@@ -1,6 +1,5 @@
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ..\Core\Src\fpga_config.c
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Core/Inc/fpga_config.h
-stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Core/Inc/main.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Core/Inc/stm32h7xx_hal_conf.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_rcc.h
@@ -33,10 +32,12 @@ stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Drive
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h
+stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sdram.h
+stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_fmc.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_usb.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd_ex.h
-stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Core/Inc/gpio.h
+stm32h743_xc7a100_ps_configuration\fpga_config.o: ../USB_DEVICE/App/usbd_cdc_if.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/usbd_cdc.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h
@@ -44,10 +45,10 @@ stm32h743_xc7a100_ps_configuration\fpga_config.o: ../USB_DEVICE/Target/usbd_conf
 stm32h743_xc7a100_ps_configuration\fpga_config.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdio.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdlib.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\string.h
+stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Core/Inc/main.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
-stm32h743_xc7a100_ps_configuration\fpga_config.o: ../USB_DEVICE/App/usbd_cdc_if.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Core/Inc/FPGAConfigDefaultTask.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../USB_DEVICE/App/usb_device.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
@@ -66,3 +67,4 @@ stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Middlewares/Third_Party/Fre
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../USB_DEVICE/App/usbd_cdc_if.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\inttypes.h
+stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Core/Inc/gpio.h

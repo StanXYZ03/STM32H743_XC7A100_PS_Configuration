@@ -28,18 +28,6 @@ extern uint8_t g_usb_recv_flag;
 #define FPGA_DONE_PIN     GPIO_PIN_13
 #define FPGA_DONE_PORT    GPIOC
 
-/* FPGA配置状态枚举 */
-typedef enum {
-    FPGA_STATE_IDLE = 0,        // 空闲
-    FPGA_STATE_RESET,           // 复位中
-    FPGA_STATE_WAIT_INITB,      // 等待INIT_B就绪
-    FPGA_STATE_SENDING,         // 发送配置数据中
-    FPGA_STATE_WAIT_DONE,       // 等待DONE拉高
-    FPGA_STATE_SUCCESS,         // 配置成功
-    FPGA_STATE_FAILED           // 配置失败
-} FPGA_StateTypeDef;
-extern FPGA_StateTypeDef  g_fpga_state;  // FPGA配置状态（Debug观察）
-
 /* 函数声明 */
 void FPGAConfigDefaultTask(void const * argument);
 void FPGA_Reset(void);                  // FPGA复位函数

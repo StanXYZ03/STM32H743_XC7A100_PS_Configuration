@@ -33,6 +33,8 @@ stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Drivers/STM32H7xx
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h
+stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sdram.h
+stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_fmc.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_usb.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd_ex.h
@@ -65,3 +67,8 @@ stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Middlewares/ST/ST
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Core/Inc/FPGAConfigDefaultTask.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\inttypes.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Core/Inc/gpio.h
+stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Core/Inc/fpga_config.h
+stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Core/Inc/sdram.h
+stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Core/Inc/fmc.h
+stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

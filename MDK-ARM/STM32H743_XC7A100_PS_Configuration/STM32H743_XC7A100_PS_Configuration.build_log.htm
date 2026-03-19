@@ -22,20 +22,18 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 D:\CubeMX\STM32H743_XC7A100_PS_Configuration\MDK-ARM\STM32H743_XC7A100_PS_Configuration.uvprojx
-Project File Date:  03/16/2026
+Project File Date:  03/18/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.05 update 1 (build 106)', folder: 'D:\Keil-ARM\ARM\ARMCC\Bin'
 Build target 'STM32H743_XC7A100_PS_Configuration'
-compiling usb_device.c...
-compiling usbd_cdc_if.c...
-compiling fpga_config.c...
+compiling sdram.c...
 compiling FPGAConfigDefaultTask.c...
-..\Core\Src\FPGAConfigDefaultTask.c(68): warning:  #1-D: last line of file ends without a newline
-  }
+..\Core\Src\FPGAConfigDefaultTask.c(12): warning:  #550-D: variable "g_log_len" was set but never used
+  static uint32_t g_log_len = 0;          // 日志长度
 ..\Core\Src\FPGAConfigDefaultTask.c: 1 warning, 0 errors
 linking...
-Program Size: Code=22736 RO-data=756 RW-data=384 ZI-data=25992  
+Program Size: Code=24868 RO-data=824 RW-data=262556 ZI-data=25148  
 FromELF: creating hex file...
 "STM32H743_XC7A100_PS_Configuration\STM32H743_XC7A100_PS_Configuration.axf" - 0 Error(s), 1 Warning(s).
 
@@ -61,7 +59,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.6.0
       Include file:  CMSIS/Core/Include/tz_context.h
-Build Time Elapsed:  00:00:09
+Build Time Elapsed:  00:00:05
 </pre>
 </body>
 </html>

@@ -32,6 +32,8 @@ stm32h743_xc7a100_ps_configuration\usb_device.o: ../Drivers/STM32H7xx_HAL_Driver
 stm32h743_xc7a100_ps_configuration\usb_device.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h
 stm32h743_xc7a100_ps_configuration\usb_device.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h
 stm32h743_xc7a100_ps_configuration\usb_device.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h
+stm32h743_xc7a100_ps_configuration\usb_device.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sdram.h
+stm32h743_xc7a100_ps_configuration\usb_device.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_fmc.h
 stm32h743_xc7a100_ps_configuration\usb_device.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd.h
 stm32h743_xc7a100_ps_configuration\usb_device.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_usb.h
 stm32h743_xc7a100_ps_configuration\usb_device.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd_ex.h
