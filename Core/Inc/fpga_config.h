@@ -35,8 +35,8 @@
 /* 协议指令定义（新增） */
 #define CMD_START_FPGA_CONFIG_BYTE1 0xf0  // 第一字节
 #define CMD_START_FPGA_CONFIG_BYTE2 0x0f  // 第二字节
-#define CCLK_HIGH_MIN_NS    50  // CCLK最小高电平时间（取手册上限，更稳定）
-#define CCLK_LOW_MIN_NS     50  // CCLK最小低电平时间
+#define CCLK_HIGH_MIN_NS    30  // CCLK最小高电平时间（取手册上限，更稳定）
+#define CCLK_LOW_MIN_NS     30  // CCLK最小低电平时间
 #define DATA_SETUP_MIN_NS   20  // DATA0最小建立时间（CCLK上升沿前）
 #define DATA_HOLD_MIN_NS    20  // DATA0最小保持时间（CCLK上升沿后）
 #define PROGB_LOW_DELAY       2
@@ -66,5 +66,8 @@ void FPGA_Delay_NS(uint32_t ns);
 HAL_StatusTypeDef FPGA_Send_Bin_From_SDRAM(uint32_t bin_size); // 从SDRAM发送
 void FPGA_Reset(void);
 void FPGA_Check_Config_Cmd(uint8_t* buf, uint32_t len); // 检测配置指令
+void FPGA_Print_Sync_Word(void);
+
+uint8_t* FPGA_Find_Sync_Word(void);
 
 #endif

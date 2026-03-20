@@ -22,6 +22,35 @@ uint8_t DONE_STATE = 0;
 static HAL_StatusTypeDef FPGA_Wait_InitB_Ready(void);
 static HAL_StatusTypeDef FPGA_Wait_DONE_High(void);
 static void FPGA_Send_Byte(uint8_t data);
+static void FPGA_Print_Sync_Word(void);
+static uint8_t* FPGA_Find_Sync_Word(void);
+/**
+ * @brief  在SDRAM中搜索同步字0xAA 0x99 0x55 0x66
+ * @return 找到的同步字起始地址，未找到返回NULL
+ */
+uint8_t* FPGA_Find_Sync_Word(void)
+{
+  uint8_t* p_sdram = (uint8_t*)SDRAM_BASE_ADDR;
+  uint32_t max_search_len = SDRAM_TOTAL_SIZE - 4; // 避免越界
+
+  for(uint32_t i = 0; i < max_search_len; i++)
+  {
+    if(p_sdram[i] == 0xAA && p_sdram[i+1] == 0x99 && 
+       p_sdram[i+2] == 0x55 && p_sdram[i+3] == 0x66)
+    {
+      char find_buf[64] = {0};
+      snprintf(find_buf, sizeof(find_buf), 
+               "[FPGA] Sync Word found at offset 0x%08lX\r\n", (unsigned long)i);
+      CDC_Transmit_FS((uint8_t*)find_buf, strlen(find_buf));
+			osDelay(100);
+      return &p_sdram[i]; // 返回同步字起始地址
+    }
+  }
+
+  CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: Sync Word not found in SDRAM!\r\n", 46);
+	osDelay(100);
+  return NULL;
+}
 
 /**
  * @brief  基于DWT的精准纳秒延时函数（适配480MHz SYSCLK）
@@ -96,11 +125,26 @@ static void FPGA_Send_Byte(uint8_t data)
   volatile uint32_t* DATA0_ODR = &FPGA_DATA0_PORT->ODR;
   uint32_t CCLK_PIN_MASK = FPGA_CCLK_PIN;
   uint32_t DATA0_PIN_MASK = FPGA_DATA0_PIN;
-
+	
   for(uint8_t i = 0; i < 8; i++)
-  {
-    // 设置DATA0引脚电平（寄存器操作）
-    if(data & 0x01)
+{
+    uint8_t bit_pos = 7 - i; // 0→7, 1→6, ...,7→0
+	
+		uint8_t bit_val = (data & (1 << bit_pos)) ? 1 : 0; // 当前位的电平（1/0）
+
+//    // 3. 仅当发送0xAA字节时，逐位打印（验证MSB先行）
+//    if(data == 0xAA)
+//    {
+//      char bit_buf[64] = {0};
+//      snprintf(bit_buf, sizeof(bit_buf), 
+//               "[FPGA Bit] pos:%d (bit%d) - value:%d\r\n", 
+//               i+1, bit_pos, bit_val);
+//      CDC_Transmit_FS((uint8_t*)bit_buf, strlen(bit_buf));
+//      osDelay(5); // 轻微延时，保证上位机接收完整
+//    }
+		
+    // 设置DATA0引脚电平
+    if(data & (1 << bit_pos)) // 检查第i位（从bit7开始,MSB先行）
     {
       *DATA0_ODR |= DATA0_PIN_MASK;
     }
@@ -108,7 +152,7 @@ static void FPGA_Send_Byte(uint8_t data)
     {
       *DATA0_ODR &= ~DATA0_PIN_MASK;
     }
-    data >>= 1;
+		
 		FPGA_Delay_NS(DATA_SETUP_MIN_NS);
 		
     // 设置CCLK引脚电平（寄存器操作）
@@ -128,18 +172,20 @@ HAL_StatusTypeDef FPGA_Send_Bin_From_SDRAM(uint32_t bin_size)
     CDC_Transmit_FS((uint8_t*)"[FPGA] Invalid bin size\r\n", 24);
     return HAL_ERROR;
   }
-
+	
   // 1. FPGA复位
   FPGA_Reset();
   CDC_Transmit_FS((uint8_t*)"[FPGA] FPGA Reset OK\r\n", 18);
-  
+  osDelay(10);
   // 2. 等待INIT_B就绪
   if(FPGA_Wait_InitB_Ready() != HAL_OK)
   {
     CDC_Transmit_FS((uint8_t*)"[FPGA] INIT_B timeout\r\n", 24);
+		osDelay(10);
     return HAL_TIMEOUT;
   }
   CDC_Transmit_FS((uint8_t*)"[FPGA] INIT_B ready\r\n", 20);
+	osDelay(10);
   
   // 3. 初始化时钟/数据引脚
   HAL_GPIO_WritePin(FPGA_CCLK_PORT, FPGA_CCLK_PIN, GPIO_PIN_RESET);
@@ -148,20 +194,33 @@ HAL_StatusTypeDef FPGA_Send_Bin_From_SDRAM(uint32_t bin_size)
   // 4. 从SDRAM读取并发送数据
   g_fpga_state = FPGA_STATE_SENDING;
   CDC_Transmit_FS((uint8_t*)"[FPGA] Sending bin data from SDRAM...\r\n", 38);
-  
+  osDelay(10);
+	
   uint8_t* p_sdram = (uint8_t*)SDRAM_BASE_ADDR;
+
   for(uint32_t i = 0; i < bin_size; i++)
   {
-    FPGA_Send_Byte(p_sdram[i]); // 直接从SDRAM读取字节发送
-    
-    // 每1000字节打印进度（减少日志刷屏）
-    if(i % 1000 == 0)
+    FPGA_Send_Byte(p_sdram[i]); // 发送给FPGA
+
+    // 每5000字节打印进度
+    if(i % 5000 == 0)
     {
       char prog_buf[64] = {0};
       snprintf(prog_buf, sizeof(prog_buf), "[FPGA] Progress: %" PRIu32 "/%" PRIu32 " (%.1f%%)\r\n", 
                i, bin_size, (float)i/bin_size*100);
       CDC_Transmit_FS((uint8_t*)prog_buf, strlen(prog_buf));
+			osDelay(10);
     }
+		
+		// 2. 调试：打印同步字附近的字节（验证0x30位置的AA 99 55 66）
+    if((i >= 0x2E) && (i <= 0x35)) // 仅打印0x2E~0x35（同步字区域）
+    {
+      char byte_buf[64] = {0};
+      snprintf(byte_buf, sizeof(byte_buf), "[FPGA Send] Offset 0x%04X: 0x%02X\r\n", i, p_sdram[i]);
+      CDC_Transmit_FS((uint8_t*)byte_buf, strlen(byte_buf));
+      osDelay(10);
+    }
+		
   }
   
 	for(uint8_t i=0; i<32; i++)

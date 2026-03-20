@@ -18,25 +18,7 @@ SDRAM_Recv_State g_sdram_recv_state = SDRAM_RECV_IDLE;  // 默认空闲
 /**
  * @brief  SDRAM初始化序列
  */
-//void SDRAM_Init_Sequence(void)
-//{
-//    uint32_t mode_reg_val = 0;
-//    
-//    SDRAM_SendCmd(FMC_SDRAM_CMD_CLK_ENABLE, 1, 0);
-//    osDelay(1);
-//    
-//    SDRAM_SendCmd(FMC_SDRAM_CMD_PALL, 1, 0);
-//    SDRAM_SendCmd(FMC_SDRAM_CMD_AUTOREFRESH_MODE, 8, 0);
-//    
-//    mode_reg_val = SDRAM_MODEREG_BURST_LENGTH_1           |
-//                   SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
-//                   SDRAM_MODEREG_CAS_LATENCY_3           |
-//                   SDRAM_MODEREG_OPERATING_MODE_STANDARD |
-//                   SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
-//    SDRAM_SendCmd(FMC_SDRAM_CMD_LOAD_MODE, 1, mode_reg_val);
-//    
-//    HAL_SDRAM_ProgramRefreshRate(&hsdram1, 1152);
-//}
+
 void SDRAM_Init_Sequence(void)
 {
     FMC_SDRAM_CommandTypeDef SDRAM_Command = {0};

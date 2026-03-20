@@ -192,7 +192,7 @@ void FPGAConfigDefaultTask(void const * argument)
             osDelay(10);
             
             // 输出等待配置提示
-            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Send 0x11 to start FPGA config\r\n");
+            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Send 0xf00f to start FPGA config\r\n");
             CDC_Transmit_FS(g_log_buf, g_log_len);
             g_log_len = 0;
             
@@ -211,10 +211,12 @@ void FPGAConfigDefaultTask(void const * argument)
             if(ret == HAL_OK)
             {
                 CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration success!\r\n", 30);
+								osDelay(10);
             }
             else
             {
                 CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration failed!\r\n", 30);
+								osDelay(10);
             }
             
             // 重置配置标志，等待下一次接收
