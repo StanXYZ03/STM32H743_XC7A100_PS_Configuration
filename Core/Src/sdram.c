@@ -39,15 +39,16 @@ SDRAM_Recv_State g_sdram_recv_state = SDRAM_RECV_IDLE;  // 默认空闲
 //}
 void SDRAM_Init_Sequence(void)
 {
-    FMC_SDRAM_CommandTypeDef command = {0};
-    uint32_t tmpmrd = 0;
-		uint32_t tmpr = 0;
-    /* Step1: 发送时钟使能命令 */
-    command.CommandMode = FMC_SDRAM_CMD_CLK_ENABLE;
-    command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
-    command.AutoRefreshNumber = 1;
-    command.ModeRegisterDefinition = 0;
-    if(HAL_SDRAM_SendCommand(&hsdram1, &command, 0xFFFF) != HAL_OK)
+    FMC_SDRAM_CommandTypeDef SDRAM_Command = {0};
+    uint32_t tmpr = 0;
+		uint32_t mode_reg_val = 0;
+
+    /* Step 1: 发送时钟使能命令 */
+    SDRAM_Command.CommandMode = FMC_SDRAM_CMD_CLK_ENABLE;
+    SDRAM_Command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1; // 对应你的Bank1
+    SDRAM_Command.AutoRefreshNumber = 1;
+    SDRAM_Command.ModeRegisterDefinition = 0;
+    if(HAL_SDRAM_SendCommand(&hsdram1, &SDRAM_Command, 0xFFFF) != HAL_OK)
     {
         Error_Handler(); // 初始化失败，触发错误
     }
@@ -56,24 +57,42 @@ void SDRAM_Init_Sequence(void)
     osDelay(1);
 
     /* Step 3: 发送预充电所有Bank命令 */
-    command.CommandMode = FMC_SDRAM_CMD_PALL;
-		command.CommandMode = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
-    command.AutoRefreshNumber = 8;
-    if(HAL_SDRAM_SendCommand(&hsdram1, &command, 0xFFFF) != HAL_OK)
+    SDRAM_Command.CommandMode = FMC_SDRAM_CMD_PALL;
+    SDRAM_Command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+    if(HAL_SDRAM_SendCommand(&hsdram1, &SDRAM_Command, 0xFFFF) != HAL_OK)
     {
         Error_Handler();
     }
 
-    /* Step 4: 加载模式寄存器（案例验证过的保守值） */
-    tmpmrd = (uint32_t)SDRAM_MODEREG_BURST_LENGTH_1 |
-             SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL |
-             SDRAM_MODEREG_CAS_LATENCY_3 |
-             SDRAM_MODEREG_OPERATING_MODE_STANDARD |
-             SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
-
-    command.CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
-    command.ModeRegisterDefinition = tmpmrd;
-    if(HAL_SDRAM_SendCommand(&hsdram1, &command, 0xFFFF) != HAL_OK)
+    /* Step 4: 发送自动刷新命令（8次） */
+    SDRAM_Command.CommandMode = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
+    SDRAM_Command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+    SDRAM_Command.AutoRefreshNumber = 8;
+    if(HAL_SDRAM_SendCommand(&hsdram1, &SDRAM_Command, 0xFFFF) != HAL_OK)
+    {
+        Error_Handler();
+    }
+	
+		/* Step 5: 加载模式寄存器（案例验证过的保守值） */
+		mode_reg_val = SDRAM_MODEREG_BURST_LENGTH_1           |
+                   SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
+                   SDRAM_MODEREG_CAS_LATENCY_3           |
+                   SDRAM_MODEREG_OPERATING_MODE_STANDARD |
+                   SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
+		SDRAM_Command.CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
+		SDRAM_Command.ModeRegisterDefinition = mode_reg_val;
+		if(HAL_SDRAM_SendCommand(&hsdram1, &SDRAM_Command, 0xFFFF) != HAL_OK)
+    {
+        Error_Handler();
+    }
+		
+    /* Step 5: 加载模式寄存器（案例验证过的保守值） */
+    SDRAM_Command.CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
+    SDRAM_Command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
+    SDRAM_Command.AutoRefreshNumber = 1;
+    // 模式寄存器值：0x00000020 → CL=2, 突发长度1, 顺序突发
+    SDRAM_Command.ModeRegisterDefinition = 0x00000020;
+    if(HAL_SDRAM_SendCommand(&hsdram1, &SDRAM_Command, 0xFFFF) != HAL_OK)
     {
         Error_Handler();
     }

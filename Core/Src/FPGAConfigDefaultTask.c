@@ -86,7 +86,11 @@ static void SDRAM_Process_Data_Block(uint8_t* buf, uint32_t len)
                 SDRAM_WriteBuffer(p_valid_data, g_sdram_bin_offset, remain_len);
                 g_sdram_bin_offset += remain_len;
             }
-            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[ERROR] SDRAM Full! Stop Recv\r\n");
+            // 直接发送溢出日志，避免覆盖
+            char tmp_log[128] = {0};
+            snprintf(tmp_log, sizeof(tmp_log), "[ERROR] SDRAM Full! Stop Recv (Used: %lu/%lu Bytes)\r\n", 
+                        g_sdram_bin_offset, SDRAM_TOTAL_SIZE);
+            CDC_Transmit_FS((uint8_t*)tmp_log, strlen(tmp_log));
             g_sdram_recv_state = SDRAM_RECV_COMPLETE;
         }
     }
@@ -102,7 +106,10 @@ int8_t USB_CDC_Recv_Callback(uint8_t* buf, uint32_t* len)
         return USBD_OK;
     }
     
-    // 逐块解析协议（优先处理启动/结束指令）
+    // 1. 检测FPGA配置启动指令（0x11）
+    FPGA_Check_Config_Cmd(buf, *len);
+    
+    // 2. 逐块解析协议（优先处理启动/结束指令）
     for(i = 0; i < *len; i++)
     {
         if(g_sdram_recv_state == SDRAM_RECV_IDLE)
@@ -128,132 +135,93 @@ int8_t USB_CDC_Recv_Callback(uint8_t* buf, uint32_t* len)
         }
     }
     
-    // 处理剩余数据（批量写入SDRAM）
+    // 3. 处理剩余数据（批量写入SDRAM）
     if(i < *len && g_sdram_recv_state == SDRAM_RECV_DATA)
     {
         SDRAM_Process_Data_Block(&buf[i], *len - i);
     }
     
-    // 重置FPGA接收超时计数器
-    FPGA_USB_Recv_Data(buf, *len);
-    
+    // 4. 废弃原FPGA缓冲区写入，移除溢出日志
+    g_usb_recv_flag = 1;
     return USBD_OK;
 }
 
-// 在FPGAConfigDefaultTask.c中新增测试函数
-static void SDRAM_Test(void)
-{
-    // 改为16位测试数据（适配SDRAM 16位位宽）
-    uint16_t test_buf[5] = {0x0102, 0x0304, 0x0506, 0x0708, 0x090A};
-    uint16_t read_buf[5] = {0};
-    uint8_t log_buf[64] = {0};
-    uint32_t i = 0;
-    
-    // 1. 按16位写入SDRAM（匹配硬件位宽）
-    uint16_t* p_sdram_16 = (uint16_t*)SDRAM_BASE_ADDR;
-    for(i = 0; i < 5; i++)
-    {
-        p_sdram_16[i] = test_buf[i]; // 16位写入，地址步长2字节
-    }
-    osDelay(10);
-    
-    // 2. 按16位读取
-    for(i = 0; i < 5; i++)
-    {
-        read_buf[i] = p_sdram_16[i];
-    }
-    
-    // 3. 打印16位对比结果
-    CDC_Transmit_FS((uint8_t*)"16bit SDRAM Test:\r\n", 18);
-		osDelay(5);
-    for(i = 0; i < 5; i++)
-    {
-        snprintf((char*)log_buf, sizeof(log_buf), 
-                 "HalfWord %d: Write=0x%04X Read=0x%04X\r\n", 
-                 i, test_buf[i], read_buf[i]);
-        CDC_Transmit_FS(log_buf, strlen((char*)log_buf));
-				osDelay(5);
-    }
-    
-    // 4. 最终判断
-    uint8_t pass = 1;
-    for(i = 0; i < 5; i++)
-    {
-        if(read_buf[i] != test_buf[i]) pass = 0;
-    }
-    if(pass)
-    {
-        CDC_Transmit_FS((uint8_t*)"16bit Test OK! 8bit access error confirmed\r\n", 42);
-				osDelay(5);
-    }
-    else
-    {
-        CDC_Transmit_FS((uint8_t*)"16bit Test Fail! Check BA0/BA1 pins\r\n", 38);
-				osDelay(5);
-    }
-}
-
-// 在任务主循环前调用测试
+/* FreeRTOS核心任务：异步处理日志 + 协议状态机 + FPGA配置 */
 void FPGAConfigDefaultTask(void const * argument)
 {
+    // 1. 初始化SDRAM
     MX_FMC_Init();
     SDRAM_Init_Sequence();
-    osDelay(500);
-    MX_USB_DEVICE_Init();
+    SDRAM_Bin_Cache_Reset();
     
+    // 2. 初始化USB
+    MX_USB_DEVICE_Init();
+    osDelay(200);
+    
+    // 3. 初始提示（异步发送，避免阻塞）
+    g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[INIT] USB + SDRAM Ready! Send 0x5A to start recv bin\r\n");
+    CDC_Transmit_FS(g_log_buf, g_log_len);
+    g_log_len = 0; // 发送后立即重置
+
+    // 4. 初始化FPGA引脚
+    HAL_GPIO_WritePin(FPGA_CCLK_PORT, FPGA_CCLK_PIN, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FPGA_DATA0_PORT, FPGA_DATA0_PIN, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(FPGA_PROGB_PORT, FPGA_PROGB_PIN, GPIO_PIN_SET);
+  
+    // 5. 主循环：异步处理日志 + 检测接收完成 + FPGA配置
     for(;;)
     {
-			// 先执行SDRAM测试
-    SDRAM_Test(); // 关键：先验证SDRAM硬件
-		osDelay(500);
-		}
-    // ... 后续逻辑
+        // 发送待输出的日志（异步，避免阻塞USB回调）
+        if(g_log_len > 0)
+        {
+            CDC_Transmit_FS(g_log_buf, g_log_len);
+            g_log_len = 0;  // 重置日志长度
+            osDelay(5);     // 增加短延时，确保日志发送完成
+        }
+        
+        // 检测SDRAM接收完成
+        if(g_sdram_recv_state == SDRAM_RECV_COMPLETE)
+        {
+            // 输出统计结果
+            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                                "[INFO] Bin File Recv Complete! Total Size: %.2f MB\r\n",
+                                (float)g_sdram_bin_offset / 1024 / 1024);
+            // 强制发送统计日志
+            CDC_Transmit_FS(g_log_buf, g_log_len);
+            g_log_len = 0;
+            osDelay(10);
+            
+            // 输出等待配置提示
+            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Send 0x11 to start FPGA config\r\n");
+            CDC_Transmit_FS(g_log_buf, g_log_len);
+            g_log_len = 0;
+            
+            // 重置状态，等待下一次启动/配置
+            g_sdram_recv_state = SDRAM_RECV_IDLE;
+            osDelay(10);
+        }
+        
+        // 检测FPGA配置启动指令
+        if(g_fpga_config_start == 1)
+        {
+            CDC_Transmit_FS((uint8_t*)"[FPGA] Start FPGA configuration...\r\n", 36);
+            
+            // 从SDRAM发送数据配置FPGA
+            HAL_StatusTypeDef ret = FPGA_Send_Bin_From_SDRAM(g_sdram_bin_offset);
+            if(ret == HAL_OK)
+            {
+                CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration success!\r\n", 30);
+            }
+            else
+            {
+                CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration failed!\r\n", 30);
+            }
+            
+            // 重置配置标志，等待下一次接收
+            g_fpga_config_start = 0;
+            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Wait next start cmd (0x5A)\r\n");
+        }
+        
+        osDelay(10);  // 降低CPU占用，避免抢占USB回调
+    }
 }
-
-/* FreeRTOS核心任务：异步处理日志 + 协议状态机 */
-//void FPGAConfigDefaultTask(void const * argument)
-//{
-//    // 1. 初始化SDRAM
-//    MX_FMC_Init();
-//    SDRAM_Init_Sequence();
-//    SDRAM_Bin_Cache_Reset();
-//    
-//    // 2. 初始化USB
-//    MX_USB_DEVICE_Init();
-//    osDelay(200);
-//    
-//    // 3. 初始提示（异步发送，避免阻塞）
-//    g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[INIT] USB + SDRAM Ready! Send 0x5A to start recv bin\r\n");
-//    CDC_Transmit_FS(g_log_buf, g_log_len);
-
-//    // 4. 初始化FPGA引脚
-//    HAL_GPIO_WritePin(FPGA_CCLK_PORT, FPGA_CCLK_PIN, GPIO_PIN_RESET);
-//    HAL_GPIO_WritePin(FPGA_DATA0_PORT, FPGA_DATA0_PIN, GPIO_PIN_RESET);
-//    HAL_GPIO_WritePin(FPGA_PROGB_PORT, FPGA_PROGB_PIN, GPIO_PIN_SET);
-//  
-//    // 5. 主循环：异步处理日志 + 检测接收完成
-//    for(;;)
-//    {
-//        // 发送待输出的日志（异步，避免阻塞USB回调）
-//        if(g_log_len > 0)
-//        {
-//            CDC_Transmit_FS(g_log_buf, g_log_len);
-//            g_log_len = 0;  // 重置日志长度
-//        }
-//        
-//        // 检测接收完成
-//        if(g_sdram_recv_state == SDRAM_RECV_COMPLETE)
-//        {
-//            // 输出统计结果
-//            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
-//                                "[INFO] Bin File Recv Complete! Total Size: %.2f MB\r\n",
-//                                (float)g_sdram_bin_offset / 1024 / 1024);
-//            // 重置状态，等待下一次启动
-//            g_sdram_recv_state = SDRAM_RECV_IDLE;
-//            osDelay(10);  // 短暂延时，避免日志刷屏
-//            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Wait next start cmd (0x5A)\r\n");
-//        }
-//        
-//        osDelay(10);  // 降低CPU占用，避免抢占USB回调
-//    }
-//}

@@ -19,8 +19,8 @@
 /* -------------------------- 宏定义 -------------------------- */
 // SDRAM起始地址（BANK2）
 #define SDRAM_BASE_ADDR        ((uint32_t)0xC0000000)
-// SDRAM总大小（4MB，适配3.64MB bin文件）
-#define SDRAM_TOTAL_SIZE       ((uint32_t)0x400000)
+// SDRAM总大小（8MB，适配3.64MB bin文件）
+#define SDRAM_TOTAL_SIZE       ((uint32_t)0x800000)
 // SDRAM缓存bin文件的起始偏移（从0开始）
 #define SDRAM_BIN_OFFSET       ((uint32_t)0x000000)
 #define SDRAM_TIMEOUT          ((uint32_t)0xFFFFU)
