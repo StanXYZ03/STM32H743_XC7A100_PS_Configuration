@@ -19,12 +19,14 @@
 #include "stdio.h"
 #include "inttypes.h"
 #include "sdram.h"  // 引入SDRAM相关定义
+#include "spi.h"
+#include "dma.h"
 
 /* 引脚配置（不变） */
-#define FPGA_CCLK_PORT    GPIOG
-#define FPGA_CCLK_PIN     GPIO_PIN_12
-#define FPGA_DATA0_PORT   GPIOI
-#define FPGA_DATA0_PIN    GPIO_PIN_8
+#define FPGA_CCLK_PORT    GPIOE
+#define FPGA_CCLK_PIN     GPIO_PIN_2
+#define FPGA_DATA0_PORT   GPIOE
+#define FPGA_DATA0_PIN    GPIO_PIN_6
 #define FPGA_PROGB_PORT   GPIOE
 #define FPGA_PROGB_PIN    GPIO_PIN_3
 #define FPGA_INITB_PORT   GPIOC
@@ -60,6 +62,7 @@ extern uint8_t g_fpga_config_start; // FPGA配置启动标志
 extern uint8_t INIT_STATE;
 extern uint8_t PROG_STATE;
 extern uint8_t DONE_STATE;
+extern 	uint32_t send_total;
 
 /* 函数声明（重构） */
 void FPGA_Delay_NS(uint32_t ns);

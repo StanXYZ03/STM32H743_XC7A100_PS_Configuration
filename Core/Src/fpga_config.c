@@ -18,39 +18,12 @@ uint8_t g_fpga_config_start = 0; // FPGA配置启动标志
 uint8_t INIT_STATE = 0;
 uint8_t PROG_STATE = 0;
 uint8_t DONE_STATE = 0;
+uint32_t send_total = 0;
 /* 私有函数（不变） */
 static HAL_StatusTypeDef FPGA_Wait_InitB_Ready(void);
 static HAL_StatusTypeDef FPGA_Wait_DONE_High(void);
-static void FPGA_Send_Byte(uint8_t data);
 static void FPGA_Print_Sync_Word(void);
 static uint8_t* FPGA_Find_Sync_Word(void);
-/**
- * @brief  在SDRAM中搜索同步字0xAA 0x99 0x55 0x66
- * @return 找到的同步字起始地址，未找到返回NULL
- */
-uint8_t* FPGA_Find_Sync_Word(void)
-{
-  uint8_t* p_sdram = (uint8_t*)SDRAM_BASE_ADDR;
-  uint32_t max_search_len = SDRAM_TOTAL_SIZE - 4; // 避免越界
-
-  for(uint32_t i = 0; i < max_search_len; i++)
-  {
-    if(p_sdram[i] == 0xAA && p_sdram[i+1] == 0x99 && 
-       p_sdram[i+2] == 0x55 && p_sdram[i+3] == 0x66)
-    {
-      char find_buf[64] = {0};
-      snprintf(find_buf, sizeof(find_buf), 
-               "[FPGA] Sync Word found at offset 0x%08lX\r\n", (unsigned long)i);
-      CDC_Transmit_FS((uint8_t*)find_buf, strlen(find_buf));
-			osDelay(100);
-      return &p_sdram[i]; // 返回同步字起始地址
-    }
-  }
-
-  CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: Sync Word not found in SDRAM!\r\n", 46);
-	osDelay(100);
-  return NULL;
-}
 
 /**
  * @brief  基于DWT的精准纳秒延时函数（适配480MHz SYSCLK）
@@ -114,54 +87,14 @@ static HAL_StatusTypeDef FPGA_Wait_DONE_High(void)
       g_fpga_state = FPGA_STATE_FAILED;
       return HAL_TIMEOUT;
     }
+		if(HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET)
+  {
+    xTaskResumeAll();
+    CDC_Transmit_FS((uint8_t*)"[FPGA] CRC Error! INIT_B dropped (Wait DONE)\r\n", 48);
+    return HAL_ERROR;
+  }
   }
   return HAL_OK;
-}
-
-static void FPGA_Send_Byte(uint8_t data)
-{
-  // 直接操作寄存器，替代HAL_GPIO_WritePin（大幅提速）
-  volatile uint32_t* CCLK_ODR = &FPGA_CCLK_PORT->ODR;
-  volatile uint32_t* DATA0_ODR = &FPGA_DATA0_PORT->ODR;
-  uint32_t CCLK_PIN_MASK = FPGA_CCLK_PIN;
-  uint32_t DATA0_PIN_MASK = FPGA_DATA0_PIN;
-	
-  for(uint8_t i = 0; i < 8; i++)
-{
-    uint8_t bit_pos = 7 - i; // 0→7, 1→6, ...,7→0
-	
-		uint8_t bit_val = (data & (1 << bit_pos)) ? 1 : 0; // 当前位的电平（1/0）
-
-//    // 3. 仅当发送0xAA字节时，逐位打印（验证MSB先行）
-//    if(data == 0xAA)
-//    {
-//      char bit_buf[64] = {0};
-//      snprintf(bit_buf, sizeof(bit_buf), 
-//               "[FPGA Bit] pos:%d (bit%d) - value:%d\r\n", 
-//               i+1, bit_pos, bit_val);
-//      CDC_Transmit_FS((uint8_t*)bit_buf, strlen(bit_buf));
-//      osDelay(5); // 轻微延时，保证上位机接收完整
-//    }
-		
-    // 设置DATA0引脚电平
-    if(data & (1 << bit_pos)) // 检查第i位（从bit7开始,MSB先行）
-    {
-      *DATA0_ODR |= DATA0_PIN_MASK;
-    }
-    else
-    {
-      *DATA0_ODR &= ~DATA0_PIN_MASK;
-    }
-		
-		FPGA_Delay_NS(DATA_SETUP_MIN_NS);
-		
-    // 设置CCLK引脚电平（寄存器操作）
-    *CCLK_ODR |= CCLK_PIN_MASK;
-    FPGA_Delay_NS(CCLK_HIGH_MIN_NS);
-		
-    *CCLK_ODR &= ~CCLK_PIN_MASK;
-    FPGA_Delay_NS(CCLK_LOW_MIN_NS);
-  }
 }
 
 /* 重构：从SDRAM发送bin数据配置FPGA */
@@ -173,67 +106,100 @@ HAL_StatusTypeDef FPGA_Send_Bin_From_SDRAM(uint32_t bin_size)
     return HAL_ERROR;
   }
 	
-  // 1. FPGA复位
+	
+  // 1. 复位和初始化
   FPGA_Reset();
   CDC_Transmit_FS((uint8_t*)"[FPGA] FPGA Reset OK\r\n", 18);
-  osDelay(10);
+	
+	MX_SPI4_Init();
+  osDelay(1);
+	
   // 2. 等待INIT_B就绪
   if(FPGA_Wait_InitB_Ready() != HAL_OK)
   {
     CDC_Transmit_FS((uint8_t*)"[FPGA] INIT_B timeout\r\n", 24);
 		osDelay(10);
     return HAL_TIMEOUT;
-  }
-  CDC_Transmit_FS((uint8_t*)"[FPGA] INIT_B ready\r\n", 20);
-	osDelay(10);
-  
-  // 3. 初始化时钟/数据引脚
-  HAL_GPIO_WritePin(FPGA_CCLK_PORT, FPGA_CCLK_PIN, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(FPGA_DATA0_PORT, FPGA_DATA0_PIN, GPIO_PIN_RESET);
-  
-  // 4. 从SDRAM读取并发送数据
-  g_fpga_state = FPGA_STATE_SENDING;
-  CDC_Transmit_FS((uint8_t*)"[FPGA] Sending bin data from SDRAM...\r\n", 38);
-  osDelay(10);
-	
-  uint8_t* p_sdram = (uint8_t*)SDRAM_BASE_ADDR;
-
-  for(uint32_t i = 0; i < bin_size; i++)
+  }  if(HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) != GPIO_PIN_SET)
   {
-    FPGA_Send_Byte(p_sdram[i]); // 发送给FPGA
-
-    // 每5000字节打印进度
-    if(i % 5000 == 0)
-    {
-      char prog_buf[64] = {0};
-      snprintf(prog_buf, sizeof(prog_buf), "[FPGA] Progress: %" PRIu32 "/%" PRIu32 " (%.1f%%)\r\n", 
-               i, bin_size, (float)i/bin_size*100);
-      CDC_Transmit_FS((uint8_t*)prog_buf, strlen(prog_buf));
-			osDelay(10);
-    }
-		
-		// 2. 调试：打印同步字附近的字节（验证0x30位置的AA 99 55 66）
-    if((i >= 0x2E) && (i <= 0x35)) // 仅打印0x2E~0x35（同步字区域）
-    {
-      char byte_buf[64] = {0};
-      snprintf(byte_buf, sizeof(byte_buf), "[FPGA Send] Offset 0x%04X: 0x%02X\r\n", i, p_sdram[i]);
-      CDC_Transmit_FS((uint8_t*)byte_buf, strlen(byte_buf));
-      osDelay(10);
-    }
-		
-  }
+    CDC_Transmit_FS((uint8_t*)"[FPGA] INIT_B abnormal after ready check\r\n", 38);
+    g_fpga_state = FPGA_STATE_FAILED;
+    return HAL_ERROR;
+  }  CDC_Transmit_FS((uint8_t*)"[FPGA] INIT_B ready\r\n", 20);
+	osDelay(1);
   
-	for(uint8_t i=0; i<32; i++)
-    {
-        // DATA0保持低电平
-        HAL_GPIO_WritePin(FPGA_DATA0_PORT,FPGA_DATA0_PIN,GPIO_PIN_RESET);
-        FPGA_Delay_NS(DATA_SETUP_MIN_NS); // Setup时间
-        HAL_GPIO_WritePin(FPGA_CCLK_PORT,FPGA_CCLK_PIN,GPIO_PIN_SET);
-        FPGA_Delay_NS(CCLK_HIGH_MIN_NS);
-        HAL_GPIO_WritePin(FPGA_CCLK_PORT,FPGA_CCLK_PIN,GPIO_PIN_RESET);
-        FPGA_Delay_NS(CCLK_LOW_MIN_NS);
-    }
+	// 3. 从SDRAM读取并发送数据（SPI+DMA 批量发送）
+	g_fpga_state = FPGA_STATE_SENDING;
+	CDC_Transmit_FS((uint8_t*)"[FPGA] Sending bin data via SPI+DMA...\r\n", 40);
+	osDelay(10); // 仅打印后短延时，不影响DMA发送
+
+	uint8_t* p_sdram = (uint8_t*)SDRAM_BASE_ADDR;
+	uint32_t batch_size = 1024; // 分批次发送（避免单次DMA长度超限）
+
+	// 禁用FreeRTOS调度器，保证DMA发送不被抢占（关键！）
+	vTaskSuspendAll();
+
+	// 分批次发送（适配大文件，避免DMA单次长度溢出）
+	while(send_total < bin_size)
+	{
+			// 检查INIT_B状态（FPGA拒绝配置则立即终止）
+			if(HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET)
+			{
+					// 恢复调度器
+					xTaskResumeAll();
+					CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: INIT_B dropped during configuration (abort)!\r\n", 57);
+					g_fpga_state = FPGA_STATE_FAILED;
+					// 停止DMA发送
+					HAL_SPI_Abort(&hspi4);
+					return HAL_ERROR;
+			}
+
+			// 计算当前批次发送长度（最后一批可能不足4096）
+			uint32_t current_batch = (bin_size - send_total) > batch_size ? batch_size : (bin_size - send_total);
+
+			// 启动SPI DMA发送（内存→外设）
+			if(HAL_SPI_Transmit_DMA(&hspi4, &p_sdram[send_total], current_batch) != HAL_OK)
+			{
+					xTaskResumeAll();
+					CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: DMA transmit failed!\r\n", 36);
+					g_fpga_state = FPGA_STATE_FAILED;
+					HAL_SPI_Abort(&hspi4);
+					return HAL_ERROR;
+			}
+
+			// 等待DMA发送完成（非阻塞，可轮询状态）
+			while(HAL_SPI_GetState(&hspi4) != HAL_SPI_STATE_READY)
+			{
+					// 等待期间仍检测INIT_B
+					if(HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET)
+					{
+							HAL_SPI_Abort(&hspi4);
+							xTaskResumeAll();
+							CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: INIT_B dropped (DMA abort)!\r\n", 48);
+							g_fpga_state = FPGA_STATE_FAILED;
+							return HAL_ERROR;
+					}
+			}
+
+			// 更新发送进度
+			send_total += current_batch;
+
+//			// 打印进度（每4096字节一次，无延时）
+//			char prog_buf[96] = {0};
+//			snprintf(prog_buf, sizeof(prog_buf), "[FPGA] Progress: %" PRIu32 "/%" PRIu32 " (%.2f%%)\r\n", 
+//							 send_total, bin_size, (float)send_total / bin_size * 100);
+//			CDC_Transmit_FS((uint8_t*)prog_buf, strlen(prog_buf));
+	}
+
+	// 4. 发送Dummy CCLK（DMA发送0x00）
+	uint8_t dummy_data[100] = {0}; 
+	HAL_SPI_Transmit_DMA(&hspi4, dummy_data, 100);
+	while(HAL_SPI_GetState(&hspi4) != HAL_SPI_STATE_READY)
+	{}
 		
+	// 恢复FreeRTOS调度器
+	xTaskResumeAll();
+
   // 5. 等待DONE引脚置高
   if(FPGA_Wait_DONE_High() != HAL_OK)
   {
@@ -241,9 +207,7 @@ HAL_StatusTypeDef FPGA_Send_Bin_From_SDRAM(uint32_t bin_size)
     return HAL_TIMEOUT;
   }
   
-  // 6. 配置完成，复位引脚
-  HAL_GPIO_WritePin(FPGA_CCLK_PORT, FPGA_CCLK_PIN, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(FPGA_DATA0_PORT, FPGA_DATA0_PIN, GPIO_PIN_SET);
+  // 6. 配置完成
   g_fpga_state = FPGA_STATE_SUCCESS;
   
   CDC_Transmit_FS((uint8_t*)"[FPGA] Config complete\r\n", 24);
