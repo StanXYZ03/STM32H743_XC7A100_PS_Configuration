@@ -157,89 +157,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>164</LineNumber>
+          <LineNumber>230</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134226194</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Core\Src\fpga_config.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32H743_XC7A100_PS_Configuration\../Core/Src/fpga_config.c\164</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>151</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134226206</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Core\Src\fpga_config.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32H743_XC7A100_PS_Configuration\../Core/Src/fpga_config.c\151</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>178</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134226326</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Core\Src\fpga_config.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32H743_XC7A100_PS_Configuration\../Core/Src/fpga_config.c\178</Expression>
-        </Bp>
-        <Bp>
-          <Number>3</Number>
-          <Type>0</Type>
-          <LineNumber>128</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134226108</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Core\Src\fpga_config.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32H743_XC7A100_PS_Configuration\../Core/Src/fpga_config.c\128</Expression>
-        </Bp>
-        <Bp>
-          <Number>4</Number>
-          <Type>0</Type>
-          <LineNumber>120</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134226090</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Core\Src\fpga_config.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\STM32H743_XC7A100_PS_Configuration\../Core/Src/fpga_config.c\120</Expression>
-        </Bp>
-        <Bp>
-          <Number>5</Number>
-          <Type>0</Type>
-          <LineNumber>210</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134225384</Address>
+          <Address>134225404</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -248,14 +168,14 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\Core\Src\FPGAConfigDefaultTask.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\STM32H743_XC7A100_PS_Configuration\../Core/Src/FPGAConfigDefaultTask.c\210</Expression>
+          <Expression>\\STM32H743_XC7A100_PS_Configuration\../Core/Src/FPGAConfigDefaultTask.c\230</Expression>
         </Bp>
         <Bp>
-          <Number>6</Number>
+          <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>111</LineNumber>
+          <LineNumber>87</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134225980</Address>
+          <Address>134226868</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -264,42 +184,26 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\Core\Src\fpga_config.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\STM32H743_XC7A100_PS_Configuration\../Core/Src/fpga_config.c\111</Expression>
+          <Expression>\\STM32H743_XC7A100_PS_Configuration\../Core/Src/fpga_config.c\87</Expression>
         </Bp>
         <Bp>
-          <Number>7</Number>
+          <Number>2</Number>
           <Type>0</Type>
-          <LineNumber>104</LineNumber>
+          <LineNumber>93</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
+          <Address>134226880</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
+          <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\Core\Src\fpga_config.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\STM32H743_XC7A100_PS_Configuration\../Core/Src/fpga_config.c\93</Expression>
         </Bp>
         <Bp>
-          <Number>8</Number>
-          <Type>0</Type>
-          <LineNumber>91</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>../Core/Src/stm32h7xx_it.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>9</Number>
+          <Number>3</Number>
           <Type>0</Type>
           <LineNumber>91</LineNumber>
           <EnabledFlag>1</EnabledFlag>
@@ -315,7 +219,23 @@
           <Expression></Expression>
         </Bp>
         <Bp>
-          <Number>10</Number>
+          <Number>4</Number>
+          <Type>0</Type>
+          <LineNumber>104</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32h743xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>5</Number>
           <Type>0</Type>
           <LineNumber>106</LineNumber>
           <EnabledFlag>1</EnabledFlag>
@@ -331,7 +251,7 @@
           <Expression></Expression>
         </Bp>
         <Bp>
-          <Number>11</Number>
+          <Number>6</Number>
           <Type>0</Type>
           <LineNumber>126</LineNumber>
           <EnabledFlag>1</EnabledFlag>
@@ -347,7 +267,23 @@
           <Expression></Expression>
         </Bp>
         <Bp>
-          <Number>12</Number>
+          <Number>7</Number>
+          <Type>0</Type>
+          <LineNumber>131</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32h743xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>8</Number>
           <Type>0</Type>
           <LineNumber>163</LineNumber>
           <EnabledFlag>1</EnabledFlag>
@@ -363,7 +299,7 @@
           <Expression></Expression>
         </Bp>
         <Bp>
-          <Number>13</Number>
+          <Number>9</Number>
           <Type>0</Type>
           <LineNumber>172</LineNumber>
           <EnabledFlag>1</EnabledFlag>
@@ -379,9 +315,73 @@
           <Expression></Expression>
         </Bp>
         <Bp>
-          <Number>14</Number>
+          <Number>10</Number>
+          <Type>0</Type>
+          <LineNumber>194</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32h743xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>11</Number>
           <Type>0</Type>
           <LineNumber>200</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32h743xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>12</Number>
+          <Type>0</Type>
+          <LineNumber>204</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32h743xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>13</Number>
+          <Type>0</Type>
+          <LineNumber>206</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32h743xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>14</Number>
+          <Type>0</Type>
+          <LineNumber>208</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
@@ -414,6 +414,70 @@
           <Number>16</Number>
           <Type>0</Type>
           <LineNumber>223</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32h743xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>17</Number>
+          <Type>0</Type>
+          <LineNumber>238</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32h743xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>18</Number>
+          <Type>0</Type>
+          <LineNumber>240</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32h743xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>19</Number>
+          <Type>0</Type>
+          <LineNumber>312</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>startup_stm32h743xx.s</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>20</Number>
+          <Type>0</Type>
+          <LineNumber>315</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
@@ -482,6 +546,11 @@
           <count>10</count>
           <WinNumber>1</WinNumber>
           <ItemText>hspi4</ItemText>
+        </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>g_sdram_bin_offset,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

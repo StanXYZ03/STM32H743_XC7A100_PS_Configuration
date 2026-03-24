@@ -3,7 +3,7 @@
  * File Created: Wednesday, 18th March 2026 2:19:50 pm
  * Author: 赵祥宇
  * -----
- * Last Modified: Wednesday, 18th March 2026 2:19:54 pm
+ * Last Modified: Tuesday, 24th March 2026 2:08:47 pm
  * Modified By: 赵祥宇
  * -----
  * Copyright (c) 2026 北京革新创展科技有限公司
@@ -18,9 +18,9 @@
 
 /* -------------------------- 宏定义 -------------------------- */
 // SDRAM起始地址（BANK2）
-#define SDRAM_BASE_ADDR        ((uint32_t)0xC0000000)
-// SDRAM总大小（8MB，适配3.64MB bin文件）
-#define SDRAM_TOTAL_SIZE       ((uint32_t)0x800000)
+#define SDRAM_BASE_ADDR        ((uint32_t)0xC0A00000)
+// SDRAM总大小(512KB)
+#define SDRAM_TOTAL_SIZE       ((uint32_t)0x00080000)
 // SDRAM缓存bin文件的起始偏移（从0开始）
 #define SDRAM_BIN_OFFSET       ((uint32_t)0x000000)
 #define SDRAM_TIMEOUT          ((uint32_t)0xFFFFU)

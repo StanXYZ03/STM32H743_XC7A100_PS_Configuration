@@ -3,11 +3,12 @@
  * File Created: Wednesday, 18th March 2026 2:20:11 pm
  * Author: 赵祥宇
  * -----
- * Last Modified: Wednesday, 18th March 2026 2:20:19 pm
+ * Last Modified: Tuesday, 24th March 2026 2:08:14 pm
  * Modified By: 赵祥宇
  * -----
  * Copyright (c) 2026 北京革新创展科技有限公司
  */
+
 
 #include "sdram.h"
 #include "cmsis_os.h"
@@ -81,8 +82,7 @@ void SDRAM_Init_Sequence(void)
 
     /* Step 6: 计算并设置刷新频率（案例公式） */
     // SDRAM_CLOCK = 100MHz（先降频，稳定后再调150MHz）
-    tmpr = (uint32_t)((100000000 / 1000) * 7.8125);
-    HAL_SDRAM_ProgramRefreshRate(&hsdram1, tmpr);
+    HAL_SDRAM_ProgramRefreshRate(&hsdram1, 761);
 }
 
 /**

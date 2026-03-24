@@ -3,11 +3,12 @@
  * File Created: Monday, 16th March 2026 1:14:27 pm
  * Author: 赵祥宇
  * -----
- * Last Modified: Monday, 16th March 2026 1:20:04 pm
+ * Last Modified: Tuesday, 24th March 2026 2:07:51 pm
  * Modified By: 赵祥宇
  * -----
  * Copyright (c) 2026 北京革新创展科技有限公司
  */
+
 
 #include "fpga_config.h"
 
@@ -128,63 +129,54 @@ HAL_StatusTypeDef FPGA_Send_Bin_From_SDRAM(uint32_t bin_size)
   }  CDC_Transmit_FS((uint8_t*)"[FPGA] INIT_B ready\r\n", 20);
 	osDelay(1);
   
-	// 3. 从SDRAM读取并发送数据（SPI+DMA 批量发送）
-	g_fpga_state = FPGA_STATE_SENDING;
-	CDC_Transmit_FS((uint8_t*)"[FPGA] Sending bin data via SPI+DMA...\r\n", 40);
-	osDelay(10); // 仅打印后短延时，不影响DMA发送
+	// 3. 发送数据（SPI+DMA 分块）
+  g_fpga_state = FPGA_STATE_SENDING;
+  CDC_Transmit_FS((uint8_t*)"[FPGA] Sending bin data via SPI+DMA (one-shot)...\r\n", 48);
+  osDelay(10); 
 
-	uint8_t* p_sdram = (uint8_t*)SDRAM_BASE_ADDR;
-	uint32_t batch_size = 1024; // 分批次发送（避免单次DMA长度超限）
-
-	// 禁用FreeRTOS调度器，保证DMA发送不被抢占（关键！）
-	vTaskSuspendAll();
-
-	// 分批次发送（适配大文件，避免DMA单次长度溢出）
+  uint8_t* p_sdram = (uint8_t*)SDRAM_BASE_ADDR;
+	uint32_t batch_size = 4096;
+  // 禁用FreeRTOS调度器（关键：保证DMA发送不被任务抢占）
+  //vTaskSuspendAll();
 	while(send_total < bin_size)
-	{
-			// 检查INIT_B状态（FPGA拒绝配置则立即终止）
-			if(HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET)
-			{
-					// 恢复调度器
-					xTaskResumeAll();
-					CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: INIT_B dropped during configuration (abort)!\r\n", 57);
-					g_fpga_state = FPGA_STATE_FAILED;
-					// 停止DMA发送
-					HAL_SPI_Abort(&hspi4);
-					return HAL_ERROR;
-			}
+  {
+  // 检查INIT_B状态（发送前最后确认）
+  if(HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET)
+  {
+    //xTaskResumeAll();
+    CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: INIT_B dropped before send!\r\n", 44);
+    g_fpga_state = FPGA_STATE_FAILED;
+    return HAL_ERROR;
+  }
 
-			// 计算当前批次发送长度（最后一批可能不足4096）
-			uint32_t current_batch = (bin_size - send_total) > batch_size ? batch_size : (bin_size - send_total);
+  // ========== 核心：分块发送bin数据 ==========
+	// 计算批次长度
+  uint32_t current_batch = (bin_size - send_total) > batch_size ? batch_size : (bin_size - send_total);
+  // 启动SPI DMA发送
+  if(HAL_SPI_Transmit_DMA(&hspi4, &p_sdram[send_total], current_batch) != HAL_OK)
+  {
+    //xTaskResumeAll();
+    CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: DMA transmit failed!\r\n", 36);
+    g_fpga_state = FPGA_STATE_FAILED;
+    HAL_SPI_Abort(&hspi4);
+    return HAL_ERROR;
+  }
 
-			// 启动SPI DMA发送（内存→外设）
-			if(HAL_SPI_Transmit_DMA(&hspi4, &p_sdram[send_total], current_batch) != HAL_OK)
-			{
-					xTaskResumeAll();
-					CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: DMA transmit failed!\r\n", 36);
-					g_fpga_state = FPGA_STATE_FAILED;
-					HAL_SPI_Abort(&hspi4);
-					return HAL_ERROR;
-			}
-
-			// 等待DMA发送完成（非阻塞，可轮询状态）
-			while(HAL_SPI_GetState(&hspi4) != HAL_SPI_STATE_READY)
-			{
-					// 等待期间仍检测INIT_B
-					if(HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET)
-					{
-							HAL_SPI_Abort(&hspi4);
-							xTaskResumeAll();
-							CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: INIT_B dropped (DMA abort)!\r\n", 48);
-							g_fpga_state = FPGA_STATE_FAILED;
-							return HAL_ERROR;
-					}
-			}
-
-			// 更新发送进度
-			send_total += current_batch;
-
-//			// 打印进度（每4096字节一次，无延时）
+  // 等待DMA发送完成（全程检测INIT_B）
+  while(HAL_SPI_GetState(&hspi4) != HAL_SPI_STATE_READY)
+  {
+    if(HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET)
+    {
+      HAL_SPI_Abort(&hspi4);
+      //xTaskResumeAll();
+      CDC_Transmit_FS((uint8_t*)"[FPGA] ERROR: INIT_B dropped (DMA abort)!\r\n", 48);
+      g_fpga_state = FPGA_STATE_FAILED;
+      return HAL_ERROR;
+    }
+	}
+	// 更新发送进度
+	send_total += current_batch;
+			// 打印进度（每4096字节一次，无延时）
 //			char prog_buf[96] = {0};
 //			snprintf(prog_buf, sizeof(prog_buf), "[FPGA] Progress: %" PRIu32 "/%" PRIu32 " (%.2f%%)\r\n", 
 //							 send_total, bin_size, (float)send_total / bin_size * 100);
@@ -198,7 +190,7 @@ HAL_StatusTypeDef FPGA_Send_Bin_From_SDRAM(uint32_t bin_size)
 	{}
 		
 	// 恢复FreeRTOS调度器
-	xTaskResumeAll();
+	//xTaskResumeAll();
 
   // 5. 等待DONE引脚置高
   if(FPGA_Wait_DONE_High() != HAL_OK)

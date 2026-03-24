@@ -42,15 +42,15 @@ void MX_SPI4_Init(void)
   hspi4.Init.Mode = SPI_MODE_MASTER;
   hspi4.Init.Direction = SPI_DIRECTION_2LINES_TXONLY;
   hspi4.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi4.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi4.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi4.Init.CLKPolarity = SPI_POLARITY_HIGH;
+  hspi4.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi4.Init.NSS = SPI_NSS_SOFT;
   hspi4.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi4.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi4.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi4.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi4.Init.CRCPolynomial = 0x0;
-  hspi4.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  hspi4.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
   hspi4.Init.NSSPolarity = SPI_NSS_POLARITY_LOW;
   hspi4.Init.FifoThreshold = SPI_FIFO_THRESHOLD_01DATA;
   hspi4.Init.TxCRCInitializationPattern = SPI_CRC_INITIALIZATION_ALL_ZERO_PATTERN;
@@ -116,10 +116,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
     hdma_spi4_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_spi4_tx.Init.Mode = DMA_NORMAL;
     hdma_spi4_tx.Init.Priority = DMA_PRIORITY_LOW;
-    hdma_spi4_tx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
-    hdma_spi4_tx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
-    hdma_spi4_tx.Init.MemBurst = DMA_MBURST_SINGLE;
-    hdma_spi4_tx.Init.PeriphBurst = DMA_PBURST_SINGLE;
+    hdma_spi4_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
     if (HAL_DMA_Init(&hdma_spi4_tx) != HAL_OK)
     {
       Error_Handler();
@@ -165,24 +162,5 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 }
 
 /* USER CODE BEGIN 1 */
-void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
-{
-  if(hspi->Instance == SPI4)
-  {
-    // 标记DMA发送完成，HAL库会自动更新SPI状态为READY
-    hspi->State = HAL_SPI_STATE_READY; 
-    hspi->TxXferCount = 0;
-    hspi->TxXferSize = 0;
-  }
-}
 
-void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
-{
-  if(hspi->Instance == SPI4)
-  {
-    CDC_Transmit_FS((uint8_t*)"[SPI4] DMA Error! State: %d\r\n", hspi->State);
-    hspi->State = HAL_SPI_STATE_READY;
-    HAL_SPI_Abort(&hspi4); // 强制终止SPI
-  }
-}
 /* USER CODE END 1 */

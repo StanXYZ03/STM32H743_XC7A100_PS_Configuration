@@ -103,7 +103,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of FPGAConfigTask */
-  osThreadDef(FPGAConfigTask, FPGAConfigDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(FPGAConfigTask, FPGAConfigDefaultTask, osPriorityNormal, 0, 2048);
   FPGAConfigTaskHandle = osThreadCreate(osThread(FPGAConfigTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
