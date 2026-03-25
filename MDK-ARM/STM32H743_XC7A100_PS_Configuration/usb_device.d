@@ -70,3 +70,10 @@ stm32h743_xc7a100_ps_configuration\usb_device.o: ../Middlewares/Third_Party/Free
 stm32h743_xc7a100_ps_configuration\usb_device.o: ../USB_DEVICE/App/usbd_cdc_if.h
 stm32h743_xc7a100_ps_configuration\usb_device.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\inttypes.h
 stm32h743_xc7a100_ps_configuration\usb_device.o: ../Core/Inc/gpio.h
+stm32h743_xc7a100_ps_configuration\usb_device.o: ../Core/Inc/fpga_config.h
+stm32h743_xc7a100_ps_configuration\usb_device.o: ../Core/Inc/sdram.h
+stm32h743_xc7a100_ps_configuration\usb_device.o: ../Core/Inc/fmc.h
+stm32h743_xc7a100_ps_configuration\usb_device.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+stm32h743_xc7a100_ps_configuration\usb_device.o: ../Core/Inc/spi.h
+stm32h743_xc7a100_ps_configuration\usb_device.o: ../Core/Inc/dma.h
+stm32h743_xc7a100_ps_configuration\usb_device.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdbool.h

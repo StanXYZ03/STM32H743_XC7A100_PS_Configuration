@@ -14,6 +14,7 @@
 
 /* 全局变量 */
 FPGA_StateTypeDef g_fpga_state = FPGA_STATE_IDLE;
+JtagHalCallbacks jtag_hal_ops;
 uint8_t g_fpga_config_start = 0; // FPGA配置启动标志
 
 uint8_t INIT_STATE = 0;
@@ -23,8 +24,6 @@ uint32_t send_total = 0;
 /* 私有函数（不变） */
 static HAL_StatusTypeDef FPGA_Wait_InitB_Ready(void);
 static HAL_StatusTypeDef FPGA_Wait_DONE_High(void);
-static void FPGA_Print_Sync_Word(void);
-static uint8_t* FPGA_Find_Sync_Word(void);
 
 /**
  * @brief  基于DWT的精准纳秒延时函数（适配480MHz SYSCLK）
@@ -260,4 +259,229 @@ void FPGA_Check_Config_Cmd(uint8_t* buf, uint32_t len)
             g_cfg_cmd_idx = 0;
         }
     }
+}
+
+// 状态机跳转查找表 (TMS 序列 LSB 优先)
+// 索引: [当前状态][目标状态]
+static const uint8_t jtag_tms_lut[JTAG_STATE_COUNT][JTAG_STATE_COUNT] = {
+    // TLR   RTI   SDS   CDR   SDR   E1D   PDR   E2D   UDR   SIS   CIR   SIR   E1I   PIR   E2I   UIR
+    {0x00, 0x00, 0x02, 0x02, 0x02, 0x0A, 0x0A, 0x2A, 0x1A, 0x06, 0x06, 0x06, 0x16, 0x16, 0x56, 0x36}, // TLR
+    {0x07, 0x00, 0x01, 0x01, 0x01, 0x05, 0x05, 0x15, 0x0D, 0x03, 0x03, 0x03, 0x0B, 0x0B, 0x2B, 0x1B}, // RTI
+    {0x03, 0x03, 0x00, 0x00, 0x00, 0x02, 0x02, 0x0A, 0x06, 0x01, 0x01, 0x01, 0x05, 0x05, 0x15, 0x0D}, // SDS
+    {0x1F, 0x03, 0x07, 0x00, 0x00, 0x01, 0x01, 0x05, 0x03, 0x0F, 0x0F, 0x0F, 0x2F, 0x2F, 0xAF, 0x6F}, // CDR
+    {0x1F, 0x03, 0x07, 0x07, 0x00, 0x01, 0x01, 0x05, 0x03, 0x0F, 0x0F, 0x0F, 0x2F, 0x2F, 0xAF, 0x6F}, // SDR
+    {0x0F, 0x01, 0x03, 0x03, 0x02, 0x00, 0x00, 0x02, 0x01, 0x07, 0x07, 0x07, 0x17, 0x17, 0x57, 0x37}, // E1D
+    {0x1F, 0x03, 0x07, 0x07, 0x01, 0x05, 0x00, 0x01, 0x03, 0x0F, 0x0F, 0x0F, 0x2F, 0x2F, 0xAF, 0x6F}, // PDR
+    {0x0F, 0x01, 0x03, 0x03, 0x00, 0x02, 0x02, 0x00, 0x01, 0x07, 0x07, 0x07, 0x17, 0x17, 0x57, 0x37}, // E2D
+    {0x07, 0x00, 0x01, 0x01, 0x01, 0x05, 0x05, 0x15, 0x00, 0x03, 0x03, 0x03, 0x0B, 0x0B, 0x2B, 0x1B}, // UDR
+    {0x01, 0x01, 0x05, 0x05, 0x05, 0x15, 0x15, 0x55, 0x35, 0x00, 0x00, 0x00, 0x02, 0x02, 0x0A, 0x06}, // SIS
+    {0x1F, 0x03, 0x07, 0x07, 0x07, 0x17, 0x17, 0x57, 0x37, 0x0F, 0x00, 0x00, 0x01, 0x01, 0x05, 0x03}, // CIR
+    {0x1F, 0x03, 0x07, 0x07, 0x07, 0x17, 0x17, 0x57, 0x37, 0x0F, 0x0F, 0x00, 0x01, 0x01, 0x05, 0x03}, // SIR
+    {0x0F, 0x01, 0x03, 0x03, 0x03, 0x0B, 0x0B, 0x2B, 0x1B, 0x07, 0x07, 0x02, 0x00, 0x00, 0x02, 0x01}, // E1I
+    {0x1F, 0x03, 0x07, 0x07, 0x07, 0x17, 0x17, 0x57, 0x37, 0x0F, 0x0F, 0x01, 0x05, 0x00, 0x01, 0x03}, // PIR
+    {0x0F, 0x01, 0x03, 0x03, 0x03, 0x0B, 0x0B, 0x2B, 0x1B, 0x07, 0x07, 0x00, 0x02, 0x02, 0x00, 0x01}, // E2I
+    {0x07, 0x00, 0x01, 0x01, 0x01, 0x05, 0x05, 0x15, 0x0D, 0x03, 0x03, 0x03, 0x0B, 0x0B, 0x2B, 0x00}  // UIR
+};
+
+// 状态机跳转步数查找表
+static const uint8_t jtag_steps_lut[JTAG_STATE_COUNT][JTAG_STATE_COUNT] = {
+    {0, 1, 2, 3, 4, 4, 5, 6, 5, 3, 4, 5, 5, 6, 7, 6}, // TLR
+    {3, 0, 1, 2, 3, 3, 4, 5, 4, 2, 3, 4, 4, 5, 6, 5}, // RTI
+    {2, 3, 0, 1, 2, 2, 3, 4, 3, 1, 2, 3, 3, 4, 5, 4}, // SDS
+    {5, 3, 3, 0, 1, 1, 2, 3, 2, 4, 5, 6, 6, 7, 8, 7}, // CDR
+    {5, 3, 3, 4, 0, 1, 2, 3, 2, 4, 5, 6, 6, 7, 8, 7}, // SDR
+    {4, 2, 2, 3, 3, 0, 1, 2, 1, 3, 4, 5, 5, 6, 7, 6}, // E1D
+    {5, 3, 3, 4, 2, 3, 0, 1, 2, 4, 5, 6, 6, 7, 8, 7}, // PDR
+    {4, 2, 2, 3, 1, 2, 3, 0, 1, 3, 4, 5, 5, 6, 7, 6}, // E2D
+    {3, 1, 1, 2, 3, 3, 4, 5, 0, 2, 3, 4, 4, 5, 6, 5}, // UDR
+    {1, 2, 3, 4, 5, 5, 6, 7, 6, 0, 1, 2, 2, 3, 4, 3}, // SIS
+    {5, 3, 3, 4, 5, 5, 6, 7, 6, 4, 0, 1, 1, 2, 3, 2}, // CIR
+    {5, 3, 3, 4, 5, 5, 6, 7, 6, 4, 5, 0, 1, 2, 3, 2}, // SIR
+    {4, 2, 2, 3, 4, 4, 5, 6, 5, 3, 4, 3, 0, 1, 2, 1}, // E1I
+    {5, 3, 3, 4, 5, 5, 6, 7, 6, 4, 5, 2, 3, 0, 1, 2}, // PIR
+    {4, 2, 2, 3, 4, 4, 5, 6, 5, 3, 4, 1, 2, 3, 0, 1}, // E2I
+    {3, 1, 1, 2, 3, 3, 4, 5, 4, 2, 3, 4, 4, 5, 6, 0}  // UIR
+};
+
+
+/**
+ * @brief 产生一个 TCK 上升沿，发送一个 Bit
+ * @note  时序：先设置 TMS/TDI，再拉高 TCK (采样)，再拉低
+ */
+static void Jtag_Tick(JtagContext *jtag, bool tms, bool tdi)
+{
+    jtag->hal->SetTMS(tms);
+    jtag->hal->SetTDI(tdi);
+    
+    FPGA_Delay_NS(100); // 建立时间
+    
+    jtag->hal->SetTCK(true);  // 上升沿：FPGA 采样 TMS/TDI
+    
+    FPGA_Delay_NS(100); // 保持时间
+    
+    jtag->hal->SetTCK(false); // 下降沿：FPGA 更新 TDO
+}
+
+// ================= 公共 API 实现 =================
+
+void Jtag_Init(JtagContext *jtag, JtagHalCallbacks *hal, JtagTransfer *xfer)
+{
+    jtag->hal = hal;
+    jtag->xfer = xfer;
+    jtag->current_state = JTAG_TLR;
+    jtag->last_bit_held = false;
+    jtag->last_bit = 0;
+    
+    // 初始复位
+    Jtag_Reset(jtag);
+}
+
+void Jtag_Reset(JtagContext *jtag)
+{
+    // 连续发送 5 个 TMS=1，确保回到 TLR
+    for(int i = 0; i < 5; i++) {
+        Jtag_Tick(jtag, true, true);
+    }
+    jtag->current_state = JTAG_TLR;
+}
+
+void Jtag_GotoState(JtagContext *jtag, JtagState target_state)
+{
+    if (jtag->current_state == target_state) return;
+
+    uint8_t tms_seq = jtag_tms_lut[jtag->current_state][target_state];
+    uint8_t steps = jtag_steps_lut[jtag->current_state][target_state];
+
+    while (steps--) {
+        bool tms = (tms_seq & 0x01);
+        // 状态跳转时，TDI 可以是任意值 (通常给 1)
+        Jtag_Tick(jtag, tms, true);
+        tms_seq >>= 1;
+    }
+    
+    jtag->current_state = target_state;
+}
+
+void Jtag_RunClocks(JtagContext *jtag, uint32_t count, JtagState end_state)
+{
+    Jtag_GotoState(jtag, JTAG_RTI);
+    while (count--) {
+        // TMS=0，保持在 RTI 或 DR/IR 移位状态
+        Jtag_Tick(jtag, false, true); 
+    }
+    Jtag_GotoState(jtag, end_state);
+}
+
+/**
+ * @brief 底层移位函数 (仅在 SIR/SDR 状态下调用)
+ */
+static void Jtag_ShiftRaw(JtagContext *jtag, const uint8_t *tx_data, uint8_t *rx_data, uint32_t bit_len, bool end_after_shift)
+{
+    uint32_t bits_remaining = bit_len;
+    uint32_t byte_idx = 0;
+    uint8_t bit_idx = 0;
+    uint8_t rx_byte = 0;
+
+    // 1. 处理前 N-1 个 Bit
+    while (bits_remaining > 1) {
+        bool tdi = false;
+        if (tx_data) {
+            tdi = (tx_data[byte_idx] >> bit_idx) & 0x01;
+        }
+
+        // TMS=0，保持在 Shift 状态
+        Jtag_Tick(jtag, false, tdi);
+
+        // 读取 TDO
+        if (rx_data) {
+            bool tdo = jtag->hal->ReadTDO();
+            rx_byte |= (tdo << bit_idx);
+        }
+
+        bit_idx++;
+        if (bit_idx == 8) {
+            if (rx_data) rx_data[byte_idx] = rx_byte;
+            rx_byte = 0;
+            bit_idx = 0;
+            byte_idx++;
+        }
+        bits_remaining--;
+    }
+
+    // 2. 处理最后 1 个 Bit
+    if (bits_remaining == 1) {
+        bool tdi = false;
+        if (tx_data) {
+            tdi = (tx_data[byte_idx] >> bit_idx) & 0x01;
+        }
+
+        // 如果需要结束，最后一个 Bit 时 TMS=1，进入 Exit1 状态
+        bool tms = end_after_shift;
+        
+        Jtag_Tick(jtag, tms, tdi);
+
+        if (rx_data) {
+            bool tdo = jtag->hal->ReadTDO();
+            rx_byte |= (tdo << bit_idx);
+            rx_data[byte_idx] = rx_byte; // 保存最后一个字节
+        }
+
+        // 更新状态
+        if (end_after_shift) {
+            // 此时已经在 Exit1 了
+            jtag->current_state = (jtag->current_state == JTAG_SDR) ? JTAG_E1D : JTAG_E1I;
+        }
+    }
+}
+
+void Jtag_WriteInstruction(JtagContext *jtag, uint8_t inst, JtagState end_state)
+{
+    // 1. 进入 Shift-IR
+    Jtag_GotoState(jtag, JTAG_SIR);
+
+    // 2. 准备数据 (注意：Xilinx 通常 LSB 优先)
+    // 这里的 buffer 只是临时用，因为指令很短
+    uint8_t inst_buf[2] = {inst, 0};
+    
+    // 3. 移位
+    // 如果 end_state 不是 SIR，说明要退出，那么 ShiftRaw 会在最后一拍拉高 TMS
+    bool exit_after = (end_state != JTAG_SIR);
+    Jtag_ShiftRaw(jtag, inst_buf, NULL, XILINX_IR_LEN, exit_after);
+
+    // 4. 进入最终状态 (通常是 RTI)
+    Jtag_GotoState(jtag, end_state);
+}
+
+void Jtag_WriteData(JtagContext *jtag, const uint8_t *data, uint32_t bit_len, JtagState end_state)
+{
+    // 1. 进入 Shift-DR
+    Jtag_GotoState(jtag, JTAG_SDR);
+
+    // 2. 移位数据
+    bool exit_after = (end_state != JTAG_SDR);
+    Jtag_ShiftRaw(jtag, data, NULL, bit_len, exit_after);
+
+    // 3. 进入最终状态
+    // 如果 end_state 是 SDR，说明是连续传输，不跳转
+    if (end_state != JTAG_SDR) {
+        Jtag_GotoState(jtag, end_state);
+    }
+}
+
+void Jtag_ReadData(JtagContext *jtag, uint8_t *data, uint32_t bit_len, JtagState end_state)
+{
+    // 1. 进入 Shift-DR
+    Jtag_GotoState(jtag, JTAG_SDR);
+
+    // 2. 移位读取 (TDI 保持高电平，即发送 0xFF)
+    bool exit_after = (end_state != JTAG_SDR);
+    Jtag_ShiftRaw(jtag, NULL, data, bit_len, exit_after); // tx_data 为 NULL 时默认发 1
+
+    // 3. 进入最终状态
+    Jtag_GotoState(jtag, end_state);
+}
+
+JtagHalCallbacks* BSP_Jtag_GetHalOps(void)
+{
+    return &jtag_hal_ops;
 }

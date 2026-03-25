@@ -75,4 +75,5 @@ stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Core/Inc/fmc.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Core/Inc/spi.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Core/Inc/dma.h
+stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdbool.h
 stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

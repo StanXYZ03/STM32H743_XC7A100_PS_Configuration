@@ -68,6 +68,22 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+	#if CONFIGURATION_MODE
+	
+	#else
+	// 2. 配置输出引脚: TCK, TDI, TMS
+	GPIO_InitStruct.Pin = JTAG_TCK_PIN | JTAG_TDI_PIN | JTAG_TMS_PIN;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	HAL_GPIO_Init(JTAG_GPIO_PORT, &GPIO_InitStruct);
+
+	// 3. 配置输入引脚: TDO
+	GPIO_InitStruct.Pin = JTAG_TDO_PIN;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP; // 通常上拉
+	HAL_GPIO_Init(JTAG_GPIO_PORT, &GPIO_InitStruct);
+	#endif
 }
 
 /* USER CODE BEGIN 2 */

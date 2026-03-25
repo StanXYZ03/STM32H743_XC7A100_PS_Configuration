@@ -121,12 +121,15 @@ void FPGAConfigDefaultTask(void const * argument)
     
     // 2. 初始化USB
     MX_USB_DEVICE_Init();
+
+    // 3. 初始化配置模式
+    #if CONFIGURATION_MODE
+    MX_SPI4_Init();
+    #else
+
+    #endif
     osDelay(200);
-    
-    // 3. 初始提示（异步发送，避免阻塞）
-    g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[INIT] USB + SDRAM Ready! Send 0x5A to start recv bin\r\n");
-    CDC_Transmit_FS(g_log_buf, g_log_len);
-    g_log_len = 0; // 发送后立即重置
+
 
     // 4. 初始化FPGA引脚
     HAL_GPIO_WritePin(FPGA_PROGB_PORT, FPGA_PROGB_PIN, GPIO_PIN_SET);
