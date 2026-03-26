@@ -158,7 +158,8 @@ void FPGAConfigDefaultTask(void const * argument)
             osDelay(10);
             
             // 输出等待配置提示
-            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Send 0xf00f to start FPGA config\r\n");
+            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                                 "[READY] Send 0x1231 for FPGA config or 0x2143 for XSVF execute\r\n");
             CDC_Transmit_FS(g_log_buf, g_log_len);
             g_log_len = 0;
             
@@ -174,25 +175,12 @@ void FPGAConfigDefaultTask(void const * argument)
         {
             CDC_Transmit_FS((uint8_t*)"[FPGA] Start FPGA configuration...\r\n", 36);
             
-            // 在 g_fpga_config_start == 1 分支中，发送前添加
-						if(g_sdram_bin_offset > 35)
-						{
-								uint8_t* p_sdram = (uint8_t*)SDRAM_BASE_ADDR;
-								char check_log[64] = {0};
-								uint32_t log_pos = 0;
-								log_pos += snprintf(check_log + log_pos, sizeof(check_log) - log_pos, 
-																		"[SDRAM Check] 30-35: ");
-								for(int i = 30; i <= 35; i++)
-								{
-										log_pos += snprintf(check_log + log_pos, sizeof(check_log) - log_pos, 
-																				"%02X ", p_sdram[i]);
-								}
-								log_pos += snprintf(check_log + log_pos, sizeof(check_log) - log_pos, "\r\n");
-								CDC_Transmit_FS((uint8_t*)check_log, log_pos);
-								osDelay(10);
-						}
             // 从SDRAM发送数据配置FPGA
+            #if CONFIGURATION_MODE
             HAL_StatusTypeDef ret = FPGA_Send_Bin_From_SDRAM(g_sdram_bin_offset);
+            #else
+            HAL_StatusTypeDef ret = Jtag_ConfigureFromSdram(g_sdram_bin_offset);
+            #endif
             if(ret == HAL_OK)
             {
                 CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration success!\r\n", 30);
@@ -208,6 +196,26 @@ void FPGAConfigDefaultTask(void const * argument)
             g_fpga_config_start = 0;
             g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Wait next start cmd (0x5A)\r\n");
         }
+				if(g_xsvf_exec_start == 1U)
+				{
+						CDC_Transmit_FS((uint8_t*)"[XSVF] Start execute...\r\n", 24);
+
+						HAL_StatusTypeDef ret = Xsvf_ExecuteFromSdram(g_sdram_bin_offset);
+						if(ret == HAL_OK)
+						{
+								CDC_Transmit_FS((uint8_t*)"[XSVF] Execute success!\r\n", 25);
+						}
+						else
+						{
+								CDC_Transmit_FS((uint8_t*)"[XSVF] Execute failed!\r\n", 24);
+						}
+
+						osDelay(10);
+						g_xsvf_exec_start = 0U;
+						g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+																 "[READY] Wait next start cmd (0x5A)\r\n");
+				}
+
         osDelay(10);  // 降低CPU占用，避免抢占USB回调
     }
 }
