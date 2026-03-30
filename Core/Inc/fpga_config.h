@@ -1,4 +1,4 @@
-﻿#ifndef __FPGA_CONFIG_H
+#ifndef __FPGA_CONFIG_H
 #define __FPGA_CONFIG_H
 
 #include "stm32h7xx_hal.h"
@@ -12,12 +12,12 @@
 #include "dma.h"
 #include <stdbool.h>
 
-#if CONFIGURATION_MODE
+
 #define FPGA_CCLK_PORT    GPIOE
 #define FPGA_CCLK_PIN     GPIO_PIN_2
 #define FPGA_DATA0_PORT   GPIOE
 #define FPGA_DATA0_PIN    GPIO_PIN_6
-#else
+
 #define JTAG_GPIO_PORT         GPIOE
 #define JTAG_TCK_PIN           GPIO_PIN_2
 #define JTAG_TDI_PIN           GPIO_PIN_6
@@ -29,24 +29,9 @@
 #define XILINX_INST_BYPASS     0x3F
 #define XILINX_INST_IDCODE     0x09
 #define JTAG_GPIO_CLK_ENABLE() __HAL_RCC_GPIOE_CLK_ENABLE()
-#endif
 
-#ifndef JTAG_GPIO_PORT
-#define JTAG_GPIO_PORT         GPIOE
-#define JTAG_TCK_PIN           GPIO_PIN_2
-#define JTAG_TDI_PIN           GPIO_PIN_6
-#define JTAG_TDO_PIN           GPIO_PIN_5
-#define JTAG_TMS_PIN           GPIO_PIN_4
-#define JTAG_GPIO_CLK_ENABLE() __HAL_RCC_GPIOE_CLK_ENABLE()
-#endif
 
-#ifndef XILINX_INST_JPROGRAM
-#define XILINX_INST_JPROGRAM   0x0B
-#define XILINX_INST_CFG_IN     0x05
-#define XILINX_INST_JSTART     0x0C
-#define XILINX_INST_BYPASS     0x3F
-#define XILINX_INST_IDCODE     0x09
-#endif
+
 
 #define FPGA_PROGB_PORT   GPIOE
 #define FPGA_PROGB_PIN    GPIO_PIN_3
@@ -79,6 +64,12 @@ typedef enum {
     FPGA_STATE_FAILED,
     FPGA_STATE_READY_FOR_CONFIG
 } FPGA_StateTypeDef;
+
+/* ----------------------- 模式枚举 ----------------------- */
+typedef enum {
+    FPGA_MODE_JTAG      = 0,
+    FPGA_MODE_SLAVE_SERIAL = 1
+} FPGA_ModeType;
 
 typedef enum {
     JTAG_TLR = 0,
@@ -143,5 +134,7 @@ void Jtag_WriteInstruction(JtagContext *jtag, uint8_t inst, JtagState end_state)
 void Jtag_WriteData(JtagContext *jtag, const uint8_t *data, uint32_t bit_len, JtagState end_state);
 void Jtag_ReadData(JtagContext *jtag, uint8_t *data, uint32_t bit_len, JtagState end_state);
 JtagHalCallbacks *BSP_Jtag_GetHalOps(void);
+
+void FPGA_Switch_Mode(FPGA_ModeType mode);
 
 #endif

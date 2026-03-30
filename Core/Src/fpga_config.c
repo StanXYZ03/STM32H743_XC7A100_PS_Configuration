@@ -149,7 +149,6 @@ HAL_StatusTypeDef FPGA_Send_Bin_From_SDRAM(uint32_t bin_size)
     FPGA_Reset();
     CDC_Transmit_FS((uint8_t *)"[FPGA] FPGA Reset OK\r\n", 22);
 
-    MX_SPI4_Init();
     osDelay(1);
 
     if (FPGA_Wait_InitB_Ready() != HAL_OK) {
@@ -1022,4 +1021,36 @@ JtagHalCallbacks *BSP_Jtag_GetHalOps(void)
     jtag_hal_ops.SetTDI = BSP_Jtag_SetTdi;
     jtag_hal_ops.ReadTDO = BSP_Jtag_ReadTdo;
     return &jtag_hal_ops;
+}
+
+void FPGA_Switch_Mode(FPGA_ModeType mode)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    __HAL_RCC_GPIOE_CLK_ENABLE();
+
+    // 先把所有复用引脚全部去初始化
+    HAL_GPIO_DeInit(GPIOE, GPIO_PIN_2 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6);
+
+    if (mode == FPGA_MODE_JTAG)
+    {
+        // JTAG 模式
+        // TCK(PE2) TDI(PE6) TMS(PE4) 推挽输出
+        GPIO_InitStruct.Pin = JTAG_TCK_PIN | JTAG_TDI_PIN | JTAG_TMS_PIN;
+        GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+        GPIO_InitStruct.Pull = GPIO_NOPULL;
+        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+        HAL_GPIO_Init(JTAG_GPIO_PORT, &GPIO_InitStruct);
+
+        // TDO(PE5) 上拉输入
+        GPIO_InitStruct.Pin = JTAG_TDO_PIN;
+        GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+        GPIO_InitStruct.Pull = GPIO_PULLUP;
+        HAL_GPIO_Init(JTAG_GPIO_PORT, &GPIO_InitStruct);
+    }
+    else
+    {
+        // Slave Serial 模式
+        // CCLK(PE2) DATA0(PE6) 由 SPI 控制 => 复用推挽
+        MX_SPI4_Init();
+    }
 }

@@ -20,7 +20,8 @@ uint8_t g_usb_recv_flag = 0;
 static uint8_t g_log_buf[128] = {0};    // 日志缓冲区（任务中异步发送）
 static uint32_t g_log_len = 0;          // 日志长度
 static uint8_t first_call = 1;
-
+uint8_t g_fpgamode = 0; // 0=未选择 1=PS 2=JTAG
+uint8_t g_wait_mode_flag = 0; // 等待模式选择标志
 
 /* 批量处理数据字节 */
 static void SDRAM_Process_Data_Block(uint8_t* buf, uint32_t len)
@@ -74,6 +75,28 @@ int8_t USB_CDC_Recv_Callback(uint8_t* buf, uint32_t* len)
     // 1. 检测FPGA配置启动指令（0x11）
     FPGA_Check_Config_Cmd(buf, *len);
     
+		// ================== 新增：模式选择 ==================
+    if(g_wait_mode_flag == 1 && *len == 1)
+    {
+        if(buf[0] == 0x01 || buf[0] == 0x02)
+        {
+            g_fpgamode = buf[0];  // 保存模式
+            g_wait_mode_flag = 0; // 取消等待
+
+            // 回复上位机：模式已接收
+            snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                     "[INFO] Mode Selected: %s\r\n",
+                     g_fpgamode==1 ? "Slave Serial" : "JTAG");
+            CDC_Transmit_FS(g_log_buf, strlen((char*)g_log_buf));
+
+            // 提示：可以发送 0x1231 启动
+            snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                     "[READY] Send 0x1231 to start config\r\n");
+            CDC_Transmit_FS(g_log_buf, strlen((char*)g_log_buf));
+            return USBD_OK;
+        }
+    }
+		
     // 2. 逐块解析协议（优先处理启动/结束指令）
     for(i = 0; i < *len; i++)
     {
@@ -148,54 +171,77 @@ void FPGAConfigDefaultTask(void const * argument)
         // 检测SDRAM接收完成
         if(g_sdram_recv_state == SDRAM_RECV_COMPLETE)
         {
-            // 输出统计结果
-            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
-                                "[INFO] Bin File Recv Complete! Total Size: %.2f MB\r\n",
-                                (float)g_sdram_bin_offset / 1024 / 1024);
-            // 强制发送统计日志
-            CDC_Transmit_FS(g_log_buf, g_log_len);
-            g_log_len = 0;
-            osDelay(10);
-            
-            // 输出等待配置提示
-            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
-                                 "[READY] Send 0x1231 for FPGA config or 0x2143 for XSVF execute\r\n");
-            CDC_Transmit_FS(g_log_buf, g_log_len);
-            g_log_len = 0;
-            
-            // 重置状态，等待下一次启动/配置
-            g_sdram_recv_state = SDRAM_RECV_IDLE;
-						first_call = 1;
-						
-            osDelay(10);
+             // 输出统计结果
+					g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+															"[INFO] Bin File Recv Complete! Total Size: %.2f MB\r\n",
+															(float)g_sdram_bin_offset / 1024 / 1024);
+					CDC_Transmit_FS(g_log_buf, g_log_len);
+					g_log_len = 0;
+					osDelay(10);
+
+					// ====================== 新增 ======================
+					// 清空之前的模式
+					g_fpgamode = 0;
+					// 标记：现在开始等待上位机发送模式
+					g_wait_mode_flag = 1;
+
+					// 输出提示：请发送配置模式 0x01=PS 0x02=JTAG
+					g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+															 "[WAIT] Send Mode: 0x01=PS 0x02=JTAG\r\n");
+					CDC_Transmit_FS(g_log_buf, g_log_len);
+					g_log_len = 0;
+
+					// 重置状态
+					g_sdram_recv_state = SDRAM_RECV_IDLE;
+					first_call = 1;
+					osDelay(10);
         }
         
         // 检测FPGA配置启动指令
         if(g_fpga_config_start == 1)
         {
-            CDC_Transmit_FS((uint8_t*)"[FPGA] Start FPGA configuration...\r\n", 36);
-            
-            // 从SDRAM发送数据配置FPGA
-            #if CONFIGURATION_MODE
-            HAL_StatusTypeDef ret = FPGA_Send_Bin_From_SDRAM(g_sdram_bin_offset);
-            #else
-            HAL_StatusTypeDef ret = Jtag_ConfigureFromSdram(g_sdram_bin_offset);
-            #endif
-            if(ret == HAL_OK)
-            {
-                CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration success!\r\n", 30);
-								osDelay(10);
-            }
-            else
-            {
-                CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration failed!\r\n", 30);
-								osDelay(10);
-            }
-            
-            // 重置配置标志，等待下一次接收
-            g_fpga_config_start = 0;
-            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Wait next start cmd (0x5A)\r\n");
-        }
+               // 先判断：模式是否已经选择
+					if(g_fpgamode != 1 && g_fpgamode != 2)
+					{
+							CDC_Transmit_FS((uint8_t*)"[ERROR] Please select mode first!\r\n", 35);
+							g_fpga_config_start = 0;
+							return;
+					}
+
+					CDC_Transmit_FS((uint8_t*)"[FPGA] Start FPGA configuration...\r\n", 36);
+
+					HAL_StatusTypeDef ret = HAL_ERROR;
+
+					// ====================== 动态切换模式并执行 ======================
+					if(g_fpgamode == 1)
+					{
+						// PS 模式
+						FPGA_Switch_Mode(FPGA_MODE_SLAVE_SERIAL);
+						ret = FPGA_Send_Bin_From_SDRAM(g_sdram_bin_offset);
+					}
+					else if(g_fpgamode == 2)
+					{
+							// JTAG 模式
+							FPGA_Switch_Mode(FPGA_MODE_JTAG);
+							ret = Jtag_ConfigureFromSdram(g_sdram_bin_offset);
+					}
+
+					// ===============================================================
+
+					if(ret == HAL_OK)
+					{
+							CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration success!\r\n", 30);
+					}
+					else
+					{
+							CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration failed!\r\n", 30);
+					}
+
+					osDelay(1);
+					g_fpga_config_start = 0;
+					g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Wait next start cmd (0x5A)\r\n");
+					osDelay(1);
+				}
 				if(g_xsvf_exec_start == 1U)
 				{
 						CDC_Transmit_FS((uint8_t*)"[XSVF] Start execute...\r\n", 24);
