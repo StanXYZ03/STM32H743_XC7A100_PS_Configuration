@@ -1,12 +1,5 @@
 /*
  * File: FPGAConfigDefaultTask.c
- * File Created: Monday, 16th March 2026 2:51:15 pm
- * Author: 赵祥宇
- * -----
- * Last Modified: Tuesday, 24th March 2026 2:08:00 pm
- * Modified By: 赵祥宇
- * -----
- * Copyright (c) 2026 北京革新创展科技有限公司
  */
 
 #include "FPGAConfigDefaultTask.h"
@@ -15,25 +8,29 @@
 #include "cmsis_os.h"
 #include "sdram.h"
 
-/* 全局变量 */
 uint8_t g_usb_recv_flag = 0;
-static uint8_t g_log_buf[128] = {0};    // 日志缓冲区（任务中异步发送）
-static uint32_t g_log_len = 0;          // 日志长度
+static uint8_t g_log_buf[128] = {0};
+static uint32_t g_log_len = 0;
 static uint8_t first_call = 1;
-uint8_t g_fpgamode = 0; // 0=未选择 1=PS 2=JTAG
-uint8_t g_wait_mode_flag = 0; // 等待模式选择标志
+uint8_t g_fpgamode = 0;
+uint8_t g_wait_mode_flag = 0;
 
-/* 批量处理数据字节 */
 static void SDRAM_Process_Data_Block(uint8_t* buf, uint32_t len)
 {
-    static uint8_t prev = 0;
-    static uint8_t started = 0;
+    static uint8_t tail[4] = {0};
+    static uint8_t tail_len = 0;
+    static const uint8_t end_marker[4] = {
+        CMD_END_BIN_BYTE1,
+        CMD_END_BIN_BYTE2,
+        CMD_END_BIN_BYTE3,
+        CMD_END_BIN_BYTE4
+    };
 
     if(first_call)
     {
         g_sdram_bin_offset = 0;
-        prev = 0;
-        started = 0;
+        memset(tail, 0, sizeof(tail));
+        tail_len = 0;
         first_call = 0;
     }
 
@@ -41,79 +38,98 @@ static void SDRAM_Process_Data_Block(uint8_t* buf, uint32_t len)
     {
         uint8_t curr = buf[i];
 
-        // 结束条件：只有 55 + AA
-        if(prev == CMD_END_BIN_BYTE1 && curr == CMD_END_BIN_BYTE2)
+        if(tail_len < sizeof(tail))
         {
-            g_sdram_recv_state = SDRAM_RECV_COMPLETE;
-            return;
+            tail[tail_len++] = curr;
+            if((tail_len == sizeof(tail)) && (memcmp(tail, end_marker, sizeof(tail)) == 0))
+            {
+                g_sdram_recv_state = SDRAM_RECV_COMPLETE;
+                tail_len = 0;
+                return;
+            }
+            continue;
         }
 
-        if(started && g_sdram_recv_state == SDRAM_RECV_DATA)
+        if(g_sdram_recv_state == SDRAM_RECV_DATA)
         {
             if(g_sdram_bin_offset < SDRAM_TOTAL_SIZE)
             {
-                SDRAM_WriteBuffer(&prev, g_sdram_bin_offset, 1);
+                SDRAM_WriteBuffer(&tail[0], g_sdram_bin_offset, 1);
                 g_sdram_bin_offset++;
             }
         }
 
-        started = 1;
-        prev = curr;
+        memmove(&tail[0], &tail[1], sizeof(tail) - 1U);
+        tail[sizeof(tail) - 1U] = curr;
+
+        if(memcmp(tail, end_marker, sizeof(tail)) == 0)
+        {
+            g_sdram_recv_state = SDRAM_RECV_COMPLETE;
+            tail_len = 0;
+            return;
+        }
     }
 }
 
-/* USB CDC接收回调：仅处理数据，不发送日志（避免阻塞） */
 int8_t USB_CDC_Recv_Callback(uint8_t* buf, uint32_t* len)
 {
     uint32_t i = 0;
-    
-    if(*len == 0 || buf == NULL)
+
+    if((*len == 0U) || (buf == NULL))
     {
         return USBD_OK;
-    }    
-		
-    // 1. 检测FPGA配置启动指令（0x11）
-    FPGA_Check_Config_Cmd(buf, *len);
-    
-		// ================== 新增：模式选择 ==================
-    if(g_wait_mode_flag == 1 && *len == 1)
-    {
-        if(buf[0] == 0x01 || buf[0] == 0x02)
-        {
-            g_fpgamode = buf[0];  // 保存模式
-            g_wait_mode_flag = 0; // 取消等待
+    }
 
-            // 回复上位机：模式已接收
+    FPGA_Check_Config_Cmd(buf, *len);
+
+    if((g_wait_mode_flag == 1U) && (*len == 1U))
+    {
+        if((buf[0] == 0x01U) || (buf[0] == 0x02U) || (buf[0] == 0x03U))
+        {
+            const char *mode_name = "Unknown";
+
+            g_fpgamode = buf[0];
+            g_wait_mode_flag = 0;
+
+            if(g_fpgamode == 0x01U)
+            {
+                mode_name = "Slave Serial";
+            }
+            else if(g_fpgamode == 0x02U)
+            {
+                mode_name = "JTAG";
+            }
+            else if(g_fpgamode == 0x03U)
+            {
+                mode_name = "JTAG Flash";
+            }
+
             snprintf((char*)g_log_buf, sizeof(g_log_buf),
-                     "[INFO] Mode Selected: %s\r\n",
-                     g_fpgamode==1 ? "Slave Serial" : "JTAG");
+                     "[INFO] Mode Selected: %s\r\n", mode_name);
             CDC_Transmit_FS(g_log_buf, strlen((char*)g_log_buf));
 
-            // 提示：可以发送 0x1231 启动
             snprintf((char*)g_log_buf, sizeof(g_log_buf),
                      "[READY] Send 0x1231 to start config\r\n");
             CDC_Transmit_FS(g_log_buf, strlen((char*)g_log_buf));
             return USBD_OK;
         }
     }
-		
-    // 2. 逐块解析协议（优先处理启动/结束指令）
+
     for(i = 0; i < *len; i++)
     {
         if(g_sdram_recv_state == SDRAM_RECV_IDLE)
         {
-            // 空闲状态：检测启动指令0x5A
             if(buf[i] == CMD_START_BIN)
             {
                 SDRAM_Bin_Cache_Reset();
-                g_sdram_recv_state = SDRAM_RECV_DATA;  // 直接进入数据接收状态
-                g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Bin File Recv Ready!\r\n");
-                i++;  // 跳过启动指令，处理剩余数据
+                g_sdram_recv_state = SDRAM_RECV_DATA;
+                g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                                     "[READY] Bin File Recv Ready!\r\n");
+                i++;
                 break;
             }
             else
             {
-                // 非启动指令，忽略
                 continue;
             }
         }
@@ -122,146 +138,119 @@ int8_t USB_CDC_Recv_Callback(uint8_t* buf, uint32_t* len)
             break;
         }
     }
-    
-    // 3. 处理剩余数据（批量写入SDRAM）
-    if(i < *len && g_sdram_recv_state == SDRAM_RECV_DATA)
+
+    if((i < *len) && (g_sdram_recv_state == SDRAM_RECV_DATA))
     {
         SDRAM_Process_Data_Block(&buf[i], *len - i);
     }
-    
-    // 4. 废弃原FPGA缓冲区写入，移除溢出日志
+
     g_usb_recv_flag = 1;
     return USBD_OK;
 }
 
-/* FreeRTOS核心任务：异步处理日志 + 协议状态机 + FPGA配置 */
 void FPGAConfigDefaultTask(void const * argument)
 {
-    // 1. 初始化SDRAM
+    (void)argument;
+
     MX_FMC_Init();
     SDRAM_Init_Sequence();
     SDRAM_Bin_Cache_Reset();
-    
-    // 2. 初始化USB
+
     MX_USB_DEVICE_Init();
 
-    // 3. 初始化配置模式
-    #if CONFIGURATION_MODE
+#if CONFIGURATION_MODE
     MX_SPI4_Init();
-    #else
+#endif
 
-    #endif
     osDelay(200);
-
-
-    // 4. 初始化FPGA引脚
     HAL_GPIO_WritePin(FPGA_PROGB_PORT, FPGA_PROGB_PIN, GPIO_PIN_SET);
-  
-    // 5. 主循环：异步处理日志 + 检测接收完成 + FPGA配置
+
     for(;;)
     {
-        // 发送待输出的日志（异步，避免阻塞USB回调）
-        if(g_log_len > 0)
+        if(g_log_len > 0U)
         {
             CDC_Transmit_FS(g_log_buf, g_log_len);
-            g_log_len = 0;  // 重置日志长度
-            osDelay(5);     // 增加短延时，确保日志发送完成
+            g_log_len = 0;
+            osDelay(5);
         }
-        
-        // 检测SDRAM接收完成
+
         if(g_sdram_recv_state == SDRAM_RECV_COMPLETE)
         {
-             // 输出统计结果
-					g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
-															"[INFO] Bin File Recv Complete! Total Size: %.2f MB\r\n",
-															(float)g_sdram_bin_offset / 1024 / 1024);
-					CDC_Transmit_FS(g_log_buf, g_log_len);
-					g_log_len = 0;
-					osDelay(10);
+            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                                 "[INFO] Bin File Recv Complete! Total Size: %.2f MB\r\n",
+                                 (float)g_sdram_bin_offset / 1024.0f / 1024.0f);
+            CDC_Transmit_FS(g_log_buf, g_log_len);
+            g_log_len = 0;
+            osDelay(10);
 
-					// ====================== 新增 ======================
-					// 清空之前的模式
-					g_fpgamode = 0;
-					// 标记：现在开始等待上位机发送模式
-					g_wait_mode_flag = 1;
+            g_fpgamode = 0;
+            g_wait_mode_flag = 1;
 
-					// 输出提示：请发送配置模式 0x01=PS 0x02=JTAG
-					g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
-															 "[WAIT] Send Mode: 0x01=PS 0x02=JTAG\r\n");
-					CDC_Transmit_FS(g_log_buf, g_log_len);
-					g_log_len = 0;
+            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                                 "[WAIT] Send Mode: 0x01=PS 0x02=JTAG 0x03=FLASH\r\n");
+            CDC_Transmit_FS(g_log_buf, g_log_len);
+            g_log_len = 0;
 
-					// 重置状态
-					g_sdram_recv_state = SDRAM_RECV_IDLE;
-					first_call = 1;
-					osDelay(10);
+            g_sdram_recv_state = SDRAM_RECV_IDLE;
+            first_call = 1;
+            osDelay(10);
         }
-        
-        // 检测FPGA配置启动指令
-        if(g_fpga_config_start == 1)
+
+        if(g_fpga_config_start == 1U)
         {
-               // 先判断：模式是否已经选择
-					if(g_fpgamode != 1 && g_fpgamode != 2)
-					{
-							CDC_Transmit_FS((uint8_t*)"[ERROR] Please select mode first!\r\n", 35);
-							g_fpga_config_start = 0;
-							return;
-					}
+            HAL_StatusTypeDef ret = HAL_ERROR;
 
-					CDC_Transmit_FS((uint8_t*)"[FPGA] Start FPGA configuration...\r\n", 36);
+            if((g_fpgamode != 1U) && (g_fpgamode != 2U) && (g_fpgamode != 3U))
+            {
+                CDC_Transmit_FS((uint8_t*)"[ERROR] Please select mode first!\r\n", 35);
+                g_fpga_config_start = 0;
+                osDelay(10);
+                continue;
+            }
 
-					HAL_StatusTypeDef ret = HAL_ERROR;
+            CDC_Transmit_FS((uint8_t*)"[FPGA] Start FPGA configuration...\r\n", 36);
 
-					// ====================== 动态切换模式并执行 ======================
-					if(g_fpgamode == 1)
-					{
-						// PS 模式
-						FPGA_Switch_Mode(FPGA_MODE_SLAVE_SERIAL);
-						ret = FPGA_Send_Bin_From_SDRAM(g_sdram_bin_offset);
-					}
-					else if(g_fpgamode == 2)
-					{
-							// JTAG 模式
-							FPGA_Switch_Mode(FPGA_MODE_JTAG);
-							ret = Jtag_ConfigureFromSdram(g_sdram_bin_offset);
-					}
+            if(g_fpgamode == 1U)
+            {
+                FPGA_Switch_Mode(FPGA_MODE_SLAVE_SERIAL);
+                ret = FPGA_Send_Bin_From_SDRAM(g_sdram_bin_offset);
+            }
+            else if(g_fpgamode == 2U)
+            {
+                FPGA_Switch_Mode(FPGA_MODE_JTAG);
+                ret = Jtag_ConfigureFromSdram(g_sdram_bin_offset);
+            }
+            else if(g_fpgamode == 3U)
+            {
+                CDC_Transmit_FS((uint8_t*)"[FLASH] Start SPI Flash programming...\r\n", 40);
+								osDelay(1);
+                FPGA_Switch_Mode(FPGA_MODE_JTAG);
+                ret = spi_flash_program_full((uint8_t*)SDRAM_BASE_ADDR, g_sdram_bin_offset);
+            }
+            else
+            {
+                CDC_Transmit_FS((uint8_t*)"[ERROR] Invalid mode selected!\r\n", 32);
+                g_fpga_config_start = 0;
+                osDelay(10);
+                continue;
+            }
 
-					// ===============================================================
+            if(ret == HAL_OK)
+            {
+                CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration success!\r\n", 30);
+            }
+            else
+            {
+                CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration failed!\r\n", 30);
+            }
 
-					if(ret == HAL_OK)
-					{
-							CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration success!\r\n", 30);
-					}
-					else
-					{
-							CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration failed!\r\n", 30);
-					}
+            osDelay(1);
+            g_fpga_config_start = 0;
+            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                                 "[READY] Wait next start cmd (0x5A)\r\n");
+            osDelay(1);
+        }
 
-					osDelay(1);
-					g_fpga_config_start = 0;
-					g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf), "[READY] Wait next start cmd (0x5A)\r\n");
-					osDelay(1);
-				}
-				if(g_xsvf_exec_start == 1U)
-				{
-						CDC_Transmit_FS((uint8_t*)"[XSVF] Start execute...\r\n", 24);
-
-						HAL_StatusTypeDef ret = Xsvf_ExecuteFromSdram(g_sdram_bin_offset);
-						if(ret == HAL_OK)
-						{
-								CDC_Transmit_FS((uint8_t*)"[XSVF] Execute success!\r\n", 25);
-						}
-						else
-						{
-								CDC_Transmit_FS((uint8_t*)"[XSVF] Execute failed!\r\n", 24);
-						}
-
-						osDelay(10);
-						g_xsvf_exec_start = 0U;
-						g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
-																 "[READY] Wait next start cmd (0x5A)\r\n");
-				}
-
-        osDelay(10);  // 降低CPU占用，避免抢占USB回调
+        osDelay(10);
     }
 }

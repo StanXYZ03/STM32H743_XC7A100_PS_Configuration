@@ -1,0 +1,1 @@
+"tb_spi_flash_bridge_core" -debug "typical" -s "tb_spi_flash_bridge_core" 

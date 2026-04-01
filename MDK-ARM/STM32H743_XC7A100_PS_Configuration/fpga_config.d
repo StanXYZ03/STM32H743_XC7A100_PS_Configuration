@@ -77,3 +77,4 @@ stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Middlewares/Third_Party/Fre
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Core/Inc/spi.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Core/Inc/dma.h
 stm32h743_xc7a100_ps_configuration\fpga_config.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdbool.h
+stm32h743_xc7a100_ps_configuration\fpga_config.o: ../Core/Inc/spi_bridge_bin.h

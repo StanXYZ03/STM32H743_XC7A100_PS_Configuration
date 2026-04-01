@@ -1,0 +1,35 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Wed Apr  1 16:21:17 2026
+# Process ID: 18700
+# Current directory: D:/CubeMX/STM32H743_XC7A100_PS_Configuration
+# Command line: vivado.exe -mode batch -source vivado_bridge/tcl/run_tb_spi_flash_bridge_core.tcl
+# Log file: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado.log
+# Journal file: D:/CubeMX/STM32H743_XC7A100_PS_Configuration\vivado.jou
+#-----------------------------------------------------------
+source vivado_bridge/tcl/run_tb_spi_flash_bridge_core.tcl
+# set script_dir [file normalize [file dirname [info script]]]
+# set repo_root [file normalize [file join $script_dir ".." ".."]]
+# set sim_dir [file join $repo_root "vivado_bridge" "sim_out" "tb_spi_flash_bridge_core"]
+# file mkdir $sim_dir
+# cd $sim_dir
+# set rtl_core  [file join $repo_root "vivado_bridge" "rtl" "spi_flash_bridge_core.v"]
+# set tb_flash  [file join $repo_root "vivado_bridge" "tb"  "spi_flash_jedec_model.v"]
+# set tb_top    [file join $repo_root "vivado_bridge" "tb"  "tb_spi_flash_bridge_core.v"]
+# exec xvlog -sv $rtl_core $tb_flash $tb_top
+# exec xelab tb_spi_flash_bridge_core -debug typical -s tb_spi_flash_bridge_core
+# exec xsim tb_spi_flash_bridge_core -runall
+# puts "Simulation outputs:"
+Simulation outputs:
+# puts "  [file normalize [file join $sim_dir {xvlog.log}]]"
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/sim_out/tb_spi_flash_bridge_core/xvlog.log
+# puts "  [file normalize [file join $sim_dir {elaborate.log}]]"
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/sim_out/tb_spi_flash_bridge_core/elaborate.log
+# puts "  [file normalize [file join $sim_dir {simulate.log}]]"
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/sim_out/tb_spi_flash_bridge_core/simulate.log
+# puts "  [file normalize [file join $sim_dir {tb_spi_flash_bridge_core.vcd}]]"
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/sim_out/tb_spi_flash_bridge_core/tb_spi_flash_bridge_core.vcd
+# exit 0
+INFO: [Common 17-206] Exiting Vivado at Wed Apr  1 16:21:24 2026...

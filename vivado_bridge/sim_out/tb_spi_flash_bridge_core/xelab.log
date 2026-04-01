@@ -1,0 +1,13 @@
+Vivado Simulator 2018.3
+Copyright 1986-1999, 2001-2018 Xilinx, Inc. All Rights Reserved.
+Running: D:\Vivado\Vivado\2018.3\bin\unwrapped\win64.o\xelab.exe tb_spi_flash_bridge_core -debug typical -s tb_spi_flash_bridge_core 
+Multi-threading is on. Using 18 slave threads.
+Starting static elaboration
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.spi_flash_bridge_core
+Compiling module work.spi_flash_jedec_model
+Compiling module work.tb_spi_flash_bridge_core
+Built simulation snapshot tb_spi_flash_bridge_core

@@ -1,0 +1,11 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  \
+"../../../../../vivado_bridge/rtl/spi_flash_bridge_core.v" \
+"../../../../../vivado_bridge/tb/spi_flash_jedec_model.v" \
+"../../../../../vivado_bridge/tb/tb_spi_flash_bridge_core.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

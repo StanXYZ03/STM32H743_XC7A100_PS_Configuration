@@ -1,0 +1,7 @@
+0.6
+2018.3
+Dec  7 2018
+00:33:28
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/rtl/spi_flash_bridge_core.v,1775031657,systemVerilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/tb/spi_flash_jedec_model.v,,spi_flash_bridge_core,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/tb/spi_flash_jedec_model.v,1775029558,systemVerilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/tb/tb_spi_flash_bridge_core.v,,spi_flash_jedec_model,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/tb/tb_spi_flash_bridge_core.v,1775029567,systemVerilog,,,,tb_spi_flash_bridge_core,,,,,,,,

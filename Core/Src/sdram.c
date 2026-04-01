@@ -23,7 +23,6 @@ SDRAM_Recv_State g_sdram_recv_state = SDRAM_RECV_IDLE;  // 默认空闲
 void SDRAM_Init_Sequence(void)
 {
     FMC_SDRAM_CommandTypeDef SDRAM_Command = {0};
-    uint32_t tmpr = 0;
 		uint32_t mode_reg_val = 0;
 
     /* Step 1: 发送时钟使能命令 */

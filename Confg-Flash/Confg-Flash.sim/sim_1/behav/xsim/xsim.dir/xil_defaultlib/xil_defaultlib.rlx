@@ -1,0 +1,8 @@
+0.6
+2018.3
+Dec  7 2018
+00:33:28
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Confg-Flash/Confg-Flash.sim/sim_1/behav/xsim/glbl.v,1544155481,verilog,,,,glbl,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/rtl/spi_flash_bridge_core.v,1775027854,verilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/tb/spi_flash_jedec_model.v,,spi_flash_bridge_core,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/tb/spi_flash_jedec_model.v,1775027768,verilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/tb/tb_spi_flash_bridge_core.v,,spi_flash_jedec_model,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_bridge/tb/tb_spi_flash_bridge_core.v,1775027768,verilog,,,,tb_spi_flash_bridge_core,,,,,,,,

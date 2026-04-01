@@ -1,9 +1,10 @@
 #include "fpga_config.h"
+#include "spi_bridge_bin.h"
 
 FPGA_StateTypeDef g_fpga_state = FPGA_STATE_IDLE;
 JtagHalCallbacks jtag_hal_ops;
 uint8_t g_fpga_config_start = 0;
-uint8_t g_xsvf_exec_start = 0;
+static JtagTransfer g_jtag_xfer = {0};
 
 uint8_t INIT_STATE = 0;
 uint8_t PROG_STATE = 0;
@@ -32,19 +33,79 @@ static bool BSP_Jtag_ReadTdo(void);
 static void Jtag_Tick(JtagContext *jtag, bool tms, bool tdi);
 static void Jtag_ShiftRawOrder(JtagContext *jtag, const uint8_t *tx_data, uint8_t *rx_data,
                                uint32_t bit_len, bool end_after_shift, bool lsb_first,
-                               bool default_tdi_high);
+                               bool default_tdi_high)
+{
+    if ((bit_len == 0U) || (jtag == NULL)) {
+        return;
+    }
+
+    if (rx_data != NULL) {
+        memset(rx_data, 0, (bit_len + 7U) / 8U);
+    }
+
+    for (uint32_t bit_pos = 0; bit_pos < bit_len; bit_pos++) {
+        uint32_t tx_byte_idx = bit_pos / 8U;
+        uint32_t tx_bit_idx = bit_pos % 8U;
+        bool tdi = default_tdi_high;
+        bool tms = end_after_shift && (bit_pos == (bit_len - 1U));
+
+        if (tx_data != NULL) {
+            if (!lsb_first) {
+                tx_bit_idx = 7U - tx_bit_idx;
+            }
+            tdi = ((tx_data[tx_byte_idx] >> tx_bit_idx) & 0x01U) != 0U;
+        }
+
+        JTAG_GPIO_WRITE(JTAG_GPIO_PORT, JTAG_TMS_PIN, tms);
+        JTAG_GPIO_WRITE(JTAG_GPIO_PORT, JTAG_TDI_PIN, tdi);
+
+        if (JTAG_EDGE_DELAY_NS != 0U) {
+            FPGA_Delay_NS(JTAG_EDGE_DELAY_NS);
+        }
+
+        JTAG_GPIO_SET(JTAG_GPIO_PORT, JTAG_TCK_PIN);
+
+        if (JTAG_EDGE_DELAY_NS != 0U) {
+            FPGA_Delay_NS(JTAG_EDGE_DELAY_NS);
+        }
+
+        if (rx_data != NULL) {
+            uint32_t rx_byte_idx = bit_pos / 8U;
+            uint32_t rx_bit_idx = bit_pos % 8U;
+            if (JTAG_TDO_IS_HIGH()) {
+                rx_data[rx_byte_idx] |= (uint8_t)(1U << rx_bit_idx);
+            }
+        }
+
+        JTAG_GPIO_CLR(JTAG_GPIO_PORT, JTAG_TCK_PIN);
+    }
+
+    if (end_after_shift) {
+        jtag->current_state = (jtag->current_state == JTAG_SDR) ? JTAG_E1D : JTAG_E1I;
+    }
+}
+
 static void Jtag_ShiftCfgInFast(JtagContext *jtag, const uint8_t *tx_data, uint32_t byte_len,
                                 bool end_after_shift);
 static HAL_StatusTypeDef Jtag_WaitInitBHigh(JtagContext *jtag, uint32_t timeout_ms);
-static bool Jtag_ShiftXsvf(JtagContext *jtag, const uint8_t *tx_data, uint8_t *rx_data,
-                           uint32_t bit_len, bool is_ir, JtagState end_state);
-static bool Xsvf_ReadU8(const uint8_t **cursor, const uint8_t *end, uint8_t *value);
-static bool Xsvf_ReadU32BE(const uint8_t **cursor, const uint8_t *end, uint32_t *value);
-static bool Xsvf_ReadBytes(const uint8_t **cursor, const uint8_t *end, uint8_t *dst, uint32_t len);
-static JtagState Xsvf_MapState(uint8_t xsvf_state, bool ir_path);
-static HAL_StatusTypeDef Xsvf_RunTest(JtagContext *jtag, uint32_t clocks_and_us);
-static bool Xsvf_CompareMasked(const uint8_t *actual, const uint8_t *expected,
-                               const uint8_t *mask, uint32_t len, bool use_mask);
+static HAL_StatusTypeDef Jtag_ConfigureFromBuffer(const uint8_t *bin_data, uint32_t bin_size);
+static HAL_StatusTypeDef Bridge_ShiftFrame(JtagContext *jtag, const uint8_t *tx_frame, uint8_t *rx_frame);
+static HAL_StatusTypeDef Bridge_CommandFrame(JtagContext *jtag, uint8_t opcode, uint32_t arg,
+                                             uint8_t *rx_frame_out, uint32_t timeout_cycles);
+static HAL_StatusTypeDef Bridge_Command(JtagContext *jtag, uint8_t opcode, uint32_t arg,
+                                        uint8_t *rx_data0, uint32_t timeout_cycles);
+static void Bridge_LogFrame(const char *tag, uint8_t opcode, const uint8_t *frame);
+static HAL_StatusTypeDef Bridge_SetCs(JtagContext *jtag, bool cs_high);
+static HAL_StatusTypeDef Bridge_SetDivider(JtagContext *jtag, uint16_t divider);
+static HAL_StatusTypeDef Bridge_Xfer8(JtagContext *jtag, uint8_t tx_data, uint8_t *rx_data);
+static HAL_StatusTypeDef Bridge_ReadStatusEx(JtagContext *jtag, uint8_t flags[4]);
+static HAL_StatusTypeDef spi_flash_read_status(JtagContext *jtag, uint8_t *status);
+static HAL_StatusTypeDef spi_flash_read_flag_status(JtagContext *jtag, uint8_t *status);
+static HAL_StatusTypeDef spi_flash_wait_ready(JtagContext *jtag, uint32_t timeout_ms);
+static HAL_StatusTypeDef spi_flash_read_jedec_id(JtagContext *jtag, uint8_t jedec_id[3]);
+static HAL_StatusTypeDef spi_flash_read_buffer(JtagContext *jtag, uint32_t addr, uint8_t *data, uint16_t len);
+static HAL_StatusTypeDef spi_flash_write_enable(JtagContext *jtag);
+static HAL_StatusTypeDef spi_flash_reset_memory(JtagContext *jtag);
 
 void FPGA_Delay_NS(uint32_t ns)
 {
@@ -247,12 +308,6 @@ void FPGA_Check_Config_Cmd(uint8_t *buf, uint32_t len)
                 CDC_Transmit_FS((uint8_t *)"[FPGA] Start config cmd received\r\n", 34);
                 g_cfg_cmd_idx = 0U;
                 break;
-            } else if ((g_cfg_cmd_buf[0] == CMD_START_XSVF_EXEC_BYTE1) &&
-                       (g_cfg_cmd_buf[1] == CMD_START_XSVF_EXEC_BYTE2)) {
-                g_xsvf_exec_start = 1U;
-                CDC_Transmit_FS((uint8_t *)"[XSVF] Start execute cmd received\r\n", 36);
-                g_cfg_cmd_idx = 0U;
-                break;
             } else {
                 g_cfg_cmd_idx = 0U;
             }
@@ -373,47 +428,6 @@ void Jtag_RunClocks(JtagContext *jtag, uint32_t count, JtagState end_state)
     Jtag_GotoState(jtag, end_state);
 }
 
-static void Jtag_ShiftRawOrder(JtagContext *jtag, const uint8_t *tx_data, uint8_t *rx_data,
-                               uint32_t bit_len, bool end_after_shift, bool lsb_first,
-                               bool default_tdi_high)
-{
-    if ((bit_len == 0U) || (jtag == NULL)) {
-        return;
-    }
-
-    if (rx_data != NULL) {
-        memset(rx_data, 0, (bit_len + 7U) / 8U);
-    }
-
-    for (uint32_t bit_pos = 0; bit_pos < bit_len; bit_pos++) {
-        uint32_t tx_byte_idx = bit_pos / 8U;
-        uint32_t tx_bit_idx = bit_pos % 8U;
-        bool tdi = default_tdi_high;
-        bool tms = end_after_shift && (bit_pos == (bit_len - 1U));
-
-        if (tx_data != NULL) {
-            if (!lsb_first) {
-                tx_bit_idx = 7U - tx_bit_idx;
-            }
-            tdi = ((tx_data[tx_byte_idx] >> tx_bit_idx) & 0x01U) != 0U;
-        }
-
-        Jtag_Tick(jtag, tms, tdi);
-
-        if (rx_data != NULL) {
-            uint32_t rx_byte_idx = bit_pos / 8U;
-            uint32_t rx_bit_idx = bit_pos % 8U;
-            if (JTAG_TDO_IS_HIGH()) {
-                rx_data[rx_byte_idx] |= (uint8_t)(1U << rx_bit_idx);
-            }
-        }
-    }
-
-    if (end_after_shift) {
-        jtag->current_state = (jtag->current_state == JTAG_SDR) ? JTAG_E1D : JTAG_E1I;
-    }
-}
-
 static void Jtag_ShiftCfgInFast(JtagContext *jtag, const uint8_t *tx_data, uint32_t byte_len,
                                 bool end_after_shift)
 {
@@ -469,140 +483,6 @@ static HAL_StatusTypeDef Jtag_WaitInitBHigh(JtagContext *jtag, uint32_t timeout_
     return HAL_OK;
 }
 
-static bool Xsvf_ReadU8(const uint8_t **cursor, const uint8_t *end, uint8_t *value)
-{
-    if ((*cursor == NULL) || (value == NULL) || ((*cursor) >= end)) {
-        return false;
-    }
-
-    *value = *(*cursor)++;
-    return true;
-}
-
-static bool Xsvf_ReadU32BE(const uint8_t **cursor, const uint8_t *end, uint32_t *value)
-{
-    uint8_t b0, b1, b2, b3;
-
-    if (!Xsvf_ReadU8(cursor, end, &b0) ||
-        !Xsvf_ReadU8(cursor, end, &b1) ||
-        !Xsvf_ReadU8(cursor, end, &b2) ||
-        !Xsvf_ReadU8(cursor, end, &b3)) {
-        return false;
-    }
-
-    *value = ((uint32_t)b0 << 24) | ((uint32_t)b1 << 16) | ((uint32_t)b2 << 8) | (uint32_t)b3;
-    return true;
-}
-
-static bool Xsvf_ReadBytes(const uint8_t **cursor, const uint8_t *end, uint8_t *dst, uint32_t len)
-{
-    if (((uint32_t)(end - *cursor)) < len) {
-        return false;
-    }
-
-    memcpy(dst, *cursor, len);
-    *cursor += len;
-    return true;
-}
-
-static JtagState Xsvf_MapState(uint8_t xsvf_state, bool ir_path)
-{
-    switch (xsvf_state) {
-    case 0x00: return JTAG_TLR;
-    case 0x01: return JTAG_RTI;
-    case 0x02: return JTAG_SDS;
-    case 0x03: return JTAG_CDR;
-    case 0x04: return JTAG_SDR;
-    case 0x05: return JTAG_E1D;
-    case 0x06: return JTAG_PDR;
-    case 0x07: return JTAG_E2D;
-    case 0x08: return JTAG_UDR;
-    case 0x09: return JTAG_SIS;
-    case 0x0A: return JTAG_CIR;
-    case 0x0B: return JTAG_SIR;
-    case 0x0C: return JTAG_E1I;
-    case 0x0D: return JTAG_PIR;
-    case 0x0E: return JTAG_E2I;
-    case 0x0F: return JTAG_UIR;
-    default:   return ir_path ? JTAG_RTI : JTAG_RTI;
-    }
-}
-
-static HAL_StatusTypeDef Xsvf_RunTest(JtagContext *jtag, uint32_t clocks_and_us)
-{
-    Jtag_RunClocks(jtag, clocks_and_us, JTAG_RTI);
-
-    if (clocks_and_us >= 1000U) {
-        osDelay(clocks_and_us / 1000U);
-        clocks_and_us %= 1000U;
-    }
-
-    if (clocks_and_us != 0U) {
-        FPGA_Delay_NS(clocks_and_us * 1000U);
-    }
-
-    return HAL_OK;
-}
-
-static bool Xsvf_CompareMasked(const uint8_t *actual, const uint8_t *expected,
-                               const uint8_t *mask, uint32_t len, bool use_mask)
-{
-    for (uint32_t i = 0; i < len; i++) {
-        uint8_t compare_mask = use_mask ? mask[i] : 0xFFU;
-        if (((actual[i] ^ expected[i]) & compare_mask) != 0U) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-static bool Jtag_ShiftXsvf(JtagContext *jtag, const uint8_t *tx_data, uint8_t *rx_data,
-                           uint32_t bit_len, bool is_ir, JtagState end_state)
-{
-    uint32_t byte_len = (bit_len + 7U) / 8U;
-    bool exit_after = is_ir ? (end_state != JTAG_SIR) : (end_state != JTAG_SDR);
-
-    if ((bit_len == 0U) || (jtag == NULL)) {
-        return false;
-    }
-
-    if (is_ir) {
-        Jtag_GotoState(jtag, JTAG_SIR);
-    } else {
-        Jtag_GotoState(jtag, JTAG_SDR);
-    }
-
-    if (rx_data != NULL) {
-        memset(rx_data, 0, byte_len);
-    }
-
-    for (uint32_t bit_pos = 0; bit_pos < bit_len; bit_pos++) {
-        uint32_t logical_byte = bit_pos / 8U;
-        uint32_t logical_bit = bit_pos % 8U;
-        uint32_t src_byte = (byte_len - 1U) - logical_byte;
-        bool tdi = false;
-        bool tms = exit_after && (bit_pos == (bit_len - 1U));
-
-        if (tx_data != NULL) {
-            tdi = ((tx_data[src_byte] >> logical_bit) & 0x01U) != 0U;
-        }
-
-        Jtag_Tick(jtag, tms, tdi);
-
-        if (rx_data != NULL && JTAG_TDO_IS_HIGH()) {
-            rx_data[src_byte] |= (uint8_t)(1U << logical_bit);
-        }
-    }
-
-    if (exit_after) {
-        jtag->current_state = is_ir ? JTAG_E1I : JTAG_E1D;
-    }
-
-    Jtag_GotoState(jtag, end_state);
-    return true;
-}
-
 void Jtag_WriteInstruction(JtagContext *jtag, uint8_t inst, JtagState end_state)
 {
     uint8_t inst_buf[1] = {inst};
@@ -634,22 +514,21 @@ void Jtag_ReadData(JtagContext *jtag, uint8_t *data, uint32_t bit_len, JtagState
     Jtag_GotoState(jtag, end_state);
 }
 
-HAL_StatusTypeDef Jtag_ConfigureFromSdram(uint32_t bin_size)
+static HAL_StatusTypeDef Jtag_ConfigureFromBuffer(const uint8_t *bin_data, uint32_t bin_size)
 {
-    if ((bin_size == 0U) || (bin_size > SDRAM_TOTAL_SIZE)) {
-        CDC_Transmit_FS((uint8_t *)"[JTAG] Invalid bin size\r\n", 25);
+    if ((bin_data == NULL) || (bin_size == 0U)) {
+        CDC_Transmit_FS((uint8_t *)"[JTAG] Invalid bitstream\r\n", 26);
         return HAL_ERROR;
     }
 
     send_total = 0U;
 
-    JtagTransfer xfer = {0};
     JtagContext jtag;
     JtagHalCallbacks *hal = BSP_Jtag_GetHalOps();
-    uint8_t *p_sdram = (uint8_t *)SDRAM_BASE_ADDR;
     uint32_t batch_size = JTAG_BUFFER_SIZE;
 
-    Jtag_Init(&jtag, hal, &xfer);
+    memset(&g_jtag_xfer, 0, sizeof(g_jtag_xfer));
+    Jtag_Init(&jtag, hal, &g_jtag_xfer);
 
     CDC_Transmit_FS((uint8_t *)"[JTAG] JPROGRAM\r\n", 17);
     Jtag_WriteInstruction(&jtag, XILINX_INST_JPROGRAM, JTAG_RTI);
@@ -689,7 +568,7 @@ HAL_StatusTypeDef Jtag_ConfigureFromSdram(uint32_t bin_size)
             return HAL_ERROR;
         }
 
-        Jtag_ShiftCfgInFast(&jtag, &p_sdram[send_total], current_batch, is_last_batch);
+        Jtag_ShiftCfgInFast(&jtag, &bin_data[send_total], current_batch, is_last_batch);
         send_total += current_batch;
     }
 
@@ -711,308 +590,17 @@ HAL_StatusTypeDef Jtag_ConfigureFromSdram(uint32_t bin_size)
     return HAL_OK;
 }
 
-HAL_StatusTypeDef Xsvf_ExecuteFromSdram(uint32_t file_size)
+HAL_StatusTypeDef Jtag_ConfigureFromSdram(uint32_t bin_size)
 {
-    enum {
-        XCOMPLETE = 0x00,
-        XTDOMASK = 0x01,
-        XSIR = 0x02,
-        XSDR = 0x03,
-        XRUNTEST = 0x04,
-        XREPEAT = 0x07,
-        XSDRSIZE = 0x08,
-        XSDRTDO = 0x09,
-        XSDRB = 0x0C,
-        XSDRC = 0x0D,
-        XSDRE = 0x0E,
-        XSDRTDOB = 0x0F,
-        XSDRTDOC = 0x10,
-        XSDRTDOE = 0x11,
-        XSTATE = 0x12,
-        XENDIR = 0x13,
-        XENDDR = 0x14,
-        XSIR2 = 0x15,
-        XCOMMENT = 0x16,
-        XWAIT = 0x17
-    };
-
-    static uint8_t tdi_buf[JTAG_BUFFER_SIZE];
-    static uint8_t tdo_expected[JTAG_BUFFER_SIZE];
-    static uint8_t tdo_mask[JTAG_BUFFER_SIZE];
-    static uint8_t rx_buf[JTAG_BUFFER_SIZE];
-
-    if ((file_size == 0U) || (file_size > SDRAM_TOTAL_SIZE)) {
-        CDC_Transmit_FS((uint8_t *)"[XSVF] Invalid file size\r\n", 27);
+    if ((bin_size == 0U) || (bin_size > SDRAM_TOTAL_SIZE)) {
+        CDC_Transmit_FS((uint8_t *)"[JTAG] Invalid bin size\r\n", 25);
         return HAL_ERROR;
     }
 
-    const uint8_t *cursor = (const uint8_t *)SDRAM_BASE_ADDR;
-    const uint8_t *end = cursor + file_size;
-    uint32_t sdr_bit_len = 0U;
-    uint32_t sdr_byte_len = 0U;
-    uint32_t xruntest = 0U;
-    uint8_t xrepeat = 0U;
-    bool tdomask_valid = false;
-    bool tdo_expected_valid = false;
-    JtagState endir_state = JTAG_RTI;
-    JtagState enddr_state = JTAG_RTI;
-    JtagTransfer xfer = {0};
-    JtagContext jtag;
-    JtagHalCallbacks *hal = BSP_Jtag_GetHalOps();
-
-    memset(tdo_mask, 0xFF, sizeof(tdo_mask));
-    Jtag_Init(&jtag, hal, &xfer);
-    g_fpga_state = FPGA_STATE_SENDING;
-
-    while (cursor < end) {
-        uint8_t cmd = 0U;
-
-        if (!Xsvf_ReadU8(&cursor, end, &cmd)) {
-            g_fpga_state = FPGA_STATE_FAILED;
-            return HAL_ERROR;
-        }
-
-        if (cmd == XCOMPLETE) {
-            g_fpga_state = FPGA_STATE_SUCCESS;
-            CDC_Transmit_FS((uint8_t *)"[XSVF] Execute complete\r\n", 25);
-            return HAL_OK;
-        }
-
-        switch (cmd) {
-        case XTDOMASK:
-            if ((sdr_byte_len == 0U) || (sdr_byte_len > sizeof(tdo_mask)) ||
-                !Xsvf_ReadBytes(&cursor, end, tdo_mask, sdr_byte_len)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            tdomask_valid = true;
-            break;
-
-        case XSDRSIZE:
-            if (!Xsvf_ReadU32BE(&cursor, end, &sdr_bit_len)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            sdr_byte_len = (sdr_bit_len + 7U) / 8U;
-            if ((sdr_byte_len == 0U) || (sdr_byte_len > sizeof(tdi_buf))) {
-                CDC_Transmit_FS((uint8_t *)"[XSVF] XSDRSIZE too large\r\n", 29);
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            break;
-
-        case XRUNTEST:
-            if (!Xsvf_ReadU32BE(&cursor, end, &xruntest)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            break;
-
-        case XREPEAT:
-            if (!Xsvf_ReadU8(&cursor, end, &xrepeat)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            break;
-
-        case XENDIR:
-        {
-            uint8_t state = 0U;
-            if (!Xsvf_ReadU8(&cursor, end, &state)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            endir_state = (state == 0x01U) ? JTAG_PIR : JTAG_RTI;
-            break;
-        }
-
-        case XENDDR:
-        {
-            uint8_t state = 0U;
-            if (!Xsvf_ReadU8(&cursor, end, &state)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            enddr_state = (state == 0x01U) ? JTAG_PDR : JTAG_RTI;
-            break;
-        }
-
-        case XSTATE:
-        {
-            uint8_t state = 0U;
-            if (!Xsvf_ReadU8(&cursor, end, &state)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            if (state == 0x00U) {
-                Jtag_Reset(&jtag);
-            } else {
-                Jtag_GotoState(&jtag, Xsvf_MapState(state, false));
-            }
-            break;
-        }
-
-        case XWAIT:
-        {
-            uint8_t wait_state = 0U;
-            uint8_t end_state = 0U;
-            uint32_t wait_time = 0U;
-            if (!Xsvf_ReadU8(&cursor, end, &wait_state) ||
-                !Xsvf_ReadU8(&cursor, end, &end_state) ||
-                !Xsvf_ReadU32BE(&cursor, end, &wait_time)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            Jtag_GotoState(&jtag, Xsvf_MapState(wait_state, false));
-            if (wait_time >= 1000U) {
-                osDelay(wait_time / 1000U);
-                wait_time %= 1000U;
-            }
-            if (wait_time != 0U) {
-                FPGA_Delay_NS(wait_time * 1000U);
-            }
-            Jtag_GotoState(&jtag, Xsvf_MapState(end_state, false));
-            break;
-        }
-
-        case XCOMMENT:
-            while ((cursor < end) && (*cursor != 0U)) {
-                cursor++;
-            }
-            if (cursor < end) {
-                cursor++;
-            }
-            break;
-
-        case XSIR:
-        {
-            uint8_t ir_len = 0U;
-            uint32_t ir_byte_len = 0U;
-            if (!Xsvf_ReadU8(&cursor, end, &ir_len)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            ir_byte_len = ((uint32_t)ir_len + 7U) / 8U;
-            if ((ir_byte_len == 0U) || (ir_byte_len > sizeof(tdi_buf)) ||
-                !Xsvf_ReadBytes(&cursor, end, tdi_buf, ir_byte_len) ||
-                !Jtag_ShiftXsvf(&jtag, tdi_buf, NULL, ir_len, true,
-                                (xruntest != 0U) ? JTAG_RTI : endir_state)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            if (xruntest != 0U) {
-                Xsvf_RunTest(&jtag, xruntest);
-            }
-            break;
-        }
-
-        case XSIR2:
-        {
-            uint8_t len_hi = 0U;
-            uint8_t len_lo = 0U;
-            uint32_t ir_len = 0U;
-            uint32_t ir_byte_len = 0U;
-            if (!Xsvf_ReadU8(&cursor, end, &len_hi) ||
-                !Xsvf_ReadU8(&cursor, end, &len_lo)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            ir_len = ((uint32_t)len_hi << 8) | (uint32_t)len_lo;
-            ir_byte_len = (ir_len + 7U) / 8U;
-            if ((ir_byte_len == 0U) || (ir_byte_len > sizeof(tdi_buf)) ||
-                !Xsvf_ReadBytes(&cursor, end, tdi_buf, ir_byte_len) ||
-                !Jtag_ShiftXsvf(&jtag, tdi_buf, NULL, ir_len, true,
-                                (xruntest != 0U) ? JTAG_RTI : endir_state)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-            if (xruntest != 0U) {
-                Xsvf_RunTest(&jtag, xruntest);
-            }
-            break;
-        }
-
-        case XSDR:
-        case XSDRTDO:
-        case XSDRB:
-        case XSDRC:
-        case XSDRE:
-        case XSDRTDOB:
-        case XSDRTDOC:
-        case XSDRTDOE:
-        {
-            uint32_t attempts = (uint32_t)xrepeat + 1U;
-            JtagState end_state = enddr_state;
-            bool compare = false;
-            bool use_mask = false;
-
-            if ((sdr_byte_len == 0U) || (sdr_byte_len > sizeof(tdi_buf)) ||
-                !Xsvf_ReadBytes(&cursor, end, tdi_buf, sdr_byte_len)) {
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-
-            if ((cmd == XSDRTDO) || (cmd == XSDRTDOB) || (cmd == XSDRTDOC) || (cmd == XSDRTDOE)) {
-                if (!Xsvf_ReadBytes(&cursor, end, tdo_expected, sdr_byte_len)) {
-                    g_fpga_state = FPGA_STATE_FAILED;
-                    return HAL_ERROR;
-                }
-                tdo_expected_valid = true;
-            }
-
-            if ((cmd == XSDR) && tdo_expected_valid) {
-                compare = true;
-                use_mask = tdomask_valid;
-            } else if ((cmd == XSDRTDO) || (cmd == XSDRTDOB) || (cmd == XSDRTDOC) || (cmd == XSDRTDOE)) {
-                compare = true;
-                use_mask = (cmd == XSDRTDO);
-            }
-
-            if ((cmd == XSDRB) || (cmd == XSDRC) || (cmd == XSDRTDOB) || (cmd == XSDRTDOC)) {
-                end_state = JTAG_SDR;
-            } else if (xruntest != 0U) {
-                end_state = JTAG_RTI;
-            }
-
-            do {
-                if (!Jtag_ShiftXsvf(&jtag, tdi_buf, compare ? rx_buf : NULL, sdr_bit_len, false, end_state)) {
-                    g_fpga_state = FPGA_STATE_FAILED;
-                    return HAL_ERROR;
-                }
-
-                if (!compare || Xsvf_CompareMasked(rx_buf, tdo_expected, tdo_mask, sdr_byte_len, use_mask)) {
-                    break;
-                }
-            } while (--attempts != 0U);
-
-            if (compare && (attempts == 0U)) {
-                CDC_Transmit_FS((uint8_t *)"[XSVF] TDO compare failed\r\n", 27);
-                g_fpga_state = FPGA_STATE_FAILED;
-                return HAL_ERROR;
-            }
-
-            if ((xruntest != 0U) &&
-                ((cmd == XSDR) || (cmd == XSDRTDO) || (cmd == XSDRE) || (cmd == XSDRTDOE))) {
-                Xsvf_RunTest(&jtag, xruntest);
-            }
-            break;
-        }
-
-        default:
-        {
-            char msg[48] = {0};
-            snprintf(msg, sizeof(msg), "[XSVF] Unsupported cmd 0x%02X\r\n", cmd);
-            CDC_Transmit_FS((uint8_t *)msg, strlen(msg));
-            g_fpga_state = FPGA_STATE_FAILED;
-            return HAL_ERROR;
-        }
-        }
-    }
-
-    g_fpga_state = FPGA_STATE_FAILED;
-    CDC_Transmit_FS((uint8_t *)"[XSVF] Missing XCOMPLETE\r\n", 25);
-    return HAL_ERROR;
+    return Jtag_ConfigureFromBuffer((const uint8_t *)SDRAM_BASE_ADDR, bin_size);
 }
+
+
 
 JtagHalCallbacks *BSP_Jtag_GetHalOps(void)
 {
@@ -1028,20 +616,19 @@ void FPGA_Switch_Mode(FPGA_ModeType mode)
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     __HAL_RCC_GPIOE_CLK_ENABLE();
 
-    // ÏÈ°ÑËùÓÐ¸´ÓÃÒý½ÅÈ«²¿È¥³õÊ¼»¯
+    /* PE2/PE6 are shared by SPI4 and bit-banged JTAG, so force SPI deinit
+       before changing the pin mux to guarantee HAL re-runs MSP init later. */
+    (void)HAL_SPI_DeInit(&hspi4);
     HAL_GPIO_DeInit(GPIOE, GPIO_PIN_2 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6);
 
     if (mode == FPGA_MODE_JTAG)
     {
-        // JTAG Ä£Ê½
-        // TCK(PE2) TDI(PE6) TMS(PE4) ÍÆÍìÊä³ö
         GPIO_InitStruct.Pin = JTAG_TCK_PIN | JTAG_TDI_PIN | JTAG_TMS_PIN;
         GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
         HAL_GPIO_Init(JTAG_GPIO_PORT, &GPIO_InitStruct);
 
-        // TDO(PE5) ÉÏÀ­ÊäÈë
         GPIO_InitStruct.Pin = JTAG_TDO_PIN;
         GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
         GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -1049,8 +636,716 @@ void FPGA_Switch_Mode(FPGA_ModeType mode)
     }
     else
     {
-        // Slave Serial Ä£Ê½
-        // CCLK(PE2) DATA0(PE6) ÓÉ SPI ¿ØÖÆ => ¸´ÓÃÍÆÍì
         MX_SPI4_Init();
     }
+}
+
+/**
+ * @brief  AXIé–¸æ„­ç‘¦éŽ¼é”‹æ‹…å©Šæ„®çª—é–¸æ°­åž¶ç€µæ°±â‚¬è§„è‰¾å©€æ’®å´¸éˆ§î„„å´˜å¨†å¿“å¼³32å¨´ï½…ç§µé†ç†¼å¹‘?
+ * @param  jtag JTAGå¨‘æ’³ï¹£ç»—å‘´å¼¬é¥Ñƒç¶–é–º?
+ * @param  addr 32å¨´ï½…ä¼¯XIé–¸ï¸½æ¾˜å¨¼?
+ * @param  data ç€µæ¿æ‡ŽéŸæ’»å´—éŠ‰Ñ„ç•±32å¨´ï½…ç§µé†ç†¼å¹‘?
+ */
+static HAL_StatusTypeDef Bridge_ShiftFrame(JtagContext *jtag, const uint8_t *tx_frame, uint8_t *rx_frame)
+{
+    if ((jtag == NULL) || (tx_frame == NULL) || (rx_frame == NULL)) {
+        return HAL_ERROR;
+    }
+
+    memset(rx_frame, 0, BRIDGE_FRAME_BYTES);
+    Jtag_GotoState(jtag, JTAG_SDR);
+    Jtag_ShiftRawOrder(jtag, tx_frame, rx_frame, BRIDGE_FRAME_BITS, true, true, false);
+    Jtag_GotoState(jtag, JTAG_RTI);
+    return HAL_OK;
+}
+
+static void Bridge_LogFrame(const char *tag, uint8_t opcode, const uint8_t *frame)
+{
+    char log_buf[96] = {0};
+    uint16_t log_len = 0U;
+
+    if ((tag == NULL) || (frame == NULL)) {
+        return;
+    }
+
+    log_len = (uint16_t)snprintf(log_buf, sizeof(log_buf),
+                                 "[BRIDGE] %s op=%02X rx=%02X %02X %02X %02X %02X\r\n",
+                                 tag, opcode,
+                                 frame[0], frame[1], frame[2], frame[3], frame[4]);
+    if (log_len > 0U) {
+        CDC_Transmit_FS((uint8_t *)log_buf, log_len);
+    }
+}
+
+static HAL_StatusTypeDef Bridge_CommandFrame(JtagContext *jtag, uint8_t opcode, uint32_t arg,
+                                             uint8_t *rx_frame_out, uint32_t timeout_cycles)
+{
+    uint8_t tx_frame[BRIDGE_FRAME_BYTES] = {0};
+    uint8_t rx_frame[BRIDGE_FRAME_BYTES] = {0};
+    uint8_t nop_frame[BRIDGE_FRAME_BYTES] = {0};
+
+    tx_frame[0] = opcode;
+    tx_frame[1] = (uint8_t)(arg & 0xFFU);
+    tx_frame[2] = (uint8_t)((arg >> 8) & 0xFFU);
+    tx_frame[3] = (uint8_t)((arg >> 16) & 0xFFU);
+    tx_frame[4] = (uint8_t)((arg >> 24) & 0xFFU);
+
+    if (Bridge_ShiftFrame(jtag, tx_frame, rx_frame) != HAL_OK) {
+        Bridge_LogFrame("shift-fail", opcode, rx_frame);
+        return HAL_ERROR;
+    }
+
+    /* The USER1 bridge is one frame deep, so the first NOP after UPDATE
+       usually returns the previous response. Prime the pipeline first. */
+    if (Bridge_ShiftFrame(jtag, nop_frame, rx_frame) != HAL_OK) {
+        Bridge_LogFrame("prime-fail", opcode, rx_frame);
+        return HAL_ERROR;
+    }
+
+    while (timeout_cycles-- > 0U) {
+        if (Bridge_ShiftFrame(jtag, nop_frame, rx_frame) != HAL_OK) {
+            Bridge_LogFrame("poll-fail", opcode, rx_frame);
+            return HAL_ERROR;
+        }
+
+        if (rx_frame[4] == BRIDGE_STATUS_BUSY) {
+            continue;
+        }
+
+        if (rx_frame[4] != BRIDGE_STATUS_OK) {
+            Bridge_LogFrame("bad-status", opcode, rx_frame);
+            return HAL_ERROR;
+        }
+
+        if (rx_frame_out != NULL) {
+            memcpy(rx_frame_out, rx_frame, BRIDGE_FRAME_BYTES);
+        }
+        return HAL_OK;
+    }
+
+    Bridge_LogFrame("timeout", opcode, rx_frame);
+    return HAL_TIMEOUT;
+}
+
+static HAL_StatusTypeDef Bridge_Command(JtagContext *jtag, uint8_t opcode, uint32_t arg,
+                                        uint8_t *rx_data0, uint32_t timeout_cycles)
+{
+    uint8_t rx_frame[BRIDGE_FRAME_BYTES] = {0};
+
+    if (Bridge_CommandFrame(jtag, opcode, arg, rx_frame, timeout_cycles) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    if (rx_data0 != NULL) {
+        *rx_data0 = rx_frame[0];
+    }
+
+    return HAL_OK;
+}
+
+static HAL_StatusTypeDef Bridge_SetCs(JtagContext *jtag, bool cs_high)
+{
+    return Bridge_Command(jtag, BRIDGE_CMD_SET_CS, cs_high ? 1U : 0U, NULL, 16U);
+}
+
+static HAL_StatusTypeDef Bridge_SetDivider(JtagContext *jtag, uint16_t divider)
+{
+    return Bridge_Command(jtag, BRIDGE_CMD_SET_DIV, divider, NULL, 16U);
+}
+
+static HAL_StatusTypeDef Bridge_Xfer8(JtagContext *jtag, uint8_t tx_data, uint8_t *rx_data)
+{
+    return Bridge_Command(jtag, BRIDGE_CMD_XFER8, tx_data, rx_data, 256U);
+}
+
+static HAL_StatusTypeDef Bridge_ReadStatusEx(JtagContext *jtag, uint8_t flags[4])
+{
+    uint8_t rx_frame[BRIDGE_FRAME_BYTES] = {0};
+
+    if ((jtag == NULL) || (flags == NULL)) {
+        return HAL_ERROR;
+    }
+
+    if (Bridge_CommandFrame(jtag, BRIDGE_CMD_STATUS_EX, 0U, rx_frame, 32U) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    memcpy(flags, rx_frame, 4U);
+    return HAL_OK;
+}
+
+static HAL_StatusTypeDef Bridge_Echo(JtagContext *jtag, uint32_t arg, uint8_t echoed[4])
+{
+    uint8_t rx_frame[BRIDGE_FRAME_BYTES] = {0};
+
+    if ((jtag == NULL) || (echoed == NULL)) {
+        return HAL_ERROR;
+    }
+
+    if (Bridge_CommandFrame(jtag, BRIDGE_CMD_ECHO, arg, rx_frame, 32U) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    memcpy(echoed, rx_frame, 4U);
+    return HAL_OK;
+}
+
+HAL_StatusTypeDef spi_flash_init(JtagContext *jtag)
+{
+    uint8_t nop_frame[BRIDGE_FRAME_BYTES] = {0};
+    uint8_t rx_frame[BRIDGE_FRAME_BYTES] = {0};
+    uint8_t echo_bytes[4] = {0};
+    char log_buf[96] = {0};
+    uint16_t log_len = 0U;
+
+    if (jtag == NULL) {
+        return HAL_ERROR;
+    }
+
+    Jtag_WriteInstruction(jtag, XILINX_INST_USER1, JTAG_RTI);
+
+    if (Bridge_ShiftFrame(jtag, nop_frame, rx_frame) != HAL_OK) {
+        CDC_Transmit_FS((uint8_t*)"[BRIDGE] Initial NOP shift failed\r\n",
+                        sizeof("[BRIDGE] Initial NOP shift failed\r\n") - 1U);
+        return HAL_ERROR;
+    }
+    Bridge_LogFrame("probe", BRIDGE_CMD_NOP, rx_frame);
+
+    if (Bridge_Echo(jtag, 0x12345678U, echo_bytes) != HAL_OK) {
+        CDC_Transmit_FS((uint8_t*)"[BRIDGE] ECHO command failed\r\n",
+                        sizeof("[BRIDGE] ECHO command failed\r\n") - 1U);
+        return HAL_ERROR;
+    }
+
+    log_len = (uint16_t)snprintf(log_buf, sizeof(log_buf),
+                                 "[BRIDGE] ECHO rx=%02X %02X %02X %02X expect=06 78 56 34\r\n",
+                                 echo_bytes[0], echo_bytes[1], echo_bytes[2], echo_bytes[3]);
+    if (log_len > 0U) {
+        CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+    }
+
+    if ((echo_bytes[0] != BRIDGE_CMD_ECHO) ||
+        (echo_bytes[1] != 0x78U) ||
+        (echo_bytes[2] != 0x56U) ||
+        (echo_bytes[3] != 0x34U)) {
+        CDC_Transmit_FS((uint8_t*)"[BRIDGE] ECHO mismatch\r\n",
+                        sizeof("[BRIDGE] ECHO mismatch\r\n") - 1U);
+        return HAL_ERROR;
+    }
+
+    if (Bridge_SetCs(jtag, true) != HAL_OK) {
+        CDC_Transmit_FS((uint8_t*)"[BRIDGE] SET_CS failed\r\n",
+                        sizeof("[BRIDGE] SET_CS failed\r\n") - 1U);
+        return HAL_ERROR;
+    }
+
+    if (Bridge_SetDivider(jtag, BRIDGE_SPI_CLK_DIV) != HAL_OK) {
+        CDC_Transmit_FS((uint8_t*)"[BRIDGE] SET_DIV failed\r\n",
+                        sizeof("[BRIDGE] SET_DIV failed\r\n") - 1U);
+        return HAL_ERROR;
+    }
+
+    return HAL_OK;
+}
+
+static HAL_StatusTypeDef spi_flash_read_status(JtagContext *jtag, uint8_t *status)
+{
+    uint8_t rx_data = 0U;
+
+    if ((jtag == NULL) || (status == NULL)) {
+        return HAL_ERROR;
+    }
+
+    if (Bridge_SetCs(jtag, false) != HAL_OK) {
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, SPI_CMD_READ_STATUS1, NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, 0xFFU, &rx_data) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_SetCs(jtag, true) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    *status = rx_data;
+    return HAL_OK;
+}
+
+static HAL_StatusTypeDef spi_flash_read_flag_status(JtagContext *jtag, uint8_t *status)
+{
+    uint8_t rx_data = 0U;
+
+    if ((jtag == NULL) || (status == NULL)) {
+        return HAL_ERROR;
+    }
+
+    if (Bridge_SetCs(jtag, false) != HAL_OK) {
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, SPI_CMD_READ_FLAG_STATUS, NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, 0xFFU, &rx_data) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_SetCs(jtag, true) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    *status = rx_data;
+    return HAL_OK;
+}
+
+static HAL_StatusTypeDef spi_flash_wait_ready(JtagContext *jtag, uint32_t timeout_ms)
+{
+    uint8_t status = 0U;
+
+    while (timeout_ms-- > 0U) {
+        if (spi_flash_read_status(jtag, &status) != HAL_OK) {
+            return HAL_ERROR;
+        }
+
+        if ((status & 0x01U) == 0U) {
+            return HAL_OK;
+        }
+
+        osDelay(1);
+    }
+
+    return HAL_TIMEOUT;
+}
+
+static HAL_StatusTypeDef spi_flash_write_enable(JtagContext *jtag)
+{
+    uint8_t status = 0U;
+
+    if (Bridge_SetCs(jtag, false) != HAL_OK) {
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, SPI_CMD_WRITE_ENABLE, NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_SetCs(jtag, true) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    for (uint32_t retry = 0; retry < 50U; retry++) {
+        if (spi_flash_read_status(jtag, &status) != HAL_OK) {
+            return HAL_ERROR;
+        }
+        if ((status & 0x02U) != 0U) {
+            return HAL_OK;
+        }
+        osDelay(1);
+    }
+
+    return HAL_TIMEOUT;
+}
+
+static HAL_StatusTypeDef spi_flash_reset_memory(JtagContext *jtag)
+{
+    if (jtag == NULL) {
+        return HAL_ERROR;
+    }
+
+    if (Bridge_SetCs(jtag, false) != HAL_OK) {
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, SPI_CMD_RESET_ENABLE, NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_SetCs(jtag, true) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    if (Bridge_SetCs(jtag, false) != HAL_OK) {
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, SPI_CMD_RESET_MEMORY, NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_SetCs(jtag, true) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    osDelay(1);
+    return HAL_OK;
+}
+
+static HAL_StatusTypeDef spi_flash_read_jedec_id(JtagContext *jtag, uint8_t jedec_id[3])
+{
+    uint8_t cmd_rx = 0U;
+    char log_buf[96] = {0};
+    uint16_t log_len = 0U;
+
+    if ((jtag == NULL) || (jedec_id == NULL)) {
+        return HAL_ERROR;
+    }
+
+    if (Bridge_SetCs(jtag, false) != HAL_OK) {
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, SPI_CMD_READ_JEDEC_ID, &cmd_rx) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+
+    for (uint32_t i = 0; i < 3U; i++) {
+        if (Bridge_Xfer8(jtag, 0xFFU, &jedec_id[i]) != HAL_OK) {
+            (void)Bridge_SetCs(jtag, true);
+            return HAL_ERROR;
+        }
+    }
+
+    if (Bridge_SetCs(jtag, true) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    log_len = (uint16_t)snprintf(log_buf, sizeof(log_buf),
+                                 "[FLASH] JEDEC raw cmd_rx=%02X id=%02X %02X %02X\r\n",
+                                 cmd_rx, jedec_id[0], jedec_id[1], jedec_id[2]);
+    if (log_len > 0U) {
+        CDC_Transmit_FS((uint8_t *)log_buf, log_len);
+    }
+
+    return HAL_OK;
+}
+
+HAL_StatusTypeDef spi_flash_erase_sector(JtagContext *jtag, uint32_t sector_addr)
+{
+    if (spi_flash_write_enable(jtag) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    if (Bridge_SetCs(jtag, false) != HAL_OK) {
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, SPI_CMD_SECTOR_ERASE, NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, (uint8_t)((sector_addr >> 16) & 0xFFU), NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, (uint8_t)((sector_addr >> 8) & 0xFFU), NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, (uint8_t)(sector_addr & 0xFFU), NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_SetCs(jtag, true) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    return spi_flash_wait_ready(jtag, 5000U);
+}
+
+HAL_StatusTypeDef spi_flash_program_page(JtagContext *jtag, uint32_t page_addr, const uint8_t *data, uint16_t len)
+{
+    if ((data == NULL) || (len == 0U) || (len > SPI_FLASH_PAGE_SIZE)) {
+        return HAL_ERROR;
+    }
+
+    if (spi_flash_write_enable(jtag) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    if (Bridge_SetCs(jtag, false) != HAL_OK) {
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, SPI_CMD_PAGE_PROGRAM, NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, (uint8_t)((page_addr >> 16) & 0xFFU), NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, (uint8_t)((page_addr >> 8) & 0xFFU), NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, (uint8_t)(page_addr & 0xFFU), NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+
+    for (uint16_t i = 0; i < len; i++) {
+        if (Bridge_Xfer8(jtag, data[i], NULL) != HAL_OK) {
+            (void)Bridge_SetCs(jtag, true);
+            return HAL_ERROR;
+        }
+    }
+
+    if (Bridge_SetCs(jtag, true) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    return spi_flash_wait_ready(jtag, 1000U);
+}
+
+static HAL_StatusTypeDef spi_flash_read_buffer(JtagContext *jtag, uint32_t addr, uint8_t *data, uint16_t len)
+{
+    if ((jtag == NULL) || (data == NULL) || (len == 0U)) {
+        return HAL_ERROR;
+    }
+
+    if (Bridge_SetCs(jtag, false) != HAL_OK) {
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, SPI_CMD_READ_DATA, NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, (uint8_t)((addr >> 16) & 0xFFU), NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, (uint8_t)((addr >> 8) & 0xFFU), NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+    if (Bridge_Xfer8(jtag, (uint8_t)(addr & 0xFFU), NULL) != HAL_OK) {
+        (void)Bridge_SetCs(jtag, true);
+        return HAL_ERROR;
+    }
+
+    for (uint16_t i = 0; i < len; i++) {
+        if (Bridge_Xfer8(jtag, 0xFFU, &data[i]) != HAL_OK) {
+            (void)Bridge_SetCs(jtag, true);
+            return HAL_ERROR;
+        }
+    }
+
+    return Bridge_SetCs(jtag, true);
+}
+
+uint8_t spi_flash_read_byte(JtagContext *jtag, uint32_t addr)
+{
+    uint8_t rx_data = 0U;
+
+    if (spi_flash_read_buffer(jtag, addr, &rx_data, 1U) != HAL_OK) {
+        return 0xFFU;
+    }
+
+    return rx_data;
+}
+
+HAL_StatusTypeDef spi_flash_program_full(uint8_t *bin_data, uint32_t bin_len)
+{
+    JtagContext jtag;
+    JtagHalCallbacks *hal = BSP_Jtag_GetHalOps();
+    char log_buf[128] = {0};
+    uint8_t bridge_status[4] = {0};
+    uint8_t verify_buf[SPI_FLASH_PAGE_SIZE] = {0};
+    uint8_t jedec_id[3] = {0};
+    uint8_t status_reg = 0U;
+    uint8_t flag_status_reg = 0U;
+    uint16_t log_len = 0;
+
+    if ((bin_data == NULL) || (bin_len == 0U) || (bin_len > SDRAM_TOTAL_SIZE)) {
+        CDC_Transmit_FS((uint8_t*)"[ERROR] Invalid user design length!\r\n",
+                        sizeof("[ERROR] Invalid user design length!\r\n") - 1U);
+        return HAL_ERROR;
+    }
+
+    CDC_Transmit_FS((uint8_t*)"[FLASH] Load SPI bridge bitstream...\r\n", 38);
+    osDelay(1);
+		HAL_StatusTypeDef ret = Jtag_ConfigureFromBuffer(g_spi_bridge_bin, g_spi_bridge_bin_len);
+    if(ret != HAL_OK) {
+        CDC_Transmit_FS((uint8_t*)"[ERROR] Bridge load failed!\r\n", 30);
+        return ret;
+    }
+
+    osDelay(100);
+    memset(&g_jtag_xfer, 0, sizeof(g_jtag_xfer));
+    Jtag_Init(&jtag, hal, &g_jtag_xfer);
+
+    if (spi_flash_init(&jtag) != HAL_OK) {
+        CDC_Transmit_FS((uint8_t*)"[ERROR] SPI bridge init failed!\r\n",
+                        sizeof("[ERROR] SPI bridge init failed!\r\n") - 1U);
+        return HAL_ERROR;
+    }
+    CDC_Transmit_FS((uint8_t*)"[FLASH] SPI controller init done\r\n", 34);
+
+    if (Bridge_ReadStatusEx(&jtag, bridge_status) == HAL_OK) {
+        log_len = (uint16_t)snprintf(log_buf, sizeof(log_buf),
+                                     "[BRIDGE] EX flags=0x%02X state_idx=0x%02X sck=0x%02X%02X\r\n",
+                                     bridge_status[0], bridge_status[1],
+                                     bridge_status[3], bridge_status[2]);
+        CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+    }
+
+    if (spi_flash_reset_memory(&jtag) != HAL_OK) {
+        CDC_Transmit_FS((uint8_t*)"[ERROR] Flash software reset failed!\r\n",
+                        sizeof("[ERROR] Flash software reset failed!\r\n") - 1U);
+        return HAL_ERROR;
+    }
+    CDC_Transmit_FS((uint8_t*)"[FLASH] Flash software reset done\r\n",
+                    sizeof("[FLASH] Flash software reset done\r\n") - 1U);
+
+    if (Bridge_ReadStatusEx(&jtag, bridge_status) == HAL_OK) {
+        log_len = (uint16_t)snprintf(log_buf, sizeof(log_buf),
+                                     "[BRIDGE] EX after reset flags=0x%02X state_idx=0x%02X sck=0x%02X%02X\r\n",
+                                     bridge_status[0], bridge_status[1],
+                                     bridge_status[3], bridge_status[2]);
+        CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+    }
+
+    if (spi_flash_read_status(&jtag, &status_reg) != HAL_OK) {
+        CDC_Transmit_FS((uint8_t*)"[ERROR] Status register read failed!\r\n",
+                        sizeof("[ERROR] Status register read failed!\r\n") - 1U);
+        return HAL_ERROR;
+    }
+
+    if (spi_flash_read_flag_status(&jtag, &flag_status_reg) != HAL_OK) {
+        CDC_Transmit_FS((uint8_t*)"[ERROR] Flag status register read failed!\r\n",
+                        sizeof("[ERROR] Flag status register read failed!\r\n") - 1U);
+        return HAL_ERROR;
+    }
+
+    log_len = (uint16_t)snprintf(log_buf, sizeof(log_buf),
+                                 "[FLASH] SR=0x%02X FSR=0x%02X\r\n",
+                                 status_reg, flag_status_reg);
+    CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+
+    if (spi_flash_read_jedec_id(&jtag, jedec_id) != HAL_OK) {
+        CDC_Transmit_FS((uint8_t*)"[ERROR] Flash JEDEC ID read failed!\r\n", 37);
+        return HAL_ERROR;
+    }
+
+    if (Bridge_ReadStatusEx(&jtag, bridge_status) == HAL_OK) {
+        log_len = (uint16_t)snprintf(log_buf, sizeof(log_buf),
+                                     "[BRIDGE] EX after JEDEC flags=0x%02X state_idx=0x%02X sck=0x%02X%02X\r\n",
+                                     bridge_status[0], bridge_status[1],
+                                     bridge_status[3], bridge_status[2]);
+        CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+    }
+
+    if (((jedec_id[0] == 0x00U) && (jedec_id[1] == 0x00U) && (jedec_id[2] == 0x00U)) ||
+        ((jedec_id[0] == 0xFFU) && (jedec_id[1] == 0xFFU) && (jedec_id[2] == 0xFFU))) {
+        CDC_Transmit_FS((uint8_t*)"[ERROR] Flash JEDEC ID looks invalid!\r\n",
+                        sizeof("[ERROR] Flash JEDEC ID looks invalid!\r\n") - 1U);
+        return HAL_ERROR;
+    }
+
+    log_len = snprintf(log_buf, sizeof(log_buf),
+                       "[FLASH] JEDEC ID: %02X %02X %02X\r\n",
+                       jedec_id[0], jedec_id[1], jedec_id[2]);
+    CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+
+    uint32_t total_sectors = (bin_len + (SPI_FLASH_SECTOR_SIZE - 1U)) / SPI_FLASH_SECTOR_SIZE;
+    log_len = snprintf(log_buf, sizeof(log_buf),
+                       "[FLASH] Total sectors to erase: %" PRIu32 "\r\n",
+                       total_sectors);
+    CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+
+    for (uint32_t i = 0; i < total_sectors; i++) {
+        ret = spi_flash_erase_sector(&jtag, i * SPI_FLASH_SECTOR_SIZE);
+        if (ret != HAL_OK) {
+            log_len = snprintf(log_buf, sizeof(log_buf),
+                               "[ERROR] Erase failed at sector 0x%08" PRIX32 "\r\n",
+                               i * SPI_FLASH_SECTOR_SIZE);
+            CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+            return ret;
+        }
+
+        if((i % 16U) == 0U) {
+            log_len = snprintf(log_buf, sizeof(log_buf),
+                               "[FLASH] Erase progress: %" PRIu32 "/%" PRIu32 "\r\n",
+                               i + 1U, total_sectors);
+            CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+        }
+    }
+    CDC_Transmit_FS((uint8_t*)"[FLASH] Erase complete!\r\n", 26);
+
+    uint32_t total_pages = (bin_len + (SPI_FLASH_PAGE_SIZE - 1U)) / SPI_FLASH_PAGE_SIZE;
+    log_len = snprintf(log_buf, sizeof(log_buf),
+                       "[FLASH] Total pages to program: %" PRIu32 "\r\n",
+                       total_pages);
+    CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+
+    for (uint32_t i = 0; i < total_pages; i++) {
+        uint32_t page_addr = i * SPI_FLASH_PAGE_SIZE;
+        uint16_t write_len = (i == (total_pages - 1U)) ? (uint16_t)(bin_len - page_addr) : SPI_FLASH_PAGE_SIZE;
+        ret = spi_flash_program_page(&jtag, page_addr, &bin_data[page_addr], write_len);
+        if (ret != HAL_OK) {
+            log_len = snprintf(log_buf, sizeof(log_buf),
+                               "[ERROR] Program failed at 0x%08" PRIX32 "\r\n",
+                               page_addr);
+            CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+            return ret;
+        }
+
+        if((i % 64U) == 0U)
+        {
+            log_len = snprintf(log_buf, sizeof(log_buf), "[FLASH] Program progress: %.1f%%\r\n", (float)i / total_pages * 100.0f);
+            CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+        }
+    }
+    CDC_Transmit_FS((uint8_t*)"[FLASH] Program complete!\r\n", 28);
+
+    CDC_Transmit_FS((uint8_t*)"[FLASH] Start data verify...\r\n", 32);
+    for(uint32_t i = 0; i < total_pages; i++)
+    {
+        uint32_t page_addr = i * SPI_FLASH_PAGE_SIZE;
+        uint16_t read_len = (i == (total_pages - 1U)) ? (uint16_t)(bin_len - page_addr) : SPI_FLASH_PAGE_SIZE;
+
+        if (spi_flash_read_buffer(&jtag, page_addr, verify_buf, read_len) != HAL_OK)
+        {
+            log_len = snprintf(log_buf, sizeof(log_buf),
+                               "[ERROR] Verify read failed at 0x%08X\r\n",
+                               page_addr);
+            CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+            return HAL_ERROR;
+        }
+
+        if (memcmp(verify_buf, &bin_data[page_addr], read_len) != 0)
+        {
+            uint16_t failed_index = 0U;
+            while ((failed_index < read_len) && (verify_buf[failed_index] == bin_data[page_addr + failed_index]))
+            {
+                failed_index++;
+            }
+
+            log_len = snprintf(log_buf, sizeof(log_buf),
+                               "[ERROR] Verify failed at 0x%08X: 0x%02X vs 0x%02X\r\n",
+                               page_addr + failed_index,
+                               verify_buf[failed_index],
+                               bin_data[page_addr + failed_index]);
+            CDC_Transmit_FS((uint8_t*)log_buf, log_len);
+            return HAL_ERROR;
+        }
+    }
+    CDC_Transmit_FS((uint8_t*)"[FLASH] Verify success!\r\n", 26);
+
+    CDC_Transmit_FS((uint8_t*)"[FLASH] Reset FPGA, load from Flash...\r\n", 40);
+    FPGA_Reset();
+
+    if(FPGA_Wait_InitB_Ready() != HAL_OK)
+    {
+        CDC_Transmit_FS((uint8_t*)"[ERROR] INIT_B timeout after Flash boot reset!\r\n", 46);
+        return HAL_TIMEOUT;
+    }
+
+    if(FPGA_Wait_DONE_High() != HAL_OK)
+    {
+        CDC_Transmit_FS((uint8_t*)"[ERROR] FPGA load from Flash failed!\r\n", 38);
+        return HAL_ERROR;
+    }
+
+    CDC_Transmit_FS((uint8_t*)"[FLASH] All done! FPGA boot success!\r\n", 38);
+    return HAL_OK;
 }

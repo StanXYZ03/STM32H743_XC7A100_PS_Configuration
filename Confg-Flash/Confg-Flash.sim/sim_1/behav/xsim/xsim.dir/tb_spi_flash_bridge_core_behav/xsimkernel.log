@@ -1,0 +1,4 @@
+Running: xsim.dir/tb_spi_flash_bridge_core_behav/xsimk.exe -simmode gui -wdb tb_spi_flash_bridge_core_behav.wdb -simrunnum 0 -socket 55239
+Design successfully loaded
+Design Loading Memory Usage: 8556 KB (Peak: 8556 KB)
+Design Loading CPU Usage: 46 ms
