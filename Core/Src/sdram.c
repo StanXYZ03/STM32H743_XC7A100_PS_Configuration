@@ -11,6 +11,19 @@
 
 
 #include "sdram.h"
+
+static void SDRAM_DelayMs(uint32_t ms)
+{
+#if (INCLUDE_xTaskGetSchedulerState == 1)
+    if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+    {
+        osDelay(ms);
+        return;
+    }
+#endif
+    HAL_Delay(ms);
+}
+
 #include "cmsis_os.h"
 // SDRAM接收相关全局变量
 uint32_t g_sdram_bin_offset = 0;
@@ -36,7 +49,7 @@ void SDRAM_Init_Sequence(void)
     }
 
     /* Step 2: 延时≥100us（案例用100ms，更稳定） */
-    osDelay(1);
+    SDRAM_DelayMs(1);
 
     /* Step 3: 发送预充电所有Bank命令 */
     SDRAM_Command.CommandMode = FMC_SDRAM_CMD_PALL;
@@ -54,33 +67,22 @@ void SDRAM_Init_Sequence(void)
     {
         Error_Handler();
     }
-	
-		/* Step 5: 加载模式寄存器（案例验证过的保守值） */
-		mode_reg_val = SDRAM_MODEREG_BURST_LENGTH_1           |
+    mode_reg_val = SDRAM_MODEREG_BURST_LENGTH_1           |
                    SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
                    SDRAM_MODEREG_CAS_LATENCY_3           |
                    SDRAM_MODEREG_OPERATING_MODE_STANDARD |
                    SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
-		SDRAM_Command.CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
-		SDRAM_Command.ModeRegisterDefinition = mode_reg_val;
-		if(HAL_SDRAM_SendCommand(&hsdram1, &SDRAM_Command, 0xFFFF) != HAL_OK)
-    {
-        Error_Handler();
-    }
-		
-    /* Step 5: 加载模式寄存器（案例验证过的保守值） */
+    /* Step 5: 加载模式寄存器（与旧工程一致：Burst=1, Sequential, CAS=3, Single write burst） */
     SDRAM_Command.CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
     SDRAM_Command.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK1;
     SDRAM_Command.AutoRefreshNumber = 1;
-    // 模式寄存器值：0x00000020 → CL=2, 突发长度1, 顺序突发
-    SDRAM_Command.ModeRegisterDefinition = 0x00000020;
+    SDRAM_Command.ModeRegisterDefinition = mode_reg_val;
     if(HAL_SDRAM_SendCommand(&hsdram1, &SDRAM_Command, 0xFFFF) != HAL_OK)
     {
         Error_Handler();
     }
 
-    /* Step 6: 计算并设置刷新频率（案例公式） */
-    // SDRAM_CLOCK = 100MHz（先降频，稳定后再调150MHz）
+    /* Step 6: 设置刷新计数（与旧工程一致） */
     HAL_SDRAM_ProgramRefreshRate(&hsdram1, 761);
 }
 
@@ -114,7 +116,7 @@ void SDRAM_WriteBuffer(uint8_t *pBuffer, uint32_t WriteAddr, uint32_t n)
     uint32_t timeout = 1000;
     while (HAL_SDRAM_GetState(&hsdram1) != HAL_SDRAM_STATE_READY && timeout--)
     {
-        osDelay(1);
+        SDRAM_DelayMs(1);
     }
     if(timeout == 0)
     {
@@ -142,7 +144,7 @@ void SDRAM_ReadBuffer(uint8_t *pBuffer, uint32_t ReadAddr, uint32_t n)
     uint32_t timeout = 1000;
     while (HAL_SDRAM_GetState(&hsdram1) != HAL_SDRAM_STATE_READY && timeout--)
     {
-        osDelay(1);
+        SDRAM_DelayMs(1);
     }
     if(timeout == 0)
     {

@@ -22,12 +22,32 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 D:\CubeMX\STM32H743_XC7A100_PS_Configuration\MDK-ARM\STM32H743_XC7A100_PS_Configuration.uvprojx
-Project File Date:  03/31/2026
+Project File Date:  04/08/2026
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.05 update 1 (build 106)', folder: 'D:\Keil-ARM\ARM\ARMCC\Bin'
 Build target 'STM32H743_XC7A100_PS_Configuration'
-"STM32H743_XC7A100_PS_Configuration\STM32H743_XC7A100_PS_Configuration.axf" - 0 Error(s), 0 Warning(s).
+Note: source file '..\User\ui\MainTask.c' - object file renamed from 'STM32H743_XC7A100_PS_Configuration\MainTask.o' to 'STM32H743_XC7A100_PS_Configuration\maintask_1.o'.
+compiling LCDConf_Lin_Template.c...
+..\emWin\DisplayDriver\LCDConf_Lin_Template.c(1224): warning:  #2532-D: support for trigraphs is disabled
+  /* ?? GUI_MULTIBUF_End() ???? LCD_X_SHOWBUFFER ??????????????????"??   ??????????= (g_emwin_last_draw_buf + 1) % NUM_BUFFERS??         */
+..\emWin\DisplayDriver\LCDConf_Lin_Template.c(2654): warning:  #177-D: variable "addr" was declared but never referenced
+  	U32 addr;
+..\emWin\DisplayDriver\LCDConf_Lin_Template.c(563): warning:  #177-D: function "Optimize_Rotate_90CW_RGB565_Region" was declared but never referenced
+  static void Optimize_Rotate_90CW_RGB565_Region(const uint16_t * __restrict src,
+..\emWin\DisplayDriver\LCDConf_Lin_Template.c(1220): warning:  #550-D: variable "_aPendingBuffer" was set but never used
+  static int _aPendingBuffer[2] = { -1, -1 };
+..\emWin\DisplayDriver\LCDConf_Lin_Template.c(1391): warning:  #177-D: function "LCD_LL_LayerInit" was declared but never referenced
+  static void LCD_LL_LayerInit(U32 LayerIndex) 
+..\emWin\DisplayDriver\LCDConf_Lin_Template.c(1516): warning:  #177-D: function "LCD_LL_Init" was declared but never referenced
+  static void LCD_LL_Init(void) 
+..\emWin\DisplayDriver\LCDConf_Lin_Template.c(2284): warning:  #177-D: function "_LCD_CopyBuffer" was declared but never referenced
+  static void _LCD_CopyBuffer(int LayerIndex, int IndexSrc, int IndexDst) 
+..\emWin\DisplayDriver\LCDConf_Lin_Template.c: 7 warnings, 0 errors
+linking...
+Program Size: Code=112578 RO-data=496866 RW-data=816 ZI-data=95360  
+FromELF: creating hex file...
+"STM32H743_XC7A100_PS_Configuration\STM32H743_XC7A100_PS_Configuration.axf" - 0 Error(s), 7 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -51,7 +71,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.6.0
       Include file:  CMSIS/Core/Include/tz_context.h
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:07
 </pre>
 </body>
 </html>

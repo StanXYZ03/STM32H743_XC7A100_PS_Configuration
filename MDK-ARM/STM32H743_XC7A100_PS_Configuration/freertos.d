@@ -32,6 +32,7 @@ stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/I
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma_ex.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mdma.h
+stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma2d.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_exti.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_cortex.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash.h
@@ -39,6 +40,8 @@ stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/I
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h
+stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_ltdc.h
+stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_ltdc_ex.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sdram.h
@@ -53,3 +56,5 @@ stm32h743_xc7a100_ps_configuration\freertos.o: ../Middlewares/Third_Party/FreeRT
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 stm32h743_xc7a100_ps_configuration\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
+stm32h743_xc7a100_ps_configuration\freertos.o: ../Core/Inc/ewWinDefaultTask.h
+stm32h743_xc7a100_ps_configuration\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

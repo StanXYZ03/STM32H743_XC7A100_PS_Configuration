@@ -1,0 +1,1 @@
+stm32h743_xc7a100_ps_configuration\stemwin_cm7_os_wc16_ot_argb.o: ..\emWin\GUILib\STemWin_CM7_OS_wc16_ot_ARGB.a

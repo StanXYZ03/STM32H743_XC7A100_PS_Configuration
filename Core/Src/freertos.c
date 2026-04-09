@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "ewWinDefaultTask.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,13 +48,14 @@
 
 /* USER CODE END Variables */
 osThreadId FPGAConfigTaskHandle;
+osThreadId ewWinTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
 /* USER CODE END FunctionPrototypes */
 
 void FPGAConfigDefaultTask(void const * argument);
+void ewWinDefaultTask(void const * argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -103,8 +104,12 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of FPGAConfigTask */
-  osThreadDef(FPGAConfigTask, FPGAConfigDefaultTask, osPriorityNormal, 0, 3800);
+  osThreadDef(FPGAConfigTask, FPGAConfigDefaultTask, osPriorityNormal, 0, 4096);
   FPGAConfigTaskHandle = osThreadCreate(osThread(FPGAConfigTask), NULL);
+
+  /* definition and creation of ewWinTask */
+  osThreadDef(ewWinTask, ewWinDefaultTask, osPriorityAboveNormal, 0, 8192);
+  ewWinTaskHandle = osThreadCreate(osThread(ewWinTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -132,7 +137,23 @@ __weak void FPGAConfigDefaultTask(void const * argument)
   /* USER CODE END FPGAConfigDefaultTask */
 }
 
+/* USER CODE BEGIN Header_ewWinDefaultTask */
+/**
+* @brief Function implementing the ewWinTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_ewWinDefaultTask */
+__weak void ewWinDefaultTask(void const * argument)
+{
+  /* USER CODE BEGIN ewWinDefaultTask */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END ewWinDefaultTask */
+}
+
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-
 /* USER CODE END Application */

@@ -23,6 +23,7 @@ stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/s
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma_ex.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mdma.h
+stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma2d.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_exti.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_cortex.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash.h
@@ -30,6 +31,8 @@ stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/s
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h
+stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_ltdc.h
+stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_ltdc_ex.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sdram.h
@@ -54,6 +57,8 @@ stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/Third_Party/FreeRTOS/S
 stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/dma.h
+stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/dma2d.h
+stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/ltdc.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/memorymap.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/spi.h
 stm32h743_xc7a100_ps_configuration\main.o: ../USB_DEVICE/App/usb_device.h
@@ -79,3 +84,6 @@ stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/sdram.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/fmc.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 stm32h743_xc7a100_ps_configuration\main.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdbool.h
+stm32h743_xc7a100_ps_configuration\main.o: ../User/bsp/inc/bsp_lcd_rgb.h
+stm32h743_xc7a100_ps_configuration\main.o: ../User/bsp/inc/bsp_dwt.h
+stm32h743_xc7a100_ps_configuration\main.o: ../User/bsp/inc/bsp_led.h

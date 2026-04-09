@@ -24,6 +24,8 @@
 #include "task.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+void DMA2D_Wait_IRQHandler(void);
+void LCDConf_LTDC_IRQHandler(void);
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,6 +60,8 @@
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+extern DMA2D_HandleTypeDef hdma2d;
+extern LTDC_HandleTypeDef hltdc;
 extern DMA_HandleTypeDef hdma_spi4_tx;
 extern SPI_HandleTypeDef hspi4;
 /* USER CODE BEGIN EV */
@@ -210,6 +214,38 @@ void SPI4_IRQHandler(void)
   /* USER CODE BEGIN SPI4_IRQn 1 */
 
   /* USER CODE END SPI4_IRQn 1 */
+}
+
+/**
+  * @brief This function handles LTDC global interrupt.
+  */
+void LTDC_IRQHandler(void)
+{
+  /* USER CODE BEGIN LTDC_IRQn 0 */
+  LCDConf_LTDC_IRQHandler();
+  return;
+
+  /* USER CODE END LTDC_IRQn 0 */
+  HAL_LTDC_IRQHandler(&hltdc);
+  /* USER CODE BEGIN LTDC_IRQn 1 */
+
+  /* USER CODE END LTDC_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA2D global interrupt.
+  */
+void DMA2D_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2D_IRQn 0 */
+  DMA2D_Wait_IRQHandler();
+  return;
+
+  /* USER CODE END DMA2D_IRQn 0 */
+  HAL_DMA2D_IRQHandler(&hdma2d);
+  /* USER CODE BEGIN DMA2D_IRQn 1 */
+
+  /* USER CODE END DMA2D_IRQn 1 */
 }
 
 /**

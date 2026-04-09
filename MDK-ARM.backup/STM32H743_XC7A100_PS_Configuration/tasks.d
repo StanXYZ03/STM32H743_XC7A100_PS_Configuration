@@ -1,0 +1,16 @@
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c
+stm32h743_xc7a100_ps_configuration\tasks.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdlib.h
+stm32h743_xc7a100_ps_configuration\tasks.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\string.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+stm32h743_xc7a100_ps_configuration\tasks.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stddef.h
+stm32h743_xc7a100_ps_configuration\tasks.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdint.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Core/Inc/FreeRTOSConfig.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
+stm32h743_xc7a100_ps_configuration\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/stack_macros.h

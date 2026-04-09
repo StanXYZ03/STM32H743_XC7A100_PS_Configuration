@@ -1,4 +1,4 @@
-/* USER CODE BEGIN Header */
+﻿/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file           : main.c
@@ -20,6 +20,8 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "dma.h"
+#include "dma2d.h"
+#include "ltdc.h"
 #include "memorymap.h"
 #include "spi.h"
 #include "usb_device.h"
@@ -28,7 +30,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "sdram.h"
+#include "bsp_lcd_rgb.h"
+#include "bsp_dwt.h"
+#include "bsp_led.h"
 
+extern volatile uint8_t g_sdram_ready;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -38,7 +45,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define CONFIGURATION_MODE 0	//1-Slave Serial 0-JTAG
+#define CONFIGURATION_MODE 0  //1-Slave Serial 0-JTAG
+#define UI_EARLY_LCD_DIAG 0U
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -55,6 +63,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MPU_Config(void);
+static void CPU_CACHE_Enable(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
@@ -62,6 +71,31 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+static void UI_EarlyFramebufferInit(void)
+{
+  uint32_t i;
+  uint16_t *p_logic = (uint16_t *)0xC0000000U;
+  uint16_t *p0 = (uint16_t *)0xC0200000U;
+  uint16_t *p1 = (uint16_t *)0xC0300000U;
+  const uint32_t logic_pixels = 2U * 800U * 480U;
+  const uint32_t phys_pixels  = 480U * 800U;
+
+  for (i = 0U; i < logic_pixels; i++)
+  {
+    p_logic[i] = 0U;
+  }
+
+  for (i = 0U; i < phys_pixels; i++)
+  {
+    p0[i] = 0U;
+    p1[i] = 0U;
+  }
+
+  SCB_CleanDCache_by_Addr((uint32_t *)0xC0000000U, logic_pixels * 2U);
+  SCB_CleanDCache_by_Addr((uint32_t *)0xC0200000U, phys_pixels * 2U);
+  SCB_CleanDCache_by_Addr((uint32_t *)0xC0300000U, phys_pixels * 2U);
+}
 
 /* USER CODE END 0 */
 
@@ -78,6 +112,7 @@ int main(void)
 
   /* MPU Configuration--------------------------------------------------------*/
   MPU_Config();
+  CPU_CACHE_Enable();
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -97,13 +132,38 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  bsp_InitLed();
+  bsp_LedOn(1);
   MX_DMA_Init();
   MX_FMC_Init();
+  SDRAM_Init_Sequence();
+  g_sdram_ready = 1U;
+  bsp_InitDWT();
+  LCD_RGB_InitPanelOnly();
+  bsp_LedOn(2);
   MX_SPI4_Init();
+  MX_DMA2D_Init();
+  MX_LTDC_Init();
+  bsp_LedOn(3);
   /* USER CODE BEGIN 2 */
+#if (UI_EARLY_LCD_DIAG == 1U)
+  UI_EarlyFramebufferInit();
+  LCD_RGB_Init();
+  if (LTDC_Layer1->CFBAR != 0xC0200000U)
+  {
+    LTDC_Layer1->CFBAR = 0xC0200000U;
+    LTDC->SRCR = LTDC_SRCR_IMR;
+  }
+  LCD_RGB_BacklightOn();
+  LCD_RGB_Fill(0xFFFFU);
+  bsp_LedOn(4);
+  for (;;)
+  {
+    HAL_Delay(1000);
+  }
+#endif
 
-  /* USER CODE END 2 */
-
+/* USER CODE END 2 */
   /* Call init function for freertos objects (in cmsis_os2.c) */
   MX_FREERTOS_Init();
 
@@ -142,23 +202,18 @@ void SystemClock_Config(void)
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
 
-  __HAL_RCC_SYSCFG_CLK_ENABLE();
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
-
-  while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
-
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 5;
-  RCC_OscInitStruct.PLL.PLLN = 192;
+  RCC_OscInitStruct.PLL.PLLN = 160;
   RCC_OscInitStruct.PLL.PLLP = 2;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
@@ -181,14 +236,21 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
   RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }
 }
 
 /* USER CODE BEGIN 4 */
-
+static void CPU_CACHE_Enable(void)
+{
+  SCB_EnableICache();
+  SCB_EnableDCache();
+  SCB->CCR &= ~(uint32_t)SCB_CCR_UNALIGN_TRP_Msk;
+  __DSB();
+  __ISB();
+}
 /* USER CODE END 4 */
 
  /* MPU Configuration */
@@ -200,21 +262,48 @@ void MPU_Config(void)
   /* Disables the MPU */
   HAL_MPU_Disable();
 
-  /** Initializes and configures the Region and the memory to be protected
-  */
+  /* AXI SRAM: Write-back, Read/Write allocate */
   MPU_InitStruct.Enable = MPU_REGION_ENABLE;
   MPU_InitStruct.Number = MPU_REGION_NUMBER0;
-  MPU_InitStruct.BaseAddress = 0xC0000000;
-  MPU_InitStruct.Size = MPU_REGION_SIZE_4MB;
-  MPU_InitStruct.SubRegionDisable = 0x0;
+  MPU_InitStruct.BaseAddress = 0x24000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_512KB;
+  MPU_InitStruct.SubRegionDisable = 0x00;
   MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL1;
   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
-  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_DISABLE;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
   MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
   MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
   MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
-
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+  /* FMC control space: device/strongly-ordered style region */
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER1;
+  MPU_InitStruct.BaseAddress = 0x60000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_64KB;
+  MPU_InitStruct.SubRegionDisable = 0x00;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
+  /* Full SDRAM window: write-through so LTDC/DMA2D always see fresh pixels */
+  MPU_InitStruct.Enable = MPU_REGION_ENABLE;
+  MPU_InitStruct.Number = MPU_REGION_NUMBER2;
+  MPU_InitStruct.BaseAddress = 0xC0000000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_32MB;
+  MPU_InitStruct.SubRegionDisable = 0x00;
+  MPU_InitStruct.TypeExtField = MPU_TEX_LEVEL0;
+  MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
+  MPU_InitStruct.DisableExec = MPU_INSTRUCTION_ACCESS_ENABLE;
+  MPU_InitStruct.IsShareable = MPU_ACCESS_NOT_SHAREABLE;
+  MPU_InitStruct.IsCacheable = MPU_ACCESS_CACHEABLE;
+  MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
+  HAL_MPU_ConfigRegion(&MPU_InitStruct);
+
   /* Enables the MPU */
   HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 
@@ -251,3 +340,4 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+

@@ -1,0 +1,17 @@
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ..\User\ui\UI_WaveformCtrl.c
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ..\User\ui\UI_WaveformCtrl.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdint.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdbool.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stddef.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ../Core/Inc/FreeRTOSConfig.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/deprecated_definitions.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/portmacro.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/mpu_wrappers.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/task.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\string.h
+stm32h743_xc7a100_ps_configuration\ui_waveformctrl.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdio.h
