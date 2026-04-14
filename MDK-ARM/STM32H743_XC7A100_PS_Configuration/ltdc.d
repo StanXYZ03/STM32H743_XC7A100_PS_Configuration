@@ -43,3 +43,5 @@ stm32h743_xc7a100_ps_configuration\ltdc.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/s
 stm32h743_xc7a100_ps_configuration\ltdc.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd.h
 stm32h743_xc7a100_ps_configuration\ltdc.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_usb.h
 stm32h743_xc7a100_ps_configuration\ltdc.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd_ex.h
+stm32h743_xc7a100_ps_configuration\ltdc.o: ../User/bsp/inc/bsp_dwt.h
+stm32h743_xc7a100_ps_configuration\ltdc.o: ../User/bsp/inc/bsp_lcd_rgb.h

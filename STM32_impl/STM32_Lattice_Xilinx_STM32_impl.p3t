@@ -1,0 +1,5 @@
+-rem
+-distrce
+-log "STM32_Lattice_Xilinx_STM32_impl.log"
+-o "STM32_Lattice_Xilinx_STM32_impl.csv"
+-pr "STM32_Lattice_Xilinx_STM32_impl.prf"

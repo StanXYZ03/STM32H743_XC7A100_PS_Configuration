@@ -26,10 +26,6 @@
 #define LCDCONF_VSYNC_WAIT_MS  120U
 #endif
 
-
-
-
-
 typedef struct
 {
   int32_t      address;          
@@ -327,11 +323,11 @@ static void LCDConf_WaitVsyncReload(void)
     }
     vsync_pending = 1U;
     if (xSemaphoreTake(s_ltdc_vsync_sem, pdMS_TO_TICKS(LCDCONF_VSYNC_WAIT_MS)) != pdTRUE) {
-        /* 保守兜底：放弃本次切换并保持当前前台缓冲，避免在任意扫描位置强制 IMR 导致瞬时错位。 */
+        /* 与 LTDC_IRQHandler 中 vsync_pending 分支等效，避免 emWin 永久卡在 Take */
         taskENTER_CRITICAL();
         if (vsync_pending != 0U) {
-            __HAL_LTDC_LAYER(&hltdc, 0)->CFBAR =
-                (active_phys_buffer == 0U) ? VRAM_PHYSICAL_0_ADDR : VRAM_PHYSICAL_1_ADDR;
+            LTDC->SRCR = LTDC_SRCR_IMR;
+            active_phys_buffer = (active_phys_buffer == 0U) ? 1U : 0U;
             vsync_pending = 0U;
             g_lcdconf_vsync_timeout_cnt++;
         }
@@ -2973,7 +2969,6 @@ void LCDConf_LTDC_IRQHandler(void)
     /* 清除行中断标志（必须先清标志，防止 ISR 重入） */
     LTDC->ICR = LTDC_ICR_CLIF;
 	g_emwin_ltdc_irq_cnt++;
-    HAL_LTDC_ProgramLineEvent(&hltdc, 0);
 
     if (vsync_pending != 0U) {
         /* 立即重载 Shadow Register：CFBAR 新地址正式生效

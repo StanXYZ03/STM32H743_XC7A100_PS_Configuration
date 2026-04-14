@@ -21,6 +21,8 @@
 #include "ltdc.h"
 
 /* USER CODE BEGIN 0 */
+#include "bsp_dwt.h"
+#include "bsp_lcd_rgb.h"
 
 /* USER CODE END 0 */
 
@@ -38,6 +40,10 @@ void MX_LTDC_Init(void)
   LTDC_LayerCfgTypeDef pLayerCfg1 = {0};
 
   /* USER CODE BEGIN LTDC_Init 1 */
+  /* Keep panel register init in LTDC user block so CubeMX regeneration
+   * preserves the required bring-up order. */
+  bsp_InitDWT();
+  LCD_RGB_InitPanelOnly();
 
   /* USER CODE END LTDC_Init 1 */
   hltdc.Instance = LTDC;
@@ -125,7 +131,7 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef* ltdcHandle)
     PeriphClkInitStruct.PLL3.PLL3R = 18;
     PeriphClkInitStruct.PLL3.PLL3RGE = RCC_PLL3VCIRANGE_2;
     PeriphClkInitStruct.PLL3.PLL3VCOSEL = RCC_PLL3VCOWIDE;
-    PeriphClkInitStruct.PLL3.PLL3FRACN = 0.0;
+    PeriphClkInitStruct.PLL3.PLL3FRACN = 0;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {
       Error_Handler();

@@ -1,0 +1,14 @@
+BLOCK RESETPATHS;
+BLOCK ASYNCPATHS;
+
+LOCATE COMP "stm32_spi_cs_cmd"  SITE "PB30A";
+LOCATE COMP "stm32_spi_cs_data" SITE "PB4A";
+LOCATE COMP "stm32_spi_clk"  SITE "PB9A";
+LOCATE COMP "stm32_spi_mosi" SITE "PB9B";
+LOCATE COMP "stm32_spi_miso" SITE "PB30B";
+
+LOCATE COMP "xilinx_spi_cs_cmd"  SITE "PR19B";
+LOCATE COMP "xilinx_spi_cs_data" SITE "PB24D";
+LOCATE COMP "xilinx_spi_miso" SITE "PB27B";
+LOCATE COMP "xilinx_spi_mosi" SITE "PB29A";
+LOCATE COMP "xilinx_spi_clk"  SITE "PB29B";

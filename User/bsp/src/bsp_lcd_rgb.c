@@ -468,6 +468,14 @@ void LCD_RGB_Init(void)
         Error_Handler();
     }
 
+    /* CubeMX configures both LTDC layers by default.
+     * This UI only uses layer 1; keep layer 2 disabled so it cannot fetch from
+     * an unintended framebuffer and disturb scanout timing. */
+    __HAL_LTDC_LAYER_DISABLE(&hltdc, LTDC_LAYER_2);
+    LTDC_LAYER(&hltdc, LTDC_LAYER_2)->CFBAR = 0U;
+    LTDC_LAYER(&hltdc, LTDC_LAYER_2)->CFBLNR = 0U;
+    LTDC->SRCR = LTDC_SRCR_IMR;
+
     /* 启用 LTDC 全局中断 (关键！否则进不去 LineEventCallback 导致死机) */
     HAL_NVIC_SetPriority(LTDC_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(LTDC_IRQn);

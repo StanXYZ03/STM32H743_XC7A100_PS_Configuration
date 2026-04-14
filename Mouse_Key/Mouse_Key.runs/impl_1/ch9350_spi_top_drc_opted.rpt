@@ -1,0 +1,41 @@
+Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
+| Date         : Mon Apr 13 15:59:10 2026
+| Host         : adsf running 64-bit major release  (build 9200)
+| Command      : report_drc -file ch9350_spi_top_drc_opted.rpt -pb ch9350_spi_top_drc_opted.pb -rpx ch9350_spi_top_drc_opted.rpx
+| Design       : ch9350_spi_top
+| Device       : xc7a100tfgg484-2
+| Speed File   : -2
+| Design State : Synthesized
+---------------------------------------------------------------------------------------------------------------------------------
+
+Report DRC
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: netlist
+          Floorplan: design_1
+      Design limits: <entire design considered>
+           Ruledeck: default
+             Max violations: <unlimited>
+             Violations found: 1
++--------+----------+-----------------------+------------+
+| Rule   | Severity | Description           | Violations |
++--------+----------+-----------------------+------------+
+| IOSR-1 | Warning  | IOB set reset sharing | 1          |
++--------+----------+-----------------------+------------+
+
+2. REPORT DETAILS
+-----------------
+IOSR-1#1 Warning
+IOB set reset sharing  
+IO spi_sdi connects to flops which have these u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/rst_n_0, u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/rst_n set/reset signals.  For optimal IOB flop packing there should be only one set/reset signal coming into the IOB.
+Related violations: <none>
+
+

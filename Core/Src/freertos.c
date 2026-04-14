@@ -104,15 +104,18 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of FPGAConfigTask */
-  osThreadDef(FPGAConfigTask, FPGAConfigDefaultTask, osPriorityNormal, 0, 4096);
+  osThreadDef(FPGAConfigTask, FPGAConfigDefaultTask, osPriorityNormal, 0, 6144);
   FPGAConfigTaskHandle = osThreadCreate(osThread(FPGAConfigTask), NULL);
 
   /* definition and creation of ewWinTask */
-  osThreadDef(ewWinTask, ewWinDefaultTask, osPriorityAboveNormal, 0, 8192);
+  osThreadDef(ewWinTask, ewWinDefaultTask, osPriorityIdle, 0, 8192);
   ewWinTaskHandle = osThreadCreate(osThread(ewWinTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
+  if (ewWinTaskHandle != NULL)
+  {
+    osThreadSetPriority(ewWinTaskHandle, osPriorityAboveNormal);
+  }
   /* USER CODE END RTOS_THREADS */
 
 }

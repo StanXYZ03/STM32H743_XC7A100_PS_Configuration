@@ -1,0 +1,52 @@
+<top name = "STM32_Lattice_Xilinx"  library = "work"  arch = ""  entry = "Verilog">
+
+<clocks>
+</clocks>
+
+<!--
+    //=============================================================
+    //  Number of Clocks processed: 0
+    //
+    //  If a clock cannot be found in the top level pins section,
+    //  that means it is an internal clock.
+    //
+    //=============================================================
+-->
+
+<library name = "work">
+
+<unit name = "STM32_Lattice_Xilinx">
+
+    <!--
+        Top Level Pins: 10
+    -->
+
+    <pins>
+        <pitem  name = "stm32_spi_cs_cmd"  direction = "in"  />
+        <pitem  name = "stm32_spi_cs_data"  direction = "in"  />
+        <pitem  name = "stm32_spi_clk"  direction = "in"  />
+        <pitem  name = "stm32_spi_mosi"  direction = "in"  />
+        <pitem  name = "stm32_spi_miso"  direction = "out"  />
+        <pitem  name = "xilinx_spi_cs_cmd"  direction = "out"  />
+        <pitem  name = "xilinx_spi_cs_data"  direction = "out"  />
+        <pitem  name = "xilinx_spi_clk"  direction = "out"  />
+        <pitem  name = "xilinx_spi_mosi"  direction = "out"  />
+        <pitem  name = "xilinx_spi_miso"  direction = "in"  />
+    </pins>
+
+    <!--
+        Instances in netlist: 0
+    -->
+
+    <!--
+        Views in design "STM32_Lattice_Xilinx": 0
+    -->
+
+    <views>
+    </views>
+
+</unit>
+
+</library>
+
+</top>

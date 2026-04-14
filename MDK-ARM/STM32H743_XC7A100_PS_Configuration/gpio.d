@@ -55,8 +55,9 @@ stm32h743_xc7a100_ps_configuration\gpio.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
-stm32h743_xc7a100_ps_configuration\gpio.o: ../Core/Inc/FPGAConfigDefaultTask.h
-stm32h743_xc7a100_ps_configuration\gpio.o: ../USB_DEVICE/App/usb_device.h
+stm32h743_xc7a100_ps_configuration\gpio.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\inttypes.h
+stm32h743_xc7a100_ps_configuration\gpio.o: ../Core/Inc/sdram.h
+stm32h743_xc7a100_ps_configuration\gpio.o: ../Core/Inc/fmc.h
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Core/Inc/FreeRTOSConfig.h
@@ -71,12 +72,6 @@ stm32h743_xc7a100_ps_configuration\gpio.o: ../Middlewares/Third_Party/FreeRTOS/S
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-stm32h743_xc7a100_ps_configuration\gpio.o: ../USB_DEVICE/App/usbd_cdc_if.h
-stm32h743_xc7a100_ps_configuration\gpio.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\inttypes.h
-stm32h743_xc7a100_ps_configuration\gpio.o: ../Core/Inc/gpio.h
-stm32h743_xc7a100_ps_configuration\gpio.o: ../Core/Inc/sdram.h
-stm32h743_xc7a100_ps_configuration\gpio.o: ../Core/Inc/fmc.h
-stm32h743_xc7a100_ps_configuration\gpio.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Core/Inc/spi.h
 stm32h743_xc7a100_ps_configuration\gpio.o: ../Core/Inc/dma.h
 stm32h743_xc7a100_ps_configuration\gpio.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdbool.h

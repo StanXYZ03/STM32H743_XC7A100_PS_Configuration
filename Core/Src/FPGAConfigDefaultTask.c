@@ -8,6 +8,8 @@
 #include "cmsis_os.h"
 #include "sdram.h"
 
+#define LCD_STUTTER_ISOLATE_FPGA_TASK 0U
+
 uint8_t g_usb_recv_flag = 0;
 static uint8_t g_log_buf[128] = {0};
 static uint32_t g_log_len = 0;
@@ -246,6 +248,13 @@ void FPGAConfigDefaultTask(void const * argument)
         g_sdram_ready = 1U;
     }
     FPGA_UI_ResetSession();
+
+#if (LCD_STUTTER_ISOLATE_FPGA_TASK == 1U)
+    for (;;)
+    {
+        osDelay(1000);
+    }
+#endif
 
     /* Give the USB host time to see a clean detach/attach sequence when not under debugger. */
     osDelay(800);

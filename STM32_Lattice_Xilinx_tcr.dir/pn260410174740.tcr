@@ -1,0 +1,5 @@
+#Start recording tcl command: 4/10/2026 15:58:57
+#Project Location: D:/CubeMX/STM32H743_XC7A100_PS_Configuration; Project name: STM32_Lattice_Xilinx
+prj_project new -name "STM32_Lattice_Xilinx" -impl "STM32_impl" -dev LCMXO2-4000HC-5TG144C -synthesis "lse"
+prj_project save
+#Stop recording: 4/10/2026 17:47:40

@@ -103,6 +103,16 @@ static int UI_IsFpgaDynamicScreen(UI_ScreenId_t sid)
            (sid == UI_SCR_FPGA_JTAG_FLASH);
 }
 
+static void MainTask_FrameDelayUntilCompat(TickType_t *last_wake, TickType_t period_ticks)
+{
+#if (INCLUDE_vTaskDelayUntil == 1)
+    vTaskDelayUntil(last_wake, period_ticks);
+#else
+    vTaskDelay(period_ticks);
+    *last_wake = xTaskGetTickCount();
+#endif
+}
+
 static int16_t waveformData[CHANNEL_COUNT][WAVEFORM_BUFFER_SIZE];
 static int     s_max_x;
 
@@ -708,7 +718,7 @@ void MainTask(void)
                 }
                 MainTask_Scope_RenderFrame();
                 if (UI_Waveform_IsRunning()) {
-                    vTaskDelayUntil(&frame_wake_scope, pdMS_TO_TICKS(MAINTASK_FRAME_PERIOD_MS));
+                    MainTask_FrameDelayUntilCompat(&frame_wake_scope, pdMS_TO_TICKS(MAINTASK_FRAME_PERIOD_MS));
                 }
             } else {
                 int need_redraw = (prev_sid != sid) ? 1 : 0;
@@ -765,7 +775,7 @@ void MainTask(void)
             }
             MainTask_Scope_RenderFrame();
             if (UI_Waveform_IsRunning()) {
-                vTaskDelayUntil(&frame_wake, pdMS_TO_TICKS(MAINTASK_FRAME_PERIOD_MS));
+                MainTask_FrameDelayUntilCompat(&frame_wake, pdMS_TO_TICKS(MAINTASK_FRAME_PERIOD_MS));
             }
         }
     }

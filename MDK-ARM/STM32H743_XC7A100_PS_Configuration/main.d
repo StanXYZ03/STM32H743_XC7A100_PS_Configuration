@@ -75,11 +75,7 @@ stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/ST/STM32_USB_Device_Li
 stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_core.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ioreq.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_ctlreq.h
-stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/FPGAConfigDefaultTask.h
-stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
-stm32h743_xc7a100_ps_configuration\main.o: ../USB_DEVICE/App/usbd_cdc_if.h
 stm32h743_xc7a100_ps_configuration\main.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\inttypes.h
-stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/gpio.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/sdram.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/fmc.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

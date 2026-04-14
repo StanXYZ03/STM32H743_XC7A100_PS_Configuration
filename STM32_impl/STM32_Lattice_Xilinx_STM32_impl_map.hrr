@@ -1,0 +1,6 @@
+---------------------------------------------------
+Report for cell STM32_Lattice_Xilinx
+   Instance path: STM32_Lattice_Xilinx
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                 IOBUF	         10        100.0
