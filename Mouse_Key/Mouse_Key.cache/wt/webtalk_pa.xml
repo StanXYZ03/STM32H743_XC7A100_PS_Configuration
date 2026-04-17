@@ -3,7 +3,7 @@
 <!--The data in this file is primarily intended for consumption by Xilinx tools.
 The structure and the elements are likely to change over the next few releases.
 This means code written to parse this file will need to be revisited each subsequent release.-->
-<application name="pa" timeStamp="Thu Apr 16 17:19:51 2026">
+<application name="pa" timeStamp="Fri Apr 17 16:42:09 2026">
 <section name="Project Information" visible="false">
 <property name="ProjectID" value="22141a01470d440ba0ee3c9c2c64b02f" type="ProjectID"/>
 <property name="ProjectIteration" value="15" type="ProjectIteration"/>
@@ -138,9 +138,9 @@ This means code written to parse this file will need to be revisited each subseq
 <property name="WriteCfgMemFileDialog_SPECIFY_CONFIGURATION_FILENAME" value="1" type="GuiHandlerData"/>
 </item>
 <item name="Other">
-<property name="GuiMode" value="1" type="GuiMode"/>
+<property name="GuiMode" value="4" type="GuiMode"/>
 <property name="BatchMode" value="0" type="BatchMode"/>
-<property name="TclMode" value="0" type="TclMode"/>
+<property name="TclMode" value="1" type="TclMode"/>
 </item>
 </section>
 </application>
