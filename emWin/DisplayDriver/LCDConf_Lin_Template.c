@@ -849,6 +849,17 @@ static void LCDConf_CleanInvalidateLogicRegion(uint32_t base_addr, uint32_t size
     }
 }
 
+static void LCDConf_CleanInvalidateLogicRect(int x, int y, int w, int h)
+{
+    int row;
+
+    for (row = 0; row < h; row++) {
+        uint32_t row_base = VRAM_LOGICAL_ADDR +
+            (((uint32_t)(y + row) * 800U) + (uint32_t)x) * 2U;
+        LCDConf_CleanInvalidateLogicRegion(row_base, (uint32_t)w * 2U);
+    }
+}
+
 #if LCDCONF_PHYS_M2M_STRIPED
 /* 物理竖屏 480×800 RGB565：front→dst，拷贝矩形 (x,y,w,h) 像素 */
 static void LCDConf_DMA2D_MemCpyPhysRect(const uint16_t *front, uint16_t *dst,
@@ -924,12 +935,18 @@ static uint8_t s_header_static_done;
 static uint8_t s_header_rotate_requested;
 #endif
 static uint8_t s_force_full_screen_rotate;
+static uint8_t s_region_rotate_requested;
+static uint16_t s_region_rotate_x;
+static uint16_t s_region_rotate_y;
+static uint16_t s_region_rotate_w;
+static uint16_t s_region_rotate_h;
 #endif /* USE_PARTIAL_ROTATE */
 
 void LCDConf_RequestFullScreenRotate(void)
 {
 #if USE_PARTIAL_ROTATE
     s_force_full_screen_rotate = 1U;
+    s_region_rotate_requested = 0U;
 #endif
 }
 
@@ -937,6 +954,46 @@ void LCDConf_RequestHeaderRotate(void)
 {
 #if USE_PARTIAL_ROTATE && USE_ROTATE_HEADER_STATIC_SKIP
     s_header_rotate_requested = 1U;
+#endif
+}
+
+void LCDConf_RequestLogicalRegionRotate(int x, int y, int w, int h)
+{
+#if USE_PARTIAL_ROTATE
+    if ((w <= 0) || (h <= 0)) {
+        return;
+    }
+    if (x < 0) {
+        w += x;
+        x = 0;
+    }
+    if (y < 0) {
+        h += y;
+        y = 0;
+    }
+    if ((x >= 800) || (y >= 480)) {
+        return;
+    }
+    if ((x + w) > 800) {
+        w = 800 - x;
+    }
+    if ((y + h) > 480) {
+        h = 480 - y;
+    }
+    if ((w <= 0) || (h <= 0)) {
+        return;
+    }
+
+    s_region_rotate_x = (uint16_t)x;
+    s_region_rotate_y = (uint16_t)y;
+    s_region_rotate_w = (uint16_t)w;
+    s_region_rotate_h = (uint16_t)h;
+    s_region_rotate_requested = 1U;
+#else
+    (void)x;
+    (void)y;
+    (void)w;
+    (void)h;
 #endif
 }
 
@@ -1032,6 +1089,54 @@ void ManualRotateToPhysical(void)
 #endif
         s_rotate_frame_count++;
         LcdRotateProfile_6a_SubTick(5U);
+    } else if (s_region_rotate_requested != 0U) {
+        const uint16_t *front = (const uint16_t *)(active_phys_buffer == 0U ? VRAM_PHYSICAL_0_ADDR
+                                                                           : VRAM_PHYSICAL_1_ADDR);
+#if LCDCONF_PHYS_M2M_STRIPED
+        LCDConf_DMA2D_PhysFrontToDstStriped(front, dst);
+#else
+        DMA2D_Wait_TransferComplete(portMAX_DELAY);
+        DMA2D->CR      = 0x00000000UL | (1U << 9U);
+        DMA2D->FGMAR   = (uint32_t)front;
+        DMA2D->OMAR    = (uint32_t)dst;
+        DMA2D->FGOR    = 0U;
+        DMA2D->OOR     = 0U;
+        DMA2D->FGPFCCR = 0x02UL;
+        DMA2D->OPFCCR  = 0x02UL;
+        DMA2D->NLR     = (480U << 16U) | 800U;
+        DMA2D->CR     |= DMA2D_CR_START;
+        DMA2D_Wait_TransferComplete(portMAX_DELAY);
+#endif
+        LcdRotateProfile_6a_SubTick(0U);
+
+#if USE_ROTATE_HEADER_STATIC_SKIP
+        if (s_header_rotate_requested != 0U) {
+            uint32_t hdr_base  = VRAM_LOGICAL_ADDR + ((uint32_t)ROTATE_HEADER_Y * 800U + (uint32_t)ROTATE_HEADER_X) * 2U;
+            uint32_t hdr_sz    = (uint32_t)ROTATE_HEADER_W * (uint32_t)ROTATE_HEADER_H * 2U;
+            LCDConf_CleanInvalidateLogicRegion(hdr_base, hdr_sz);
+#if LCD_USE_CCW_ROTATION && LCD_HEADER_CCW_MIRROR_LOGICAL_X
+            Optimize_Rotate_90CCW_RGB565_Header_Custom(src, dst, ROTATE_HEADER_X, ROTATE_HEADER_Y,
+                ROTATE_HEADER_W, ROTATE_HEADER_H, 800);
+#else
+            ROTATE_REGION(src, dst, ROTATE_HEADER_X, ROTATE_HEADER_Y,
+                ROTATE_HEADER_W, ROTATE_HEADER_H, 800);
+#endif
+            s_header_static_done      = 1U;
+            s_header_rotate_requested = 0U;
+        }
+#endif
+
+        LCDConf_CleanInvalidateLogicRect((int)s_region_rotate_x, (int)s_region_rotate_y,
+            (int)s_region_rotate_w, (int)s_region_rotate_h);
+#if LCD_USE_CCW_ROTATION && LCD_HEADER_CCW_MIRROR_LOGICAL_X
+        Optimize_Rotate_90CCW_RGB565_Header_Custom(src, dst, (int)s_region_rotate_x, (int)s_region_rotate_y,
+            (int)s_region_rotate_w, (int)s_region_rotate_h, 800);
+#else
+        ROTATE_REGION(src, dst, (int)s_region_rotate_x, (int)s_region_rotate_y,
+            (int)s_region_rotate_w, (int)s_region_rotate_h, 800);
+#endif
+        s_region_rotate_requested = 0U;
+        LcdRotateProfile_6a_SubTick(4U);
     } else if (DMA2D_PlotBuf_IsReady()) {
         /* 方案一：PlotBuf 竖屏，仅旋转 header+边距，plot 用 DMA2D 拷贝 */
         const uint16_t *front = (const uint16_t *)(active_phys_buffer == 0U ? VRAM_PHYSICAL_0_ADDR

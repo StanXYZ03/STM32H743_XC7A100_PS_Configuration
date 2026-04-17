@@ -18,6 +18,7 @@ extern "C" {
 extern volatile uint32_t g_lcdconf_vsync_timeout_cnt;
 
 void LCDConf_RequestHeaderRotate(void);
+void LCDConf_RequestLogicalRegionRotate(int x, int y, int w, int h);
 
 /**
  * 下一帧 ManualRotateToPhysical 对整块逻辑缓冲做整屏旋转（与开机前 2 帧相同路径）。

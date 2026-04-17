@@ -1,0 +1,30 @@
+Vivado Simulator 2018.3
+Copyright 1986-1999, 2001-2018 Xilinx, Inc. All Rights Reserved.
+Running: D:/Vivado/Vivado/2018.3/bin/unwrapped/win64.o/xelab.exe -wto 1eb61064cf634730af8c910976f68461 --incr --debug typical --relax --mt 2 -L xil_defaultlib -L unisims_ver -L unimacro_ver -L secureip --snapshot tb_ch9350_spi_top_behav xil_defaultlib.tb_ch9350_spi_top xil_defaultlib.glbl -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Completed static elaboration
+Starting simulation data flow analysis
+WARNING: [XSIM 43-4099] "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/ch9350_spi_top.v" Line 1. Module ch9350_spi_top doesn't have a timescale but at least one module in design has a timescale.
+WARNING: [XSIM 43-4099] "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/uart_rx.v" Line 13. Module uart_rx_default doesn't have a timescale but at least one module in design has a timescale.
+WARNING: [XSIM 43-4099] "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/ch9350_parser.v" Line 1. Module ch9350_parser doesn't have a timescale but at least one module in design has a timescale.
+WARNING: [XSIM 43-4099] "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/SPI_Communication.v" Line 12. Module SPI_Communication doesn't have a timescale but at least one module in design has a timescale.
+WARNING: [XSIM 43-4099] "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi.v" Line 13. Module spi(DATA_WIDTH=32,CHANNEL_NUMBER=16) doesn't have a timescale but at least one module in design has a timescale.
+WARNING: [XSIM 43-4099] "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_cmd_data.v" Line 13. Module spi_cmd_data doesn't have a timescale but at least one module in design has a timescale.
+WARNING: [XSIM 43-4099] "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_core_log.v" Line 12. Module spi_core_log doesn't have a timescale but at least one module in design has a timescale.
+WARNING: [XSIM 43-4099] "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_core_log.v" Line 12. Module spi_core_log(DATA_WIDTH=32) doesn't have a timescale but at least one module in design has a timescale.
+WARNING: [XSIM 43-4099] "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_reg_buf.v" Line 16. Module spi_reg_buf doesn't have a timescale but at least one module in design has a timescale.
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module xil_defaultlib.uart_rx_default
+Compiling module xil_defaultlib.ch9350_parser
+Compiling module xil_defaultlib.spi_core_log
+Compiling module xil_defaultlib.spi_core_log(DATA_WIDTH=32)
+Compiling module xil_defaultlib.spi_reg_buf
+Compiling module xil_defaultlib.spi_cmd_data
+Compiling module xil_defaultlib.spi(DATA_WIDTH=32,CHANNEL_NUMBER...
+Compiling module xil_defaultlib.SPI_Communication
+Compiling module xil_defaultlib.ch9350_spi_top
+Compiling module xil_defaultlib.tb_ch9350_spi_top
+Compiling module xil_defaultlib.glbl
+Built simulation snapshot tb_ch9350_spi_top_behav

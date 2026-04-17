@@ -1,0 +1,1299 @@
+{
+    "ltx_root": {
+        "version": 4,
+        "minor": 0,
+        "ltx_data": [
+            {
+                "name": "EDA_PROBESET",
+                "active": true,
+                "debug_cores": [
+                    {
+                        "type": "XSDB_V3",
+                        "name": "dbg_hub",
+                        "spec": "labtools_xsdbm_v3",
+                        "clk_input_freq_hz": "100000000"
+                    },
+                    {
+                        "type": "ILA_V3",
+                        "name": "u_ila_0",
+                        "spec": "labtools_ila_v6",
+                        "core_location": {
+                            "user_chain": 1,
+                            "slave_index": 0,
+                            "bscan_switch_index": 0
+                        },
+                        "uuid": "23e7d65a79bc59f7bc47406c1714dfae",
+                        "pins": [
+                            {
+                                "name": "probe0",
+                                "id": 0,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 2,
+                                "portIndex": 0,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_reg",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_reg[2]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_reg[1]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_reg[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe1",
+                                "id": 1,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 2,
+                                "portIndex": 1,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/cs_cmd_sync",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cs_cmd_sync[2]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cs_cmd_sync[1]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cs_cmd_sync[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe2",
+                                "id": 2,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 3,
+                                "portIndex": 2,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/curr_ch_addr",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/curr_ch_addr[3]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/curr_ch_addr[2]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/curr_ch_addr[1]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/curr_ch_addr[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe3",
+                                "id": 3,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 7,
+                                "portIndex": 3,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr[7]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr[6]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr[5]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr[4]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr[3]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr[2]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr[1]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe4",
+                                "id": 4,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 31,
+                                "portIndex": 4,
+                                "nets": [
+                                    {
+                                        "name": "u_ila_0_rx_data[31]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[30]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[29]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[28]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[27]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[26]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[25]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[24]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[23]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[22]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[21]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[20]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[19]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[18]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[17]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[16]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[15]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[14]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[13]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[12]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[11]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[10]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[9]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[8]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[7]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[6]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[5]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[4]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[3]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[2]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[1]",
+                                        "isBus": false
+                                    },
+                                    {
+                                        "name": "u_ila_0_rx_data[0]",
+                                        "isBus": false
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe5",
+                                "id": 5,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 31,
+                                "portIndex": 5,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[31]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[30]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[29]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[28]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[27]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[26]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[25]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[24]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[23]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[22]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[21]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[20]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[19]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[18]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[17]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[16]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[15]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[14]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[13]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[12]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[11]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[10]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[9]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[8]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[7]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[6]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[5]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[4]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[3]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[2]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[1]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/u_spi/u_spi_cmd_data/tx_data[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe6",
+                                "id": 6,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 31,
+                                "portIndex": 6,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/write_reg_2",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[31]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[30]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[29]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[28]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[27]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[26]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[25]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[24]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[23]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[22]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[21]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[20]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[19]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[18]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[17]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[16]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[15]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[14]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[13]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[12]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[11]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[10]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[9]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[8]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[7]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[6]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[5]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[4]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[3]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[2]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[1]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_2[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe7",
+                                "id": 7,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 31,
+                                "portIndex": 7,
+                                "nets": [
+                                    {
+                                        "name": "reg_data1",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "reg_data1[31]"
+                                            },
+                                            {
+                                                "name": "reg_data1[30]"
+                                            },
+                                            {
+                                                "name": "reg_data1[29]"
+                                            },
+                                            {
+                                                "name": "reg_data1[28]"
+                                            },
+                                            {
+                                                "name": "reg_data1[27]"
+                                            },
+                                            {
+                                                "name": "reg_data1[26]"
+                                            },
+                                            {
+                                                "name": "reg_data1[25]"
+                                            },
+                                            {
+                                                "name": "reg_data1[24]"
+                                            },
+                                            {
+                                                "name": "reg_data1[23]"
+                                            },
+                                            {
+                                                "name": "reg_data1[22]"
+                                            },
+                                            {
+                                                "name": "reg_data1[21]"
+                                            },
+                                            {
+                                                "name": "reg_data1[20]"
+                                            },
+                                            {
+                                                "name": "reg_data1[19]"
+                                            },
+                                            {
+                                                "name": "reg_data1[18]"
+                                            },
+                                            {
+                                                "name": "reg_data1[17]"
+                                            },
+                                            {
+                                                "name": "reg_data1[16]"
+                                            },
+                                            {
+                                                "name": "reg_data1[15]"
+                                            },
+                                            {
+                                                "name": "reg_data1[14]"
+                                            },
+                                            {
+                                                "name": "reg_data1[13]"
+                                            },
+                                            {
+                                                "name": "reg_data1[12]"
+                                            },
+                                            {
+                                                "name": "reg_data1[11]"
+                                            },
+                                            {
+                                                "name": "reg_data1[10]"
+                                            },
+                                            {
+                                                "name": "reg_data1[9]"
+                                            },
+                                            {
+                                                "name": "reg_data1[8]"
+                                            },
+                                            {
+                                                "name": "reg_data1[7]"
+                                            },
+                                            {
+                                                "name": "reg_data1[6]"
+                                            },
+                                            {
+                                                "name": "reg_data1[5]"
+                                            },
+                                            {
+                                                "name": "reg_data1[4]"
+                                            },
+                                            {
+                                                "name": "reg_data1[3]"
+                                            },
+                                            {
+                                                "name": "reg_data1[2]"
+                                            },
+                                            {
+                                                "name": "reg_data1[1]"
+                                            },
+                                            {
+                                                "name": "reg_data1[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe8",
+                                "id": 8,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 31,
+                                "portIndex": 8,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/write_reg_0",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[31]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[30]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[29]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[28]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[27]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[26]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[25]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[24]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[23]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[22]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[21]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[20]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[19]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[18]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[17]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[16]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[15]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[14]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[13]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[12]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[11]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[10]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[9]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[8]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[7]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[6]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[5]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[4]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[3]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[2]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[1]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_0[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe9",
+                                "id": 9,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 31,
+                                "portIndex": 9,
+                                "nets": [
+                                    {
+                                        "name": "reg_data2",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "reg_data2[31]"
+                                            },
+                                            {
+                                                "name": "reg_data2[30]"
+                                            },
+                                            {
+                                                "name": "reg_data2[29]"
+                                            },
+                                            {
+                                                "name": "reg_data2[28]"
+                                            },
+                                            {
+                                                "name": "reg_data2[27]"
+                                            },
+                                            {
+                                                "name": "reg_data2[26]"
+                                            },
+                                            {
+                                                "name": "reg_data2[25]"
+                                            },
+                                            {
+                                                "name": "reg_data2[24]"
+                                            },
+                                            {
+                                                "name": "reg_data2[23]"
+                                            },
+                                            {
+                                                "name": "reg_data2[22]"
+                                            },
+                                            {
+                                                "name": "reg_data2[21]"
+                                            },
+                                            {
+                                                "name": "reg_data2[20]"
+                                            },
+                                            {
+                                                "name": "reg_data2[19]"
+                                            },
+                                            {
+                                                "name": "reg_data2[18]"
+                                            },
+                                            {
+                                                "name": "reg_data2[17]"
+                                            },
+                                            {
+                                                "name": "reg_data2[16]"
+                                            },
+                                            {
+                                                "name": "reg_data2[15]"
+                                            },
+                                            {
+                                                "name": "reg_data2[14]"
+                                            },
+                                            {
+                                                "name": "reg_data2[13]"
+                                            },
+                                            {
+                                                "name": "reg_data2[12]"
+                                            },
+                                            {
+                                                "name": "reg_data2[11]"
+                                            },
+                                            {
+                                                "name": "reg_data2[10]"
+                                            },
+                                            {
+                                                "name": "reg_data2[9]"
+                                            },
+                                            {
+                                                "name": "reg_data2[8]"
+                                            },
+                                            {
+                                                "name": "reg_data2[7]"
+                                            },
+                                            {
+                                                "name": "reg_data2[6]"
+                                            },
+                                            {
+                                                "name": "reg_data2[5]"
+                                            },
+                                            {
+                                                "name": "reg_data2[4]"
+                                            },
+                                            {
+                                                "name": "reg_data2[3]"
+                                            },
+                                            {
+                                                "name": "reg_data2[2]"
+                                            },
+                                            {
+                                                "name": "reg_data2[1]"
+                                            },
+                                            {
+                                                "name": "reg_data2[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe10",
+                                "id": 10,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 7,
+                                "portIndex": 10,
+                                "nets": [
+                                    {
+                                        "name": "uart_byte",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "uart_byte[7]"
+                                            },
+                                            {
+                                                "name": "uart_byte[6]"
+                                            },
+                                            {
+                                                "name": "uart_byte[5]"
+                                            },
+                                            {
+                                                "name": "uart_byte[4]"
+                                            },
+                                            {
+                                                "name": "uart_byte[3]"
+                                            },
+                                            {
+                                                "name": "uart_byte[2]"
+                                            },
+                                            {
+                                                "name": "uart_byte[1]"
+                                            },
+                                            {
+                                                "name": "uart_byte[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe11",
+                                "id": 11,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 31,
+                                "portIndex": 11,
+                                "nets": [
+                                    {
+                                        "name": "reg_data0",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "reg_data0[31]"
+                                            },
+                                            {
+                                                "name": "reg_data0[30]"
+                                            },
+                                            {
+                                                "name": "reg_data0[29]"
+                                            },
+                                            {
+                                                "name": "reg_data0[28]"
+                                            },
+                                            {
+                                                "name": "reg_data0[27]"
+                                            },
+                                            {
+                                                "name": "reg_data0[26]"
+                                            },
+                                            {
+                                                "name": "reg_data0[25]"
+                                            },
+                                            {
+                                                "name": "reg_data0[24]"
+                                            },
+                                            {
+                                                "name": "reg_data0[23]"
+                                            },
+                                            {
+                                                "name": "reg_data0[22]"
+                                            },
+                                            {
+                                                "name": "reg_data0[21]"
+                                            },
+                                            {
+                                                "name": "reg_data0[20]"
+                                            },
+                                            {
+                                                "name": "reg_data0[19]"
+                                            },
+                                            {
+                                                "name": "reg_data0[18]"
+                                            },
+                                            {
+                                                "name": "reg_data0[17]"
+                                            },
+                                            {
+                                                "name": "reg_data0[16]"
+                                            },
+                                            {
+                                                "name": "reg_data0[15]"
+                                            },
+                                            {
+                                                "name": "reg_data0[14]"
+                                            },
+                                            {
+                                                "name": "reg_data0[13]"
+                                            },
+                                            {
+                                                "name": "reg_data0[12]"
+                                            },
+                                            {
+                                                "name": "reg_data0[11]"
+                                            },
+                                            {
+                                                "name": "reg_data0[10]"
+                                            },
+                                            {
+                                                "name": "reg_data0[9]"
+                                            },
+                                            {
+                                                "name": "reg_data0[8]"
+                                            },
+                                            {
+                                                "name": "reg_data0[7]"
+                                            },
+                                            {
+                                                "name": "reg_data0[6]"
+                                            },
+                                            {
+                                                "name": "reg_data0[5]"
+                                            },
+                                            {
+                                                "name": "reg_data0[4]"
+                                            },
+                                            {
+                                                "name": "reg_data0[3]"
+                                            },
+                                            {
+                                                "name": "reg_data0[2]"
+                                            },
+                                            {
+                                                "name": "reg_data0[1]"
+                                            },
+                                            {
+                                                "name": "reg_data0[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe12",
+                                "id": 12,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": true,
+                                "leftIndex": 0,
+                                "rightIndex": 31,
+                                "portIndex": 12,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/write_reg_1",
+                                        "isBus": true,
+                                        "subnets": [
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[31]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[30]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[29]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[28]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[27]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[26]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[25]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[24]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[23]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[22]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[21]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[20]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[19]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[18]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[17]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[16]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[15]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[14]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[13]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[12]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[11]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[10]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[9]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[8]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[7]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[6]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[5]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[4]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[3]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[2]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[1]"
+                                            },
+                                            {
+                                                "name": "u_spi_comm/write_reg_1[0]"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe13",
+                                "id": 13,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": false,
+                                "leftIndex": 0,
+                                "rightIndex": 0,
+                                "portIndex": 13,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/ch9350_frame_valid_d1",
+                                        "isBus": false
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe14",
+                                "id": 14,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": false,
+                                "leftIndex": 0,
+                                "rightIndex": 0,
+                                "portIndex": 14,
+                                "nets": [
+                                    {
+                                        "name": "kb_mouse_valid",
+                                        "isBus": false
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe15",
+                                "id": 15,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": false,
+                                "leftIndex": 0,
+                                "rightIndex": 0,
+                                "portIndex": 15,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/reg1_sent",
+                                        "isBus": false
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe16",
+                                "id": 16,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": false,
+                                "leftIndex": 0,
+                                "rightIndex": 0,
+                                "portIndex": 16,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/Shift_Reg_Din[31]_i_1_n_0",
+                                        "isBus": false
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe17",
+                                "id": 17,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": false,
+                                "leftIndex": 0,
+                                "rightIndex": 0,
+                                "portIndex": 17,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/Shift_Reg_DOUT[31]_i_1_n_0",
+                                        "isBus": false
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe18",
+                                "id": 18,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": false,
+                                "leftIndex": 0,
+                                "rightIndex": 0,
+                                "portIndex": 18,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_neg_flag",
+                                        "isBus": false
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe19",
+                                "id": 19,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": false,
+                                "leftIndex": 0,
+                                "rightIndex": 0,
+                                "portIndex": 19,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_pos_flag",
+                                        "isBus": false
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe20",
+                                "id": 20,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": false,
+                                "leftIndex": 0,
+                                "rightIndex": 0,
+                                "portIndex": 20,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_scl_neg_flag",
+                                        "isBus": false
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe21",
+                                "id": 21,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": false,
+                                "leftIndex": 0,
+                                "rightIndex": 0,
+                                "portIndex": 21,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_scl_pos_flag",
+                                        "isBus": false
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "probe22",
+                                "id": 22,
+                                "type": "DATA_TRIGGER",
+                                "direction": "IN",
+                                "isVector": false,
+                                "leftIndex": 0,
+                                "rightIndex": 0,
+                                "portIndex": 22,
+                                "nets": [
+                                    {
+                                        "name": "u_spi_comm/wheel_cleared",
+                                        "isBus": false
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

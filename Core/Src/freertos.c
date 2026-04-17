@@ -49,6 +49,7 @@
 /* USER CODE END Variables */
 osThreadId FPGAConfigTaskHandle;
 osThreadId ewWinTaskHandle;
+osThreadId mousekeyTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -56,6 +57,7 @@ osThreadId ewWinTaskHandle;
 
 void FPGAConfigDefaultTask(void const * argument);
 void ewWinDefaultTask(void const * argument);
+void mousekeyDefaultTask(void const * argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -111,6 +113,10 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(ewWinTask, ewWinDefaultTask, osPriorityIdle, 0, 8192);
   ewWinTaskHandle = osThreadCreate(osThread(ewWinTask), NULL);
 
+  /* definition and creation of mousekeyTask */
+  osThreadDef(mousekeyTask, mousekeyDefaultTask, osPriorityIdle, 0, 1024);
+  mousekeyTaskHandle = osThreadCreate(osThread(mousekeyTask), NULL);
+
   /* USER CODE BEGIN RTOS_THREADS */
   if (ewWinTaskHandle != NULL)
   {
@@ -155,6 +161,24 @@ __weak void ewWinDefaultTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END ewWinDefaultTask */
+}
+
+/* USER CODE BEGIN Header_mousekeyDefaultTask */
+/**
+* @brief Function implementing the mousekeyTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_mousekeyDefaultTask */
+__weak void mousekeyDefaultTask(void const * argument)
+{
+  /* USER CODE BEGIN mousekeyDefaultTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END mousekeyDefaultTask */
 }
 
 /* Private application code --------------------------------------------------*/

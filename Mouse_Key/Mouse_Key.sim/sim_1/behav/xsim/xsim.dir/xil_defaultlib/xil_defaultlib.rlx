@@ -1,0 +1,14 @@
+0.6
+2018.3
+Dec  7 2018
+00:33:28
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/Mouse_Key.sim/sim_1/behav/xsim/glbl.v,1544155481,verilog,,,,glbl,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/SPI_Communication.v,1773208283,verilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/ch9350_parser.v,,SPI_Communication,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/ch9350_parser.v,1776138274,verilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/ch9350_spi_top.v,,ch9350_parser,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/ch9350_spi_top.v,1776138274,verilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi.v,,ch9350_spi_top,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi.v,1773194592,verilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_cmd_data.v,,spi,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_cmd_data.v,1773194658,verilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_core_log.v,,spi_cmd_data,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_core_log.v,1772697835,verilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_reg_buf.v,,spi_core_log,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_reg_buf.v,1772509666,verilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/uart_rx.v,,spi_reg_buf,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/tb_ch9350_spi_top.v,1773208393,verilog,,,,tb_ch9350_spi_top,,,,,,,,
+D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/uart_rx.v,1773026537,verilog,,D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/tb_ch9350_spi_top.v,,uart_rx,,,,,,,,

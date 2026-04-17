@@ -1,16 +1,18 @@
 NOTE Copyright (C), 1992-2010, Lattice Semiconductor Corporation *
 NOTE All Rights Reserved *
-NOTE DATE CREATED: Mon Apr 13 11:57:33 2026 *
+NOTE DATE CREATED: Fri Apr 17 14:42:56 2026 *
 NOTE DESIGN NAME: STM32_Lattice_Xilinx *
 NOTE DEVICE NAME: LCMXO2-4000HC-5TQFP144 *
 NOTE PIN ASSIGNMENTS *
 NOTE PINS stm32_spi_miso : 71 : out *
-NOTE PINS xilinx_spi_cs_n : 63 : out *
-NOTE PINS xilinx_spi_clk : 69 : out *
-NOTE PINS xilinx_spi_mosi : 68 : out *
-NOTE PINS stm32_spi_cs_n : 40 : in *
+NOTE PINS xilinx_spi_cs_cmd : 87 : out *
+NOTE PINS xilinx_spi_cs_data : 96 : out *
+NOTE PINS xilinx_spi_clk : 95 : out *
+NOTE PINS xilinx_spi_mosi : 94 : out *
+NOTE PINS stm32_spi_cs_cmd : 70 : in *
+NOTE PINS stm32_spi_cs_data : 40 : in *
 NOTE PINS stm32_spi_clk : 44 : in *
 NOTE PINS stm32_spi_mosi : 45 : in *
-NOTE PINS xilinx_spi_miso : 67 : in *
+NOTE PINS xilinx_spi_miso : 93 : in *
 NOTE CONFIGURATION MODE: NONE *
 NOTE COMPRESSION: on *

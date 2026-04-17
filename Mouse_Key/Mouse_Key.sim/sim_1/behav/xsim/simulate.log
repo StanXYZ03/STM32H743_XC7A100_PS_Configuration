@@ -1,0 +1,238 @@
+Vivado Simulator 2018.3
+Time resolution is 1 ps
+
+=============================================
+Reset released at 200000 ns
+=============================================
+
+
+=============================================
+Start sending mouse frame at 1200000 ns
+Mouse Frame: Btn=0x00, X=0x00, Y=0x00, Wheel=0xff
+=============================================
+
+Sending UART byte: 0x57 at 1200000 ns
+UART byte 0x57 sent completely at 88006000 ns
+Sending UART byte: 0xab at 88006000 ns
+UART byte 0xab sent completely at 174811000 ns
+Sending UART byte: 0x02 at 174811000 ns
+UART byte 0x02 sent completely at 261617000 ns
+Sending UART byte: 0x00 at 261617000 ns
+UART byte 0x00 sent completely at 348422000 ns
+Sending UART byte: 0x00 at 348422000 ns
+UART byte 0x00 sent completely at 435228000 ns
+Sending UART byte: 0x00 at 435228000 ns
+UART byte 0x00 sent completely at 522033000 ns
+Sending UART byte: 0xff at 522033000 ns
+UART byte 0xff sent completely at 608839000 ns
+
+=============================================
+Mouse frame sent completely at 608839000 ns
+=============================================
+
+
+[DEBUG] Parser state=5 kb_mouse_valid=1 data[15:0]=0x0101
+
+[CHECK] SPI register values after parsing(Key):
+  reg_data0 = 0x00000101
+  reg_data1 = 0x000000ff
+  reg_data2 = 0x00000000
+
+[TEST] Simulate STM32 reading SPI data...
+  Read reg0: 0x00000101
+  Read reg1: 0x000000ff
+  Read reg2: 0x00000000
+
+[TEST] Simulate STM32 reading SPI data...
+  Read reg0: 0x00000101
+  Read reg1: 0x00000000
+  Read reg2: 0x00000000
+
+=============================================
+Start sending keyboard frame at 690739000 ns
+Keyboard Frame:
+  Modifier: 0x04, Reserved: 0x00
+  Keycodes: 0x00 0x03 0x00 0x00 0x00 0x00
+=============================================
+
+Sending UART byte: 0x57 at 690739000 ns
+UART byte 0x57 sent completely at 777544000 ns
+Sending UART byte: 0xab at 777544000 ns
+UART byte 0xab sent completely at 864350000 ns
+Sending UART byte: 0x01 at 864350000 ns
+UART byte 0x01 sent completely at 951156000 ns
+Sending UART byte: 0x04 at 951156000 ns
+UART byte 0x04 sent completely at 1037961000 ns
+Sending UART byte: 0x00 at 1037961000 ns
+UART byte 0x00 sent completely at 1124767000 ns
+Sending UART byte: 0x00 at 1124767000 ns
+UART byte 0x00 sent completely at 1211572000 ns
+Sending UART byte: 0x03 at 1211572000 ns
+UART byte 0x03 sent completely at 1298378000 ns
+Sending UART byte: 0x00 at 1298378000 ns
+UART byte 0x00 sent completely at 1385183000 ns
+Sending UART byte: 0x00 at 1385183000 ns
+UART byte 0x00 sent completely at 1471989000 ns
+Sending UART byte: 0x00 at 1471989000 ns
+UART byte 0x00 sent completely at 1558795000 ns
+Sending UART byte: 0x00 at 1558795000 ns
+UART byte 0x00 sent completely at 1645600000 ns
+
+=============================================
+Keyboard frame sent completely at 1645600000 ns
+=============================================
+
+
+[DEBUG] Parser state=5 kb_mouse_valid=1 data[15:0]=0x0001
+
+[CHECK] SPI register values after parsing(Key):
+  reg_data0 = 0x00000001
+  reg_data1 = 0x04000003
+  reg_data2 = 0x00000000
+
+[TEST] Simulate STM32 reading SPI data...
+  Read reg0: 0x00000001
+  Read reg1: 0x04000003
+  Read reg2: 0x00000000
+
+=============================================
+Start sending keyboard frame at 1686700000 ns
+Keyboard Frame:
+  Modifier: 0x00, Reserved: 0x00
+  Keycodes: 0x00 0x00 0x00 0x00 0x77 0x00
+=============================================
+
+Sending UART byte: 0x57 at 1686700000 ns
+UART byte 0x57 sent completely at 1773506000 ns
+Sending UART byte: 0xab at 1773506000 ns
+UART byte 0xab sent completely at 1860311000 ns
+Sending UART byte: 0x01 at 1860311000 ns
+UART byte 0x01 sent completely at 1947117000 ns
+Sending UART byte: 0x00 at 1947117000 ns
+UART byte 0x00 sent completely at 2033922000 ns
+Sending UART byte: 0x00 at 2033922000 ns
+UART byte 0x00 sent completely at 2120728000 ns
+Sending UART byte: 0x00 at 2120728000 ns
+UART byte 0x00 sent completely at 2207533000 ns
+Sending UART byte: 0x00 at 2207533000 ns
+UART byte 0x00 sent completely at 2294339000 ns
+Sending UART byte: 0x00 at 2294339000 ns
+UART byte 0x00 sent completely at 2381145000 ns
+Sending UART byte: 0x00 at 2381145000 ns
+UART byte 0x00 sent completely at 2467950000 ns
+Sending UART byte: 0x77 at 2467950000 ns
+UART byte 0x77 sent completely at 2554756000 ns
+Sending UART byte: 0x00 at 2554756000 ns
+UART byte 0x00 sent completely at 2641561000 ns
+
+=============================================
+Keyboard frame sent completely at 2641561000 ns
+=============================================
+
+
+[DEBUG] Parser state=5 kb_mouse_valid=1 data[15:0]=0x0001
+
+[CHECK] SPI register values after parsing(Key):
+  reg_data0 = 0x00000001
+  reg_data1 = 0x00000000
+  reg_data2 = 0x00007700
+
+[TEST] Simulate STM32 reading SPI data...
+  Read reg0: 0x00000001
+  Read reg1: 0x00000000
+  Read reg2: 0x00007700
+
+=============================================
+Start sending keyboard frame at 2682661000 ns
+Keyboard Frame:
+  Modifier: 0x11, Reserved: 0x00
+  Keycodes: 0x22 0x00 0x00 0x00 0x00 0x00
+=============================================
+
+Sending UART byte: 0x57 at 2682661000 ns
+UART byte 0x57 sent completely at 2769467000 ns
+Sending UART byte: 0xab at 2769467000 ns
+UART byte 0xab sent completely at 2856272000 ns
+Sending UART byte: 0x01 at 2856272000 ns
+UART byte 0x01 sent completely at 2943078000 ns
+Sending UART byte: 0x11 at 2943078000 ns
+UART byte 0x11 sent completely at 3029883000 ns
+Sending UART byte: 0x00 at 3029883000 ns
+UART byte 0x00 sent completely at 3116689000 ns
+Sending UART byte: 0x22 at 3116689000 ns
+UART byte 0x22 sent completely at 3203495000 ns
+Sending UART byte: 0x00 at 3203495000 ns
+UART byte 0x00 sent completely at 3290300000 ns
+Sending UART byte: 0x00 at 3290300000 ns
+UART byte 0x00 sent completely at 3377106000 ns
+Sending UART byte: 0x00 at 3377106000 ns
+UART byte 0x00 sent completely at 3463911000 ns
+Sending UART byte: 0x00 at 3463911000 ns
+UART byte 0x00 sent completely at 3550717000 ns
+Sending UART byte: 0x00 at 3550717000 ns
+UART byte 0x00 sent completely at 3637522000 ns
+
+=============================================
+Keyboard frame sent completely at 3637522000 ns
+=============================================
+
+
+[DEBUG] Parser state=5 kb_mouse_valid=1 data[15:0]=0x0001
+
+[CHECK] SPI register values after parsing(Key):
+  reg_data0 = 0x00000001
+  reg_data1 = 0x11002200
+  reg_data2 = 0x00000000
+
+[TEST] Simulate STM32 reading SPI data...
+  Read reg0: 0x00000001
+  Read reg1: 0x11002200
+  Read reg2: 0x00000000
+
+=============================================
+Start sending keyboard frame at 3678622000 ns
+Keyboard Frame:
+  Modifier: 0x00, Reserved: 0x00
+  Keycodes: 0x00 0x33 0x00 0x00 0x00 0x00
+=============================================
+
+Sending UART byte: 0x57 at 3678622000 ns
+UART byte 0x57 sent completely at 3765428000 ns
+Sending UART byte: 0xab at 3765428000 ns
+UART byte 0xab sent completely at 3852234000 ns
+Sending UART byte: 0x01 at 3852234000 ns
+UART byte 0x01 sent completely at 3939039000 ns
+Sending UART byte: 0x00 at 3939039000 ns
+UART byte 0x00 sent completely at 4025845000 ns
+Sending UART byte: 0x00 at 4025845000 ns
+UART byte 0x00 sent completely at 4112650000 ns
+Sending UART byte: 0x00 at 4112650000 ns
+UART byte 0x00 sent completely at 4199456000 ns
+Sending UART byte: 0x33 at 4199456000 ns
+UART byte 0x33 sent completely at 4286261000 ns
+Sending UART byte: 0x00 at 4286261000 ns
+UART byte 0x00 sent completely at 4373067000 ns
+Sending UART byte: 0x00 at 4373067000 ns
+UART byte 0x00 sent completely at 4459872000 ns
+Sending UART byte: 0x00 at 4459872000 ns
+UART byte 0x00 sent completely at 4546678000 ns
+Sending UART byte: 0x00 at 4546678000 ns
+UART byte 0x00 sent completely at 4633484000 ns
+
+=============================================
+Keyboard frame sent completely at 4633484000 ns
+=============================================
+
+
+[DEBUG] Parser state=5 kb_mouse_valid=1 data[15:0]=0x0001
+
+[CHECK] SPI register values after parsing(Key):
+  reg_data0 = 0x00000001
+  reg_data1 = 0x00000033
+  reg_data2 = 0x00000000
+
+[TEST] Simulate STM32 reading SPI data...
+  Read reg0: 0x00000001
+  Read reg1: 0x00000033
+  Read reg2: 0x00000000
+$finish called at time : 4684583560 ps : File "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/tb_ch9350_spi_top.v" Line 434

@@ -17,6 +17,7 @@ proc create_report { reportName command } {
     send_msg_id runtcl-5 warning "$msg"
   }
 }
+set_param tcl.collectionResultDisplayLimit 0
 set_param xicom.use_bs_reader 1
 create_project -in_memory -part xc7a100tfgg484-2
 
@@ -30,14 +31,14 @@ set_property target_language Verilog [current_project]
 set_property ip_output_repo d:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/Mouse_Key.cache/ip [current_project]
 set_property ip_cache_permissions {read write} [current_project]
 read_verilog -library xil_defaultlib {
-  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/FPGA-SPI/RTL/SPI_Communication.v
-  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/FPGA-SPI/RTL/ch9350_parser.v
-  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/FPGA-SPI/RTL/spi.v
-  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/FPGA-SPI/RTL/spi_cmd_data.v
-  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/FPGA-SPI/RTL/spi_core_log.v
-  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/FPGA-SPI/RTL/spi_reg_buf.v
-  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/FPGA-SPI/RTL/uart_rx.v
-  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/FPGA-SPI/RTL/ch9350_spi_top.v
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/SPI_Communication.v
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/ch9350_parser.v
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi.v
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_cmd_data.v
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_core_log.v
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_reg_buf.v
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/uart_rx.v
+  D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/ch9350_spi_top.v
 }
 # Mark all dcp files as not used in implementation to prevent them from being
 # stitched into the results of this synthesis run. Any black boxes in the

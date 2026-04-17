@@ -4,11 +4,12 @@ Copyright (c) 1995 AT&T Corp.   All rights reserved.
 Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
 Copyright (c) 2001 Agere Systems   All rights reserved.
 Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
-Mon Apr 13 15:28:40 2026
+Fri Apr 17 14:42:47 2026
 
 E:/Digital-EDA/Lattice Diamond/ispfpga\bin\nt64\par -f
 STM32_Lattice_Xilinx_STM32_impl.p2t STM32_Lattice_Xilinx_STM32_impl_map.ncd
-STM32_Lattice_Xilinx_STM32_impl.dir STM32_Lattice_Xilinx_STM32_impl.prf
+STM32_Lattice_Xilinx_STM32_impl.dir STM32_Lattice_Xilinx_STM32_impl.prf -gui
+-msgset D:/CubeMX/STM32H743_XC7A100_PS_Configuration/promote.xml
 
 
 Preference file: STM32_Lattice_Xilinx_STM32_impl.prf.
@@ -27,10 +28,10 @@ par done!
 Note: user must run 'Trace' for timing closure signoff.
 
 Lattice Place and Route Report for Design "STM32_Lattice_Xilinx_STM32_impl_map.ncd"
-Mon Apr 13 15:28:40 2026
+Fri Apr 17 14:42:47 2026
 
 PAR: Place And Route Diamond (64-bit) 3.14.0.75.2.
-Command Line: par -w -l 5 -i 6 -t 1 -c 0 -e 0 -exp parUseNBR=1:parCDP=0:parCDR=0:parPathBased=OFF:parASE=1 STM32_Lattice_Xilinx_STM32_impl_map.ncd STM32_Lattice_Xilinx_STM32_impl.dir/5_1.ncd STM32_Lattice_Xilinx_STM32_impl.prf
+Command Line: par -w -l 5 -i 6 -t 1 -c 0 -e 0 -gui -msgset D:/CubeMX/STM32H743_XC7A100_PS_Configuration/promote.xml -exp parUseNBR=1:parCDP=0:parCDR=0:parPathBased=OFF:parASE=1 STM32_Lattice_Xilinx_STM32_impl_map.ncd STM32_Lattice_Xilinx_STM32_impl.dir/5_1.ncd STM32_Lattice_Xilinx_STM32_impl.prf
 Preference file: STM32_Lattice_Xilinx_STM32_impl.prf.
 Placement level-cost: 5-1.
 Routing Iterations: 6
@@ -76,12 +77,12 @@ Finished Placer Phase 0.  REAL time: 0 secs
 
 Starting Placer Phase 1.
 
-Placer score = 3216.
+Placer score = 6672.
 Finished Placer Phase 1.  REAL time: 0 secs 
 
 Starting Placer Phase 2.
 .
-Placer score =  3216
+Placer score =  6672
 Finished Placer Phase 2.  REAL time: 0 secs 
 
 
@@ -115,8 +116,8 @@ I/O Bank Usage Summary:
 | I/O Bank | Usage         | Bank Vccio | Bank Vref |
 +----------+---------------+------------+-----------+
 | 0        | 0 / 28 (  0%) | -          | -         |
-| 1        | 1 / 29 (  3%) | 2.5V       | -         |
-| 2        | 9 / 29 ( 31%) | 2.5V       | -         |
+| 1        | 5 / 29 ( 17%) | 2.5V       | -         |
+| 2        | 5 / 29 ( 17%) | 2.5V       | -         |
 | 3        | 0 / 9 (  0%)  | -          | -         |
 | 4        | 0 / 10 (  0%) | -          | -         |
 | 5        | 0 / 10 (  0%) | -          | -         |
@@ -136,7 +137,7 @@ Starting router resource preassignment
 
 Completed router resource preassignment. Real time: 0 secs 
 
-Start NBR router at 15:28:41 04/13/26
+Start NBR router at 14:42:48 04/17/26
 
 *****************************************************************
 Info: NBR allows conflicts(one node used by more than one signal)
@@ -151,24 +152,24 @@ Note: NBR uses a different method to calculate timing slacks. The
       your design.                                               
 *****************************************************************
 
-Start NBR special constraint process at 15:28:41 04/13/26
+Start NBR special constraint process at 14:42:48 04/17/26
 
-Start NBR section for initial routing at 15:28:41 04/13/26
+Start NBR section for initial routing at 14:42:48 04/17/26
 Level 4, iteration 1
 0(0.00%) conflict; 0(0.00%) untouched conn; 0 (nbr) score; real time: 0 secs 
 
 Info: Initial congestion level at 75% usage is 0
 Info: Initial congestion area  at 75% usage is 0 (0.00%)
 
-Start NBR section for normal routing at 15:28:41 04/13/26
+Start NBR section for normal routing at 14:42:48 04/17/26
 Level 4, iteration 1
 0(0.00%) conflict; 0(0.00%) untouched conn; 0 (nbr) score; real time: 0 secs 
 
-Start NBR section for re-routing at 15:28:41 04/13/26
+Start NBR section for re-routing at 14:42:48 04/17/26
 Level 4, iteration 1
 0(0.00%) conflict; 0(0.00%) untouched conn; 0 (nbr) score; real time: 0 secs 
 
-Start NBR section for post-routing at 15:28:41 04/13/26
+Start NBR section for post-routing at 14:42:48 04/17/26
 
 End NBR router with 0 unrouted connection
 

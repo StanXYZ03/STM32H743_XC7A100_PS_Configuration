@@ -32,7 +32,12 @@
         <Message>
             <ID>35002005</ID>
             <Severity>Warning</Severity>
-            <Dynamic>stm32_spi_cs_n</Dynamic>
+            <Dynamic>stm32_spi_cs_cmd</Dynamic>
+        </Message>
+        <Message>
+            <ID>35002005</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>stm32_spi_cs_data</Dynamic>
         </Message>
         <Message>
             <ID>35002005</ID>
@@ -52,7 +57,12 @@
         <Message>
             <ID>35002005</ID>
             <Severity>Warning</Severity>
-            <Dynamic>xilinx_spi_cs_n</Dynamic>
+            <Dynamic>xilinx_spi_cs_cmd</Dynamic>
+        </Message>
+        <Message>
+            <ID>35002005</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>xilinx_spi_cs_data</Dynamic>
         </Message>
         <Message>
             <ID>35002005</ID>
@@ -72,7 +82,12 @@
         <Message>
             <ID>35002005</ID>
             <Severity>Warning</Severity>
-            <Dynamic>stm32_spi_cs_n</Dynamic>
+            <Dynamic>stm32_spi_cs_cmd</Dynamic>
+        </Message>
+        <Message>
+            <ID>35002005</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>stm32_spi_cs_data</Dynamic>
         </Message>
         <Message>
             <ID>35002005</ID>
@@ -92,7 +107,12 @@
         <Message>
             <ID>35002005</ID>
             <Severity>Warning</Severity>
-            <Dynamic>xilinx_spi_cs_n</Dynamic>
+            <Dynamic>xilinx_spi_cs_cmd</Dynamic>
+        </Message>
+        <Message>
+            <ID>35002005</ID>
+            <Severity>Warning</Severity>
+            <Dynamic>xilinx_spi_cs_data</Dynamic>
         </Message>
         <Message>
             <ID>35002005</ID>

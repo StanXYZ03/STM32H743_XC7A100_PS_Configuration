@@ -1,0 +1,20 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/SPI_Communication.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module SPI_Communication
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/ch9350_parser.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module ch9350_parser
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/ch9350_spi_top.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module ch9350_spi_top
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module spi
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_cmd_data.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module spi_cmd_data
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_core_log.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module spi_core_log
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/spi_reg_buf.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module spi_reg_buf
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/uart_rx.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module uart_rx
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/rtl/tb_ch9350_spi_top.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module tb_ch9350_spi_top
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/Mouse_Key.sim/sim_1/behav/xsim/glbl.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module glbl

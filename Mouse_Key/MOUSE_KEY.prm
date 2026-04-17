@@ -1,0 +1,11 @@
+===================================
+Configuration Memory information
+===================================
+File Format        BIN
+Interface          SPIX1
+Size               16M
+Start Address      0x00000000
+End Address        0x00FFFFFF
+
+Addr1         Addr2         Date                    File(s)
+0x00000000    0x003A607B    Apr 16 15:44:26 2026    D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/Mouse_Key.runs/impl_1/ch9350_spi_top.bit

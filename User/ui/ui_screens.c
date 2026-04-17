@@ -4,6 +4,7 @@
 #include "ui_nav.h"
 #include "ui_app_config.h"
 #include "FPGAConfigDefaultTask.h"
+#include "mousekeyDefaultTask.h"
 #include <stdio.h>
 
 static void ui_text_prepare(void)
@@ -127,6 +128,101 @@ static const char *ui_wait_dots(uint32_t tick_ms)
 {
     static const char *const dots[] = {"", ".", "..", "..."};
     return dots[(tick_ms / 350U) & 3U];
+}
+
+static int clamp_int(int value, int min_value, int max_value)
+{
+    if (value < min_value) {
+        return min_value;
+    }
+    if (value > max_value) {
+        return max_value;
+    }
+    return value;
+}
+
+static void remote_control_get_frame_rect(int *x, int *y, int *w, int *h)
+{
+    if (x) {
+        *x = (UI_DISP_W - 608) / 2;
+    }
+    if (y) {
+        *y = UI_CONTENT_TOP + 34;
+    }
+    if (w) {
+        *w = 608;
+    }
+    if (h) {
+        *h = 342;
+    }
+}
+
+static void remote_control_draw_dynamic_content(void)
+{
+    const int remote_src_w = 1920;
+    const int remote_src_h = 1080;
+    int frame_x0;
+    int frame_y0;
+    int frame_w;
+    int frame_h;
+    int frame_x1;
+    int frame_y1;
+    int inner_x0;
+    int inner_y0;
+    int inner_x1;
+    int inner_y1;
+    int remote_x;
+    int remote_y;
+    int cursor_x;
+    int cursor_y;
+    char coord_text[32];
+
+    remote_control_get_frame_rect(&frame_x0, &frame_y0, &frame_w, &frame_h);
+    frame_x1 = frame_x0 + frame_w - 1;
+    frame_y1 = frame_y0 + frame_h - 1;
+    inner_x0 = frame_x0 + 12;
+    inner_y0 = frame_y0 + 12;
+    inner_x1 = frame_x1 - 12;
+    inner_y1 = frame_y1 - 12;
+    remote_x = clamp_int((int)g_mousekey_packet.x_coord, 0, remote_src_w - 1);
+    remote_y = clamp_int((int)g_mousekey_packet.y_coord, 0, remote_src_h - 1);
+    cursor_x = inner_x0 + ((remote_x * (inner_x1 - inner_x0)) / (remote_src_w - 1));
+    cursor_y = inner_y1 - ((remote_y * (inner_y1 - inner_y0)) / (remote_src_h - 1));
+
+    GUI_SetColor(UI_CLR_BG_PLOT);
+    GUI_FillRoundedRect(frame_x0, frame_y0, frame_x1, frame_y1, 6);
+    GUI_SetColor(UI_CLR_ACCENT);
+    GUI_DrawRoundedRect(frame_x0, frame_y0, frame_x1, frame_y1, 6);
+
+    GUI_SetColor(UI_CLR_CARD);
+    GUI_FillRect(inner_x0, inner_y0, inner_x1, inner_y1);
+    GUI_SetColor(UI_CLR_CARD_BR);
+    GUI_DrawRect(inner_x0, inner_y0, inner_x1, inner_y1);
+
+    GUI_SetColor(UI_CLR_GRID_MN);
+    GUI_DrawVLine(inner_x0 + ((inner_x1 - inner_x0) * 1) / 3, inner_y0, inner_y1);
+    GUI_DrawVLine(inner_x0 + ((inner_x1 - inner_x0) * 2) / 3, inner_y0, inner_y1);
+    GUI_DrawHLine(inner_y0 + ((inner_y1 - inner_y0) * 1) / 3, inner_x0, inner_x1);
+    GUI_DrawHLine(inner_y0 + ((inner_y1 - inner_y0) * 2) / 3, inner_x0, inner_x1);
+
+    GUI_SetColor(UI_CLR_ACCENT);
+    GUI_DrawHLine(frame_y0 + 28, frame_x0 + 1, frame_x1 - 1);
+    GUI_FillCircle(frame_x0 + 18, frame_y0 + 14, 3);
+    GUI_SetColor(UI_CLR_TEXT_MID);
+    GUI_SetFont(&GUI_Font8_ASCII);
+    ui_text_prepare();
+    GUI_DispStringAt("REMOTE DESKTOP", frame_x0 + 28, frame_y0 + 10);
+
+    GUI_SetColor(UI_CLR_CH1);
+    GUI_FillCircle(cursor_x, cursor_y, 6);
+    GUI_SetColor(UI_CLR_TEXT_HI);
+    GUI_DrawCircle(cursor_x, cursor_y, 9);
+
+    GUI_SetColor(UI_CLR_TEXT_HI);
+    GUI_SetFont(&GUI_Font13_ASCII);
+    ui_text_prepare();
+    snprintf(coord_text, sizeof(coord_text), "x:%d  y:%d", remote_x, remote_y);
+    GUI_DispStringAt(coord_text, inner_x0 + 10, inner_y1 - 24);
 }
 
 static void draw_fpga_status_panel(int x0, int y0, int x1, int y1)
@@ -611,19 +707,6 @@ static void screen_fpga_mode_detail(FPGA_UI_Mode_t mode, uint32_t tick_ms)
 
 static void screen_remote_control(uint32_t tick_ms)
 {
-    const int frame_w   = 608;
-    const int frame_h   = 342;
-    const int frame_x0  = (UI_DISP_W - frame_w) / 2;
-    const int frame_y0  = UI_CONTENT_TOP + 34;
-    const int frame_x1  = frame_x0 + frame_w - 1;
-    const int frame_y1  = frame_y0 + frame_h - 1;
-    const int inner_x0  = frame_x0 + 12;
-    const int inner_y0  = frame_y0 + 12;
-    const int inner_x1  = frame_x1 - 12;
-    const int inner_y1  = frame_y1 - 12;
-    const int cursor_x  = inner_x0 + ((1000 * (inner_x1 - inner_x0)) / 1919);
-    const int cursor_y  = inner_y0 + ((500  * (inner_y1 - inner_y0)) / 1079);
-
     (void)tick_ms;
     fill_bg();
     draw_header_bar("REMOTE CONTROL", "");
@@ -633,40 +716,19 @@ static void screen_remote_control(uint32_t tick_ms)
     GUI_SetColor(UI_CLR_TEXT_DIM);
     ui_text_prepare();
     GUI_DispStringAt("Scaled 1920x1080 workspace", UI_MARGIN_X, UI_CONTENT_TOP + 8);
+    remote_control_draw_dynamic_content();
+}
 
-    GUI_SetColor(UI_CLR_BG_PLOT);
-    GUI_FillRoundedRect(frame_x0, frame_y0, frame_x1, frame_y1, 6);
-    GUI_SetColor(UI_CLR_ACCENT);
-    GUI_DrawRoundedRect(frame_x0, frame_y0, frame_x1, frame_y1, 6);
-
-    GUI_SetColor(UI_CLR_CARD);
-    GUI_FillRect(inner_x0, inner_y0, inner_x1, inner_y1);
-    GUI_SetColor(UI_CLR_CARD_BR);
-    GUI_DrawRect(inner_x0, inner_y0, inner_x1, inner_y1);
-
-    GUI_SetColor(UI_CLR_GRID_MN);
-    GUI_DrawVLine(inner_x0 + ((inner_x1 - inner_x0) * 1) / 3, inner_y0, inner_y1);
-    GUI_DrawVLine(inner_x0 + ((inner_x1 - inner_x0) * 2) / 3, inner_y0, inner_y1);
-    GUI_DrawHLine(inner_y0 + ((inner_y1 - inner_y0) * 1) / 3, inner_x0, inner_x1);
-    GUI_DrawHLine(inner_y0 + ((inner_y1 - inner_y0) * 2) / 3, inner_x0, inner_x1);
-
-    GUI_SetColor(UI_CLR_ACCENT);
-    GUI_DrawHLine(frame_y0 + 28, frame_x0 + 1, frame_x1 - 1);
-    GUI_FillCircle(frame_x0 + 18, frame_y0 + 14, 3);
-    GUI_SetColor(UI_CLR_TEXT_MID);
-    GUI_SetFont(&GUI_Font8_ASCII);
+void UI_RemoteControl_DrawDynamic(uint32_t tick_ms)
+{
+    (void)tick_ms;
     ui_text_prepare();
-    GUI_DispStringAt("REMOTE DESKTOP", frame_x0 + 28, frame_y0 + 10);
+    remote_control_draw_dynamic_content();
+}
 
-    GUI_SetColor(UI_CLR_CH1);
-    GUI_FillCircle(cursor_x, cursor_y, 6);
-    GUI_SetColor(UI_CLR_TEXT_HI);
-    GUI_DrawCircle(cursor_x, cursor_y, 9);
-
-    GUI_SetColor(UI_CLR_TEXT_HI);
-    GUI_SetFont(&GUI_Font13_ASCII);
-    ui_text_prepare();
-    GUI_DispStringAt("x:1000  y:500", inner_x0 + 10, inner_y1 - 24);
+void UI_RemoteControl_GetFrameRect(int *x, int *y, int *w, int *h)
+{
+    remote_control_get_frame_rect(x, y, w, h);
 }
 
 void UI_Screen_Draw(UI_ScreenId_t id, uint32_t tick_ms)

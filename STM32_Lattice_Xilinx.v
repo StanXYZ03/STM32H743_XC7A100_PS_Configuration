@@ -13,9 +13,11 @@ module STM32_Lattice_Xilinx (
 );
 
 assign xilinx_spi_cs_cmd = stm32_spi_cs_cmd;
-assign xilinx_spi_cs_data = stm32_spi_cs_data;
-assign xilinx_spi_clk  = stm32_spi_clk;
 assign xilinx_spi_mosi = stm32_spi_mosi;
 assign stm32_spi_miso  = xilinx_spi_miso;
+assign xilinx_spi_clk  = stm32_spi_clk;
+assign xilinx_spi_cs_data = stm32_spi_cs_data;
+
+//assign stm32_spi_miso  = xilinx_spi_cs_data;
 
 endmodule

@@ -1,0 +1,136 @@
+BLOCK RESETPATHS;
+BLOCK ASYNCPATHS;
+
+# ============================================================================
+# LCMXO2-4000HC-4TG144C
+# Legacy push-mode XO2 top-level pin assignment
+# Source: schematic-only closure from:
+# - 01_原理图/01_核心板原理图_BIDT.pdf
+# - 01_原理图/02_X2转FPGA控制.pdf
+# Notes:
+# - This LPF uses only schematic-derived pin closure for the XC7A interconnect buses.
+# - SPI direction: STM32H743 = SPI master, XO2-4000HC = SPI slave.
+# - SPI SITE numbers corrected 2026-04-09 per BANK 5 schematic:
+#     SITE 2 -> spi_mosi (input,  driven by STM32 SPI4 PE6)
+#     SITE 3 -> spi_miso (output, returned to STM32 SPI4 PE5)
+#     SITE 4 -> spi_cs   (input,  driven by STM32 PE4 GPIO)
+#     SITE 5 -> spi_clk  (input,  driven by STM32 SPI4 PE2)
+# - Old map (SITE 40/44/71/45) was wrong — those pins are not wired to
+#   STM32 on the new board; kept here only to document the prior error.
+# - PO[21] lands on XO2_IO1 / SITE 1, which is already used by rst_n.
+# - PO[22] lands on XO2_TDO / dedicated JTAG pin, so it is kept unconstrained here.
+# ============================================================================
+
+# Clock / reset
+LOCATE COMP "sys_clk" SITE "92" ;
+LOCATE COMP "rst_n"   SITE "1" ;
+LOCATE COMP "clk"     SITE "50" ;
+
+# SPI slave interface from STM32H743
+# Per schematic BANK 5 (2026-04-09 corrected):
+#   pin 2 = XO2_SPI_MOSI, pin 3 = XO2_SPI_MISO,
+#   pin 4 = XO2_SPI_NSS,  pin 5 = XO2_SPI_CLK
+LOCATE COMP "spi_mosi" SITE "2" ;
+LOCATE COMP "spi_miso" SITE "3" ;
+LOCATE COMP "spi_cs"   SITE "4" ;
+LOCATE COMP "spi_clk"  SITE "5" ;
+
+# Keys
+LOCATE COMP "key_in[0]" SITE "21" ;
+LOCATE COMP "key_in[1]" SITE "9" ;
+LOCATE COMP "key_in[2]" SITE "10" ;
+LOCATE COMP "key_in[3]" SITE "11" ;
+LOCATE COMP "key_in[4]" SITE "12" ;
+LOCATE COMP "key_in[5]" SITE "13" ;
+LOCATE COMP "key_in[6]" SITE "14" ;
+LOCATE COMP "key_in[7]" SITE "15" ;
+LOCATE COMP "key_in[8]" SITE "19" ;
+LOCATE COMP "key_in[9]" SITE "20" ;
+
+# LEDs
+LOCATE COMP "LED_out[0]"  SITE "43" ;
+LOCATE COMP "LED_out[1]"  SITE "47" ;
+LOCATE COMP "LED_out[2]"  SITE "48" ;
+LOCATE COMP "LED_out[3]"  SITE "54" ;
+LOCATE COMP "LED_out[4]"  SITE "55" ;
+LOCATE COMP "LED_out[5]"  SITE "56" ;
+LOCATE COMP "LED_out[6]"  SITE "57" ;
+LOCATE COMP "LED_out[7]"  SITE "58" ;
+LOCATE COMP "LED_out[8]"  SITE "59" ;
+LOCATE COMP "LED_out[9]"  SITE "60" ;
+LOCATE COMP "LED_out[10]" SITE "61" ;
+LOCATE COMP "LED_out[11]" SITE "62" ;
+
+# Seven-segment segment lines
+LOCATE COMP "heg[7]" SITE "22" ;
+LOCATE COMP "heg[6]" SITE "23" ;
+LOCATE COMP "heg[5]" SITE "24" ;
+LOCATE COMP "heg[4]" SITE "25" ;
+LOCATE COMP "heg[3]" SITE "26" ;
+LOCATE COMP "heg[2]" SITE "27" ;
+LOCATE COMP "heg[1]" SITE "28" ;
+LOCATE COMP "heg[0]" SITE "31" ;
+
+# Seven-segment digit select lines
+LOCATE COMP "sel[0]" SITE "32" ;
+LOCATE COMP "sel[1]" SITE "33" ;
+LOCATE COMP "sel[2]" SITE "34" ;
+LOCATE COMP "sel[3]" SITE "35" ;
+LOCATE COMP "sel[4]" SITE "38" ;
+LOCATE COMP "sel[5]" SITE "39" ;
+LOCATE COMP "sel[6]" SITE "41" ;
+LOCATE COMP "sel[7]" SITE "42" ;
+
+# PIO bus
+LOCATE COMP "PIO[0]"  SITE "63" ;
+LOCATE COMP "PIO[1]"  SITE "67" ;
+LOCATE COMP "PIO[2]"  SITE "68" ;
+LOCATE COMP "PIO[3]"  SITE "69" ;
+LOCATE COMP "PIO[4]"  SITE "73" ;
+LOCATE COMP "PIO[5]"  SITE "74" ;
+LOCATE COMP "PIO[6]"  SITE "75" ;
+LOCATE COMP "PIO[7]"  SITE "76" ;
+LOCATE COMP "PIO[8]"  SITE "77" ;
+LOCATE COMP "PIO[9]"  SITE "78" ;
+LOCATE COMP "PIO[10]" SITE "81" ;
+LOCATE COMP "PIO[11]" SITE "82" ;
+LOCATE COMP "PIO[12]" SITE "83" ;
+LOCATE COMP "PIO[13]" SITE "84" ;
+LOCATE COMP "PIO[14]" SITE "85" ;
+LOCATE COMP "PIO[15]" SITE "86" ;
+
+# PO[31:0] from XC7A -> XO2
+LOCATE COMP "PO[0]"  SITE "87" ;
+LOCATE COMP "PO[1]"  SITE "93" ;
+LOCATE COMP "PO[2]"  SITE "94" ;
+LOCATE COMP "PO[3]"  SITE "95" ;
+LOCATE COMP "PO[4]"  SITE "96" ;
+LOCATE COMP "PO[5]"  SITE "97" ;
+LOCATE COMP "PO[6]"  SITE "98" ;
+LOCATE COMP "PO[7]"  SITE "99" ;
+LOCATE COMP "PO[8]"  SITE "100" ;
+LOCATE COMP "PO[9]"  SITE "103" ;
+LOCATE COMP "PO[10]" SITE "104" ;
+LOCATE COMP "PO[11]" SITE "105" ;
+LOCATE COMP "PO[12]" SITE "106" ;
+LOCATE COMP "PO[13]" SITE "107" ;
+LOCATE COMP "PO[14]" SITE "109" ;
+LOCATE COMP "PO[15]" SITE "110" ;
+LOCATE COMP "PO[16]" SITE "111" ;
+LOCATE COMP "PO[17]" SITE "112" ;
+LOCATE COMP "PO[18]" SITE "113" ;
+LOCATE COMP "PO[19]" SITE "114" ;
+LOCATE COMP "PO[20]" SITE "115" ;
+# PO[21] -> X2_IO1 -> SITE 1, conflicts with rst_n.
+# PO[22] -> X2_TDO -> dedicated JTAG pin, keep unconstrained.
+LOCATE COMP "PO[23]" SITE "121" ;
+LOCATE COMP "PO[24]" SITE "122" ;
+LOCATE COMP "PO[25]" SITE "127" ;
+LOCATE COMP "PO[26]" SITE "128" ;
+LOCATE COMP "PO[27]" SITE "132" ;
+LOCATE COMP "PO[28]" SITE "133" ;
+LOCATE COMP "PO[29]" SITE "138" ;
+LOCATE COMP "PO[30]" SITE "139" ;
+LOCATE COMP "PO[31]" SITE "140" ;
+
+FREQUENCY PORT "sys_clk" 50.000000 MHz ;

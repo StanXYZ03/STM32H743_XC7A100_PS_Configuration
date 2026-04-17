@@ -28,6 +28,8 @@ typedef enum {
  * UI_SCR_SCOPE：实际波形由 MainTask 内 MainTask_Scope_* 绘制，此处勿依赖。
  */
 void UI_Screen_Draw(UI_ScreenId_t id, uint32_t tick_ms);
+void UI_RemoteControl_DrawDynamic(uint32_t tick_ms);
+void UI_RemoteControl_GetFrameRect(int *x, int *y, int *w, int *h);
 
 #ifdef __cplusplus
 }

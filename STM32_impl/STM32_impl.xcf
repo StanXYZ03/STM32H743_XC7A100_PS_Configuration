@@ -19,9 +19,9 @@
 				<BScanLen>1</BScanLen>
 				<BScanVal>0</BScanVal>
 			</Bypass>
-			<File>D:/CubeMX/STM32H743_XC7A100_PS_Configuration/STM32_impl/STM32_Lattice_Xilinx_STM32_impl.bit</File>
-			<FileTime>04/13/26 11:41:23</FileTime>
-			<JedecChecksum>0x66F2</JedecChecksum>
+			<File>D:/CubeMX/STM32H743_XC7A100_PS_Configuration/STM32_impl/STM32_Lattice_Xilinx_STM32_impl.jed</File>
+			<FileTime>04/16/26 15:09:12</FileTime>
+			<JedecChecksum>0x47DB</JedecChecksum>
 			<Operation>FLASH Erase,Program,Verify</Operation>
 			<Option>
 				<SVFVendor>JTAG STANDARD</SVFVendor>
@@ -44,7 +44,8 @@
 		<TCKDelay>1</TCKDelay>
 	</ProjectOptions>
 	<CableOptions>
-		<CableName>LATTICE</CableName>
-		<PortAdd>0x0378</PortAdd>
+		<CableName>USB</CableName>
+		<PortAdd>EzUSB-0</PortAdd>
+		<USBID>\\?\usb#vid_1134&amp;amp;pid_8001#5&amp;amp;17fb5765&amp;amp;0&amp;amp;3#</USBID>
 	</CableOptions>
 </ispXCF>

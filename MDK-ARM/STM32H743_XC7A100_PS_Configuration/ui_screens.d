@@ -89,3 +89,4 @@ stm32h743_xc7a100_ps_configuration\ui_screens.o: ../Middlewares/Third_Party/Free
 stm32h743_xc7a100_ps_configuration\ui_screens.o: ../Core/Inc/spi.h
 stm32h743_xc7a100_ps_configuration\ui_screens.o: ../Core/Inc/dma.h
 stm32h743_xc7a100_ps_configuration\ui_screens.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdbool.h
+stm32h743_xc7a100_ps_configuration\ui_screens.o: ../Core/Inc/mousekeyDefaultTask.h

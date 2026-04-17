@@ -1,0 +1,9 @@
+stm32-fpga\sdram.o: ..\Core\Src\sdram.c
+stm32-fpga\sdram.o: ../Core/Inc/sdram.h
+stm32-fpga\sdram.o: ../Core/Inc/font.h
+stm32-fpga\sdram.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdint.h
+stm32-fpga\sdram.o: ../Drivers/CMSIS/Include/core_cm4.h
+stm32-fpga\sdram.o: ../Drivers/CMSIS/Include/cmsis_version.h
+stm32-fpga\sdram.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+stm32-fpga\sdram.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+stm32-fpga\sdram.o: ../Core/Inc/delay.h

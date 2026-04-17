@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7a100tfgg484-2" LaunchTime="1776067091">
+<GenRun Id="synth_1" LaunchPart="xc7a100tfgg484-2" LaunchTime="1776325318">
   <File Type="PA-TCL" Name="ch9350_spi_top.tcl"/>
   <File Type="RDS-PROPCONSTRS" Name="ch9350_spi_top_drc_synth.rpt"/>
   <File Type="REPORTS-TCL" Name="ch9350_spi_top_reports.tcl"/>
@@ -11,65 +11,59 @@
   <File Type="VDS-TIMING-PB" Name="ch9350_spi_top_timing_summary_synth.pb"/>
   <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1">
     <Filter Type="Srcs"/>
-    <File Path="$PPRDIR/../FPGA-SPI/RTL/SPI_Communication.v">
+    <File Path="$PPRDIR/rtl/SPI_Communication.v">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../FPGA-SPI/RTL/ch9350_parser.v">
+    <File Path="$PPRDIR/rtl/ch9350_parser.v">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../FPGA-SPI/RTL/spi.v">
+    <File Path="$PPRDIR/rtl/spi.v">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../FPGA-SPI/RTL/spi_cmd_data.v">
+    <File Path="$PPRDIR/rtl/spi_cmd_data.v">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../FPGA-SPI/RTL/spi_core_log.v">
+    <File Path="$PPRDIR/rtl/spi_core_log.v">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../FPGA-SPI/RTL/spi_reg_buf.v">
+    <File Path="$PPRDIR/rtl/spi_reg_buf.v">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../FPGA-SPI/RTL/uart_rx.v">
+    <File Path="$PPRDIR/rtl/uart_rx.v">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
-    <File Path="$PPRDIR/../FPGA-SPI/RTL/ch9350_spi_top.v">
+    <File Path="$PPRDIR/rtl/ch9350_spi_top.v">
       <FileInfo>
         <Attr Name="UsedIn" Val="synthesis"/>
         <Attr Name="UsedIn" Val="implementation"/>
-        <Attr Name="UsedIn" Val="simulation"/>
-      </FileInfo>
-    </File>
-    <File Path="$PPRDIR/../FPGA-SPI/RTL/tb_ch9350_spi_top.v">
-      <FileInfo>
-        <Attr Name="AutoDisabled" Val="1"/>
         <Attr Name="UsedIn" Val="simulation"/>
       </FileInfo>
     </File>
@@ -87,6 +81,7 @@
       </FileInfo>
     </File>
     <Config>
+      <Option Name="TargetConstrsFile" Val="$PPRDIR/constrs_1/mouse_key_spi_bridge.xdc"/>
       <Option Name="ConstrsType" Val="XDC"/>
     </Config>
   </FileSet>

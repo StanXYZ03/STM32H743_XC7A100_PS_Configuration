@@ -7,8 +7,8 @@ LOCATE COMP "stm32_spi_clk"  SITE "PB9A";
 LOCATE COMP "stm32_spi_mosi" SITE "PB9B";
 LOCATE COMP "stm32_spi_miso" SITE "PB30B";
 
-LOCATE COMP "xilinx_spi_cs_cmd"  SITE "PR19B";
-LOCATE COMP "xilinx_spi_cs_data" SITE "PB24D";
-LOCATE COMP "xilinx_spi_miso" SITE "PB27B";
-LOCATE COMP "xilinx_spi_mosi" SITE "PB29A";
-LOCATE COMP "xilinx_spi_clk"  SITE "PB29B";
+LOCATE COMP "xilinx_spi_cs_cmd"  SITE "PR10D";
+LOCATE COMP "xilinx_spi_cs_data" SITE "PR8A";
+LOCATE COMP "xilinx_spi_miso" SITE "PR9B"; //pr9b
+LOCATE COMP "xilinx_spi_mosi" SITE "PR9A";
+LOCATE COMP "xilinx_spi_clk"  SITE "PR8B"; 

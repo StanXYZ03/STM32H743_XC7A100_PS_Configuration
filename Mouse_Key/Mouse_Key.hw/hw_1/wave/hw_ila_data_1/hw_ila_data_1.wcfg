@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/Mouse_Key.hw/hw_1/wave/hw_ila_data_1/hw_ila_data_1.wdb" id="1">
+         <top_modules>
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="4259573fs"></ZoomEndTime>
+      <Cursor1Time time="529000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="316"></NameColumnWidth>
+      <ValueColumnWidth column_width="146"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="21" />
+   <wave_markers>
+   </wave_markers>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/curr_ch_addr" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/curr_ch_addr[3:0]</obj_property>
+      <obj_property name="ObjectShortName">curr_ch_addr[3:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_ila_0_rx_data" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_ila_0_rx_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">u_ila_0_rx_data[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/cmd_addr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">cmd_addr[7:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/tx_data" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/tx_data[31:0]</obj_property>
+      <obj_property name="ObjectShortName">tx_data[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/write_reg_0" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/write_reg_0[31:0]</obj_property>
+      <obj_property name="ObjectShortName">write_reg_0[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/write_reg_1" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/write_reg_1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">write_reg_1[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/write_reg_2" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/write_reg_2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">write_reg_2[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="reg_data0" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">reg_data0[31:0]</obj_property>
+      <obj_property name="ObjectShortName">reg_data0[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="reg_data1" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">reg_data1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">reg_data1[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="reg_data2" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">reg_data2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">reg_data2[31:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_ila_0_data_valid" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_ila_0_data_valid</obj_property>
+      <obj_property name="ObjectShortName">u_ila_0_data_valid</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/data_valid_d1" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/data_valid_d1</obj_property>
+      <obj_property name="ObjectShortName">data_valid_d1</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/reg1_sent" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/reg1_sent</obj_property>
+      <obj_property name="ObjectShortName">reg1_sent</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_scl_pos_flag" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_scl_pos_flag</obj_property>
+      <obj_property name="ObjectShortName">spi_scl_pos_flag</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_scl_neg_flag" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_scl_neg_flag</obj_property>
+      <obj_property name="ObjectShortName">spi_scl_neg_flag</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_reg" type="array">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_reg[2:0]</obj_property>
+      <obj_property name="ObjectShortName">spi_cs_reg[2:0]</obj_property>
+      <obj_property name="Radix">HEXRADIX</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_pos_flag" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_pos_flag</obj_property>
+      <obj_property name="ObjectShortName">spi_cs_pos_flag</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_neg_flag" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/spi_cs_neg_flag</obj_property>
+      <obj_property name="ObjectShortName">spi_cs_neg_flag</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/Shift_Reg_DOUT[31]_i_1_n_0" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/Shift_Reg_DOUT[31]_i_1_n_0</obj_property>
+      <obj_property name="ObjectShortName">Shift_Reg_DOUT[31]_i_1_n_0</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/Shift_Reg_Din[31]_i_1_n_0" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">u_spi_comm/u_spi/u_spi_cmd_data/u_spi_data_channel/Shift_Reg_Din[31]_i_1_n_0</obj_property>
+      <obj_property name="ObjectShortName">Shift_Reg_Din[31]_i_1_n_0</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+   <wvobject fp_name="kb_mouse_valid" type="logic">
+      <obj_property name="DisplayName">FullPathName</obj_property>
+      <obj_property name="ElementShortName">kb_mouse_valid</obj_property>
+      <obj_property name="ObjectShortName">kb_mouse_valid</obj_property>
+      <obj_property name="LABELRADIX">true</obj_property>
+      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+   </wvobject>
+</wave_config>

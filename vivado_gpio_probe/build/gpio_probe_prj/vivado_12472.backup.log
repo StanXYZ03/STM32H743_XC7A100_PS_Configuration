@@ -1,0 +1,147 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Thu Apr 16 15:16:14 2026
+# Process ID: 12472
+# Current directory: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent6632 D:\CubeMX\STM32H743_XC7A100_PS_Configuration\vivado_gpio_probe\build\gpio_probe_prj\gpio_probe.xpr
+# Log file: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/vivado.log
+# Journal file: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.xpr
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj'
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Vivado/Vivado/2018.3/data/ip'.
+update_compile_order -fileset sources_1
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 10
+[Thu Apr 16 15:21:12 2026] Launched synth_1...
+Run output will be captured here: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/synth_1/runme.log
+[Thu Apr 16 15:21:12 2026] Launched impl_1...
+Run output will be captured here: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/runme.log
+open_hw
+connect_hw_server
+INFO: [Labtools 27-2285] Connecting to hw_server url TCP:localhost:3121
+open_hw_target
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210251A08870
+set_property PROGRAM.FILE {D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/gpio_probe_top.bit} [get_hw_devices xc7a100t_0]
+current_hw_device [get_hw_devices xc7a100t_0]
+refresh_hw_device -update_hw_probes false [lindex [get_hw_devices xc7a100t_0] 0]
+INFO: [Labtools 27-2302] Device xc7a100t (JTAG device index = 0) is programmed with a design that has 1 ILA core(s).
+create_hw_cfgmem -hw_device [get_hw_devices xc7a100t_0] -mem_dev [lindex [get_cfgmem_parts {mt25ql128-spi-x1_x2_x4}] 0]
+set_property PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property PROGRAM.FILE {D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/gpio_probe_top.bit} [get_hw_devices xc7a100t_0]
+program_hw_devices [get_hw_devices xc7a100t_0]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7a100t_0] 0]
+INFO: [Labtools 27-1434] Device xc7a100t (JTAG device index = 0) is programmed with a design that has no supported debug core(s) in it.
+set_property PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property PROGRAM.FILE {D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/gpio_probe_top.bit} [get_hw_devices xc7a100t_0]
+program_hw_devices [get_hw_devices xc7a100t_0]
+ERROR: [Labtools 27-3165] End of startup status: LOW
+ERROR: [Common 17-39] 'program_hw_devices' failed due to earlier errors.
+ERROR: [Labtoolstcl 44-513] HW Target shutdown. Closing target: localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtools 27-1435] Device xc7a100t (JTAG device index = 0) is not programmed (DONE status = 0).
+WARNING: [Labtoolstcl 44-129] No matching hw_ila_data was found.
+set_property PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property PROGRAM.FILE {D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/gpio_probe_top.bit} [get_hw_devices xc7a100t_0]
+program_hw_devices [get_hw_devices xc7a100t_0]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7a100t_0] 0]
+INFO: [Labtools 27-1434] Device xc7a100t (JTAG device index = 0) is programmed with a design that has no supported debug core(s) in it.
+ERROR: [Labtoolstcl 44-513] HW Target shutdown. Closing target: localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtools 27-1435] Device xc7a100t (JTAG device index = 0) is not programmed (DONE status = 0).
+WARNING: [Labtoolstcl 44-129] No matching hw_ila_data was found.
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 10
+[Thu Apr 16 15:31:01 2026] Launched synth_1...
+Run output will be captured here: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/synth_1/runme.log
+[Thu Apr 16 15:31:01 2026] Launched impl_1...
+Run output will be captured here: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/runme.log
+set_property PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property PROGRAM.FILE {D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/gpio_probe_top.bit} [get_hw_devices xc7a100t_0]
+program_hw_devices [get_hw_devices xc7a100t_0]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7a100t_0] 0]
+INFO: [Labtools 27-1434] Device xc7a100t (JTAG device index = 0) is programmed with a design that has no supported debug core(s) in it.
+ERROR: [Labtoolstcl 44-513] HW Target shutdown. Closing target: localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtools 27-1435] Device xc7a100t (JTAG device index = 0) is not programmed (DONE status = 0).
+WARNING: [Labtoolstcl 44-129] No matching hw_ila_data was found.
+set_property PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property PROGRAM.FILE {D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/gpio_probe_top.bit} [get_hw_devices xc7a100t_0]
+program_hw_devices [get_hw_devices xc7a100t_0]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7a100t_0] 0]
+INFO: [Labtools 27-1434] Device xc7a100t (JTAG device index = 0) is programmed with a design that has no supported debug core(s) in it.
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 16
+[Thu Apr 16 15:36:21 2026] Launched synth_1...
+Run output will be captured here: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/synth_1/runme.log
+[Thu Apr 16 15:36:21 2026] Launched impl_1...
+Run output will be captured here: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/runme.log
+set_property PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property PROGRAM.FILE {D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/gpio_probe_top.bit} [get_hw_devices xc7a100t_0]
+program_hw_devices [get_hw_devices xc7a100t_0]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7a100t_0] 0]
+INFO: [Labtools 27-1434] Device xc7a100t (JTAG device index = 0) is programmed with a design that has no supported debug core(s) in it.
+ERROR: [Labtoolstcl 44-513] HW Target shutdown. Closing target: localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtools 27-1435] Device xc7a100t (JTAG device index = 0) is not programmed (DONE status = 0).
+WARNING: [Labtoolstcl 44-129] No matching hw_ila_data was found.
+set_property PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property PROGRAM.FILE {D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/gpio_probe_top.bit} [get_hw_devices xc7a100t_0]
+program_hw_devices [get_hw_devices xc7a100t_0]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7a100t_0] 0]
+INFO: [Labtools 27-1434] Device xc7a100t (JTAG device index = 0) is programmed with a design that has no supported debug core(s) in it.
+reset_run synth_1
+launch_runs impl_1 -to_step write_bitstream -jobs 16
+[Thu Apr 16 15:38:36 2026] Launched synth_1...
+Run output will be captured here: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/synth_1/runme.log
+[Thu Apr 16 15:38:36 2026] Launched impl_1...
+Run output will be captured here: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/runme.log
+set_property PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property PROGRAM.FILE {D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/gpio_probe_top.bit} [get_hw_devices xc7a100t_0]
+program_hw_devices [get_hw_devices xc7a100t_0]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7a100t_0] 0]
+INFO: [Labtools 27-1434] Device xc7a100t (JTAG device index = 0) is programmed with a design that has no supported debug core(s) in it.
+ERROR: [Labtoolstcl 44-513] HW Target shutdown. Closing target: localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtools 27-1435] Device xc7a100t (JTAG device index = 0) is not programmed (DONE status = 0).
+WARNING: [Labtoolstcl 44-129] No matching hw_ila_data was found.
+set_property PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7a100t_0]
+set_property PROGRAM.FILE {D:/CubeMX/STM32H743_XC7A100_PS_Configuration/vivado_gpio_probe/build/gpio_probe_prj/gpio_probe.runs/impl_1/gpio_probe_top.bit} [get_hw_devices xc7a100t_0]
+program_hw_devices [get_hw_devices xc7a100t_0]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7a100t_0] 0]
+INFO: [Labtools 27-1434] Device xc7a100t (JTAG device index = 0) is programmed with a design that has no supported debug core(s) in it.
+ERROR: [Labtoolstcl 44-513] HW Target shutdown. Closing target: localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtools 27-1435] Device xc7a100t (JTAG device index = 0) is not programmed (DONE status = 0).
+WARNING: [Labtoolstcl 44-129] No matching hw_ila_data was found.
+ERROR: [Labtoolstcl 44-513] HW Target shutdown. Closing target: localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210251A08870
+INFO: [Labtools 27-1435] Device xc7a100t (JTAG device index = 0) is not programmed (DONE status = 0).
+WARNING: [Labtoolstcl 44-129] No matching hw_ila_data was found.
+exit
+INFO: [Common 17-206] Exiting Vivado at Thu Apr 16 17:10:03 2026...

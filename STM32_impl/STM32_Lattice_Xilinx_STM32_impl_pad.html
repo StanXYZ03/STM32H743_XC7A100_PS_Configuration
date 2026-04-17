@@ -14,7 +14,7 @@ Performance Grade:      5
 PACKAGE:          TQFP144
 Package Status:                     Final          Version 1.44
 
-Mon Apr 13 15:28:41 2026
+Fri Apr 17 14:42:48 2026
 
 Pinout by Port Name:
 +--------------------+----------+--------------+-------+-----------+-----------+--------------------------------------+
@@ -25,11 +25,11 @@ Pinout by Port Name:
 | stm32_spi_cs_data  | 40/2     | LVCMOS25_IN  | PB4A  |           |           | PULL:DOWN CLAMP:ON HYSTERESIS:SMALL  |
 | stm32_spi_miso     | 71/2     | LVCMOS25_OUT | PB30B |           |           | DRIVE:8mA PULL:DOWN SLEW:SLOW        |
 | stm32_spi_mosi     | 45/2     | LVCMOS25_IN  | PB9B  |           |           | PULL:DOWN CLAMP:ON HYSTERESIS:SMALL  |
-| xilinx_spi_clk     | 69/2     | LVCMOS25_OUT | PB29B |           |           | DRIVE:8mA PULL:DOWN SLEW:SLOW        |
-| xilinx_spi_cs_cmd  | 73/1     | LVCMOS25_OUT | PR19B |           |           | DRIVE:8mA PULL:DOWN SLEW:SLOW        |
-| xilinx_spi_cs_data | 63/2     | LVCMOS25_OUT | PB24D |           |           | DRIVE:8mA PULL:DOWN SLEW:SLOW        |
-| xilinx_spi_miso    | 67/2     | LVCMOS25_IN  | PB27B |           |           | PULL:DOWN CLAMP:ON HYSTERESIS:SMALL  |
-| xilinx_spi_mosi    | 68/2     | LVCMOS25_OUT | PB29A |           |           | DRIVE:8mA PULL:DOWN SLEW:SLOW        |
+| xilinx_spi_clk     | 95/1     | LVCMOS25_OUT | PR8B  |           |           | DRIVE:8mA PULL:DOWN SLEW:SLOW        |
+| xilinx_spi_cs_cmd  | 87/1     | LVCMOS25_OUT | PR10D |           |           | DRIVE:8mA PULL:DOWN SLEW:SLOW        |
+| xilinx_spi_cs_data | 96/1     | LVCMOS25_OUT | PR8A  |           |           | DRIVE:8mA PULL:DOWN SLEW:SLOW        |
+| xilinx_spi_miso    | 93/1     | LVCMOS25_IN  | PR9B  |           |           | PULL:DOWN CLAMP:ON HYSTERESIS:SMALL  |
+| xilinx_spi_mosi    | 94/1     | LVCMOS25_OUT | PR9A  |           |           | DRIVE:8mA PULL:DOWN SLEW:SLOW        |
 +--------------------+----------+--------------+-------+-----------+-----------+--------------------------------------+
 
 Vccio by Bank:
@@ -102,14 +102,14 @@ Vccio by Bank:
 | 60/2     |     unused, PULL:DOWN |            |              | PB23B |                |           |           |
 | 61/2     |     unused, PULL:DOWN |            |              | PB24A |                |           |           |
 | 62/2     |     unused, PULL:DOWN |            |              | PB24B |                |           |           |
-| 63/2     | xilinx_spi_cs_data    | LOCATED    | LVCMOS25_OUT | PB24D |                |           |           |
+| 63/2     |     unused, PULL:DOWN |            |              | PB24D |                |           |           |
 | 65/2     |     unused, PULL:DOWN |            |              | PB27A |                |           |           |
-| 67/2     | xilinx_spi_miso       | LOCATED    | LVCMOS25_IN  | PB27B |                |           |           |
-| 68/2     | xilinx_spi_mosi       | LOCATED    | LVCMOS25_OUT | PB29A |                |           |           |
-| 69/2     | xilinx_spi_clk        | LOCATED    | LVCMOS25_OUT | PB29B |                |           |           |
+| 67/2     |     unused, PULL:DOWN |            |              | PB27B |                |           |           |
+| 68/2     |     unused, PULL:DOWN |            |              | PB29A |                |           |           |
+| 69/2     |     unused, PULL:DOWN |            |              | PB29B |                |           |           |
 | 70/2     | stm32_spi_cs_cmd      | LOCATED    | LVCMOS25_IN  | PB30A | SN             |           |           |
 | 71/2     | stm32_spi_miso        | LOCATED    | LVCMOS25_OUT | PB30B | SI/SISPI       |           |           |
-| 73/1     | xilinx_spi_cs_cmd     | LOCATED    | LVCMOS25_OUT | PR19B | DQ1            |           |           |
+| 73/1     |     unused, PULL:DOWN |            |              | PR19B | DQ1            |           |           |
 | 74/1     |     unused, PULL:DOWN |            |              | PR19A | DQ1            |           |           |
 | 75/1     |     unused, PULL:DOWN |            |              | PR18B | DQ1            |           |           |
 | 76/1     |     unused, PULL:DOWN |            |              | PR18A | DQ1            |           |           |
@@ -121,14 +121,14 @@ Vccio by Bank:
 | 84/1     |     unused, PULL:DOWN |            |              | PR14A | DQ1            |           |           |
 | 85/1     |     unused, PULL:DOWN |            |              | PR13B | DQS1N          |           |           |
 | 86/1     |     unused, PULL:DOWN |            |              | PR13A | DQS1           |           |           |
-| 87/1     |     unused, PULL:DOWN |            |              | PR10D |                |           |           |
+| 87/1     | xilinx_spi_cs_cmd     | LOCATED    | LVCMOS25_OUT | PR10D |                |           |           |
 | 89/1     |     unused, PULL:DOWN |            |              | PR10C |                |           |           |
 | 91/1     |     unused, PULL:DOWN |            |              | PR10B | PCLKC1_0/DQ0   |           |           |
 | 92/1     |     unused, PULL:DOWN |            |              | PR10A | PCLKT1_0/DQ0   |           |           |
-| 93/1     |     unused, PULL:DOWN |            |              | PR9B  | DQS0N          |           |           |
-| 94/1     |     unused, PULL:DOWN |            |              | PR9A  | DQS0           |           |           |
-| 95/1     |     unused, PULL:DOWN |            |              | PR8B  | DQ0            |           |           |
-| 96/1     |     unused, PULL:DOWN |            |              | PR8A  | DQ0            |           |           |
+| 93/1     | xilinx_spi_miso       | LOCATED    | LVCMOS25_IN  | PR9B  | DQS0N          |           |           |
+| 94/1     | xilinx_spi_mosi       | LOCATED    | LVCMOS25_OUT | PR9A  | DQS0           |           |           |
+| 95/1     | xilinx_spi_clk        | LOCATED    | LVCMOS25_OUT | PR8B  | DQ0            |           |           |
+| 96/1     | xilinx_spi_cs_data    | LOCATED    | LVCMOS25_OUT | PR8A  | DQ0            |           |           |
 | 97/1     |     unused, PULL:DOWN |            |              | PR6B  | DQ0            |           |           |
 | 98/1     |     unused, PULL:DOWN |            |              | PR6A  | DQ0            |           |           |
 | 99/1     |     unused, PULL:DOWN |            |              | PR5B  | DQ0            |           |           |
@@ -354,11 +354,11 @@ LOCATE  COMP  "stm32_spi_cs_cmd"  SITE  "70";
 LOCATE  COMP  "stm32_spi_cs_data"  SITE  "40";
 LOCATE  COMP  "stm32_spi_miso"  SITE  "71";
 LOCATE  COMP  "stm32_spi_mosi"  SITE  "45";
-LOCATE  COMP  "xilinx_spi_clk"  SITE  "69";
-LOCATE  COMP  "xilinx_spi_cs_cmd"  SITE  "73";
-LOCATE  COMP  "xilinx_spi_cs_data"  SITE  "63";
-LOCATE  COMP  "xilinx_spi_miso"  SITE  "67";
-LOCATE  COMP  "xilinx_spi_mosi"  SITE  "68";
+LOCATE  COMP  "xilinx_spi_clk"  SITE  "95";
+LOCATE  COMP  "xilinx_spi_cs_cmd"  SITE  "87";
+LOCATE  COMP  "xilinx_spi_cs_data"  SITE  "96";
+LOCATE  COMP  "xilinx_spi_miso"  SITE  "93";
+LOCATE  COMP  "xilinx_spi_mosi"  SITE  "94";
 
 
 
@@ -370,7 +370,7 @@ Copyright (c) 1995 AT&T Corp.   All rights reserved.
 Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
 Copyright (c) 2001 Agere Systems   All rights reserved.
 Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
-Mon Apr 13 15:28:41 2026
+Fri Apr 17 14:42:48 2026
 
 
 

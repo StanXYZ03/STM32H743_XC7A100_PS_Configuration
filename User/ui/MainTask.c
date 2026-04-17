@@ -11,8 +11,10 @@
 #include "MainTask_profile.h"
 #include "ui_app_config.h"
 #include "ui_screens.h"
+#include "ui_theme.h"
 #include "ui_nav.h"
 #include "FPGAConfigDefaultTask.h"
+#include "mousekeyDefaultTask.h"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -52,6 +54,10 @@
 /* RUN 时帧率封顶：默认 25ms ≈ 40fps（可在工程里 #define MAINTASK_FRAME_PERIOD_MS 覆盖） */
 #ifndef MAINTASK_FRAME_PERIOD_MS
 #define MAINTASK_FRAME_PERIOD_MS  25U
+#endif
+
+#ifndef UI_REMOTE_CONTROL_FRAME_PERIOD_MS
+#define UI_REMOTE_CONTROL_FRAME_PERIOD_MS  50U
 #endif
 
 /* Header strip */
@@ -103,6 +109,11 @@ static int UI_IsFpgaDynamicScreen(UI_ScreenId_t sid)
            (sid == UI_SCR_FPGA_JTAG_FLASH);
 }
 
+static int UI_IsRemoteControlScreen(UI_ScreenId_t sid)
+{
+    return (sid == UI_SCR_REMOTE_CONTROL);
+}
+
 static void MainTask_FrameDelayUntilCompat(TickType_t *last_wake, TickType_t period_ticks)
 {
 #if (INCLUDE_vTaskDelayUntil == 1)
@@ -115,6 +126,80 @@ static void MainTask_FrameDelayUntilCompat(TickType_t *last_wake, TickType_t per
 
 static int16_t waveformData[CHANNEL_COUNT][WAVEFORM_BUFFER_SIZE];
 static int     s_max_x;
+static uint8_t s_remote_tracked;
+static int16_t s_remote_prev_x;
+static int16_t s_remote_prev_y;
+static TickType_t s_remote_last_redraw_tick;
+
+static int16_t UI_ClampS16(int value, int min_value, int max_value)
+{
+    if (value < min_value) {
+        return (int16_t)min_value;
+    }
+    if (value > max_value) {
+        return (int16_t)max_value;
+    }
+    return (int16_t)value;
+}
+
+static int16_t UI_MapRemoteControlCursorX(int16_t remote_x)
+{
+    const int remote_src_w = 1920;
+    const int frame_w = 608;
+    const int frame_x0 = (UI_DISP_W - frame_w) / 2;
+    const int frame_x1 = frame_x0 + frame_w - 1;
+    const int inner_x0 = frame_x0 + 12;
+    const int inner_x1 = frame_x1 - 12;
+    const int clamped_x = UI_ClampS16((int)remote_x, 0, remote_src_w - 1);
+
+    return (int16_t)(inner_x0 + ((clamped_x * (inner_x1 - inner_x0)) / (remote_src_w - 1)));
+}
+
+static int16_t UI_MapRemoteControlCursorY(int16_t remote_y)
+{
+    const int remote_src_h = 1080;
+    const int frame_h = 342;
+    const int frame_y0 = UI_CONTENT_TOP + 34;
+    const int frame_y1 = frame_y0 + frame_h - 1;
+    const int inner_y0 = frame_y0 + 12;
+    const int inner_y1 = frame_y1 - 12;
+    const int clamped_y = UI_ClampS16((int)remote_y, 0, remote_src_h - 1);
+
+    return (int16_t)(inner_y1 - ((clamped_y * (inner_y1 - inner_y0)) / (remote_src_h - 1)));
+}
+
+static int UI_ShouldRefreshRemoteControl(TickType_t now)
+{
+    const int16_t x = UI_MapRemoteControlCursorX(g_mousekey_packet.x_coord);
+    const int16_t y = UI_MapRemoteControlCursorY(g_mousekey_packet.y_coord);
+
+    if (s_remote_tracked == 0u) {
+        s_remote_tracked = 1u;
+        s_remote_prev_x = x;
+        s_remote_prev_y = y;
+        s_remote_last_redraw_tick = now;
+        return 1;
+    }
+
+    if ((x != s_remote_prev_x) || (y != s_remote_prev_y)) {
+        if ((now - s_remote_last_redraw_tick) >= pdMS_TO_TICKS(UI_REMOTE_CONTROL_FRAME_PERIOD_MS)) {
+            s_remote_prev_x = x;
+            s_remote_prev_y = y;
+            s_remote_last_redraw_tick = now;
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+static void UI_ResetRemoteControlRefreshTracking(void)
+{
+    s_remote_tracked = 0u;
+    s_remote_prev_x = 0;
+    s_remote_prev_y = 0;
+    s_remote_last_redraw_tick = 0;
+}
 
 extern volatile unsigned long g_emwin_showbuffer_cnt;
 extern volatile unsigned long g_emwin_ltdc_irq_cnt;
@@ -722,19 +807,45 @@ void MainTask(void)
                 }
             } else {
                 int need_redraw = (prev_sid != sid) ? 1 : 0;
+                int remote_region_only = 0;
+                int nav_redraw = UI_Nav_ConsumeRedraw();
                 if (UI_IsFpgaDynamicScreen(sid)) {
                     need_redraw = 1;
                 }
-                if (UI_Nav_ConsumeRedraw()) {
+                if (UI_IsRemoteControlScreen(sid)) {
+                    if (UI_ShouldRefreshRemoteControl(now) != 0) {
+                        need_redraw = 1;
+                        if ((prev_sid == sid) && (nav_redraw == 0)) {
+                            remote_region_only = 1;
+                        }
+                    }
+                } else {
+                    UI_ResetRemoteControlRefreshTracking();
+                }
+                if (nav_redraw != 0) {
                     need_redraw = 1;
+                    remote_region_only = 0;
                 }
                 if (need_redraw != 0) {
                     uint32_t tick_ms = (uint32_t)((now - t_screen_start) * portTICK_PERIOD_MS);
                     GUI_MULTIBUF_Begin();
                     GUI_SetTextMode(GUI_TM_TRANS);
-                    UI_Screen_Draw(sid, tick_ms);
+                    if (remote_region_only != 0) {
+                        UI_RemoteControl_DrawDynamic(tick_ms);
+                    } else {
+                        UI_Screen_Draw(sid, tick_ms);
+                    }
                     GUI_MULTIBUF_End();
-                    LCDConf_RequestFullScreenRotate();
+                    if (remote_region_only != 0) {
+                        int rc_x;
+                        int rc_y;
+                        int rc_w;
+                        int rc_h;
+                        UI_RemoteControl_GetFrameRect(&rc_x, &rc_y, &rc_w, &rc_h);
+                        LCDConf_RequestLogicalRegionRotate(rc_x, rc_y, rc_w, rc_h);
+                    } else {
+                        LCDConf_RequestFullScreenRotate();
+                    }
                     ManualRotateToPhysical();
                 }
                 vTaskDelay(pdMS_TO_TICKS(UI_DEMO_IDLE_POLL_MS));

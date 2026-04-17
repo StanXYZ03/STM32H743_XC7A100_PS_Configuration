@@ -4,7 +4,7 @@ Copyright (c) 1995 AT&T Corp.   All rights reserved.
 Copyright (c) 1995-2001 Lucent Technologies Inc.  All rights reserved.
 Copyright (c) 2001 Agere Systems   All rights reserved.
 Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
-Mon Apr 13 11:57:31 2026
+Fri Apr 17 14:42:55 2026
 
 
 Command: bitgen -g RamCfg:Reset -path D:/CubeMX/STM32H743_XC7A100_PS_Configuration -w -jedec -gui -msgset D:/CubeMX/STM32H743_XC7A100_PS_Configuration/promote.xml STM32_Lattice_Xilinx_STM32_impl.ncd STM32_Lattice_Xilinx_STM32_impl.prf 
@@ -86,9 +86,9 @@ Initialized UFM Pages:                     0 Page.
 =========
 Padding summary
 =========
-Padded 709504 bits for this design
+Padded 709248 bits for this design
 
 
 Total CPU Time: 1 secs 
-Total REAL Time: 2 secs 
+Total REAL Time: 0 secs 
 Peak Memory Usage: 280 MB

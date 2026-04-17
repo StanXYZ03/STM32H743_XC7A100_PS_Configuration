@@ -1,0 +1,17 @@
+# compile verilog/system verilog design source files
+verilog xil_defaultlib  \
+"../../../../rtl/SPI_Communication.v" \
+"../../../../rtl/ch9350_parser.v" \
+"../../../../rtl/ch9350_spi_top.v" \
+"../../../../rtl/spi.v" \
+"../../../../rtl/spi_cmd_data.v" \
+"../../../../rtl/spi_core_log.v" \
+"../../../../rtl/spi_reg_buf.v" \
+"../../../../rtl/uart_rx.v" \
+"../../../../rtl/tb_ch9350_spi_top.v" \
+
+# compile glbl module
+verilog xil_defaultlib "glbl.v"
+
+# Do not sort compile order
+nosort

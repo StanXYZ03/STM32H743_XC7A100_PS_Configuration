@@ -84,6 +84,7 @@ stm32h743_xc7a100_ps_configuration\maintask_1.o: ..\User\ui\MainTask_profile.h
 stm32h743_xc7a100_ps_configuration\maintask_1.o: ..\User\ui\profile_opts.h
 stm32h743_xc7a100_ps_configuration\maintask_1.o: ..\User\ui\ui_app_config.h
 stm32h743_xc7a100_ps_configuration\maintask_1.o: ..\User\ui\ui_screens.h
+stm32h743_xc7a100_ps_configuration\maintask_1.o: ..\User\ui\ui_theme.h
 stm32h743_xc7a100_ps_configuration\maintask_1.o: ..\User\ui\ui_nav.h
 stm32h743_xc7a100_ps_configuration\maintask_1.o: ../Core/Inc/FPGAConfigDefaultTask.h
 stm32h743_xc7a100_ps_configuration\maintask_1.o: ../USB_DEVICE/App/usb_device.h
@@ -107,3 +108,4 @@ stm32h743_xc7a100_ps_configuration\maintask_1.o: ../Core/Inc/fmc.h
 stm32h743_xc7a100_ps_configuration\maintask_1.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 stm32h743_xc7a100_ps_configuration\maintask_1.o: ../Core/Inc/spi.h
 stm32h743_xc7a100_ps_configuration\maintask_1.o: ../Core/Inc/dma.h
+stm32h743_xc7a100_ps_configuration\maintask_1.o: ../Core/Inc/mousekeyDefaultTask.h

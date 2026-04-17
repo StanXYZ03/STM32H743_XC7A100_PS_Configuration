@@ -22,7 +22,7 @@ Setup and Hold Report
 
 --------------------------------------------------------------------------------
 <A name="Par_Twr_setup"></A><B><U><big>Lattice TRACE Report - Setup, Version Diamond (64-bit) 3.14.0.75.2</big></U></B>
-Mon Apr 13 15:28:42 2026
+Fri Apr 17 14:42:49 2026
 
 Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
 Copyright (c) 1995 AT&T Corp.   All rights reserved.
@@ -32,7 +32,7 @@ Copyright (c) 2002-2024 Lattice Semiconductor Corporation,  All rights reserved.
 
 <A name="ptwr_set_ri"></A><B><U><big>Report Information</big></U></B>
 ------------------
-Command line:    trce -v 10 -gt -sethld -sp 5 -sphld m -o STM32_Lattice_Xilinx_STM32_impl.twr STM32_Lattice_Xilinx_STM32_impl.ncd STM32_Lattice_Xilinx_STM32_impl.prf 
+Command line:    trce -v 10 -gt -sethld -sp 5 -sphld m -o STM32_Lattice_Xilinx_STM32_impl.twr -gui -msgset D:/CubeMX/STM32H743_XC7A100_PS_Configuration/promote.xml STM32_Lattice_Xilinx_STM32_impl.ncd STM32_Lattice_Xilinx_STM32_impl.prf 
 Design file:     stm32_lattice_xilinx_stm32_impl.ncd
 Preference file: stm32_lattice_xilinx_stm32_impl.prf
 Device,speed:    LCMXO2-4000HC,5
@@ -56,52 +56,52 @@ BLOCK RESETPATHS
             5 items scored, 0 timing errors detected.
 --------------------------------------------------------------------------------
 
-Report:    8.152ns delay stm32_spi_clk to xilinx_spi_clk
-
-   Name    Fanout   Delay (ns)          Site               Resource
-PADI_DEL    ---     1.372         44.PAD to       44.PADDI stm32_spi_clk
-ROUTE         1     3.332       44.PADDI to       69.PADDO xilinx_spi_clk_c_c
-DOPAD_DEL   ---     3.448       69.PADDO to         69.PAD xilinx_spi_clk
-                  --------
-                    8.152   (59.1% logic, 40.9% route), 2 logic levels.
-
-Report:    7.783ns delay stm32_spi_cs_data to xilinx_spi_cs_data
+Report:    9.625ns delay stm32_spi_cs_data to xilinx_spi_cs_data
 
    Name    Fanout   Delay (ns)          Site               Resource
 PADI_DEL    ---     1.372         40.PAD to       40.PADDI stm32_spi_cs_data
-ROUTE         1     2.963       40.PADDI to       63.PADDO xilinx_spi_cs_data_c_c
-DOPAD_DEL   ---     3.448       63.PADDO to         63.PAD xilinx_spi_cs_data
+ROUTE         1     4.805       40.PADDI to       96.PADDO xilinx_spi_cs_data_c_c
+DOPAD_DEL   ---     3.448       96.PADDO to         96.PAD xilinx_spi_cs_data
                   --------
-                    7.783   (61.9% logic, 38.1% route), 2 logic levels.
+                    9.625   (50.1% logic, 49.9% route), 2 logic levels.
 
-Report:    7.783ns delay stm32_spi_mosi to xilinx_spi_mosi
+Report:    9.217ns delay stm32_spi_clk to xilinx_spi_clk
+
+   Name    Fanout   Delay (ns)          Site               Resource
+PADI_DEL    ---     1.372         44.PAD to       44.PADDI stm32_spi_clk
+ROUTE         1     4.397       44.PADDI to       95.PADDO xilinx_spi_clk_c_c
+DOPAD_DEL   ---     3.448       95.PADDO to         95.PAD xilinx_spi_clk
+                  --------
+                    9.217   (52.3% logic, 47.7% route), 2 logic levels.
+
+Report:    9.109ns delay stm32_spi_mosi to xilinx_spi_mosi
 
    Name    Fanout   Delay (ns)          Site               Resource
 PADI_DEL    ---     1.372         45.PAD to       45.PADDI stm32_spi_mosi
-ROUTE         1     2.963       45.PADDI to       68.PADDO xilinx_spi_mosi_c_c
-DOPAD_DEL   ---     3.448       68.PADDO to         68.PAD xilinx_spi_mosi
+ROUTE         1     4.289       45.PADDI to       94.PADDO xilinx_spi_mosi_c_c
+DOPAD_DEL   ---     3.448       94.PADDO to         94.PAD xilinx_spi_mosi
                   --------
-                    7.783   (61.9% logic, 38.1% route), 2 logic levels.
+                    9.109   (52.9% logic, 47.1% route), 2 logic levels.
 
-Report:    6.773ns delay stm32_spi_cs_cmd to xilinx_spi_cs_cmd
+Report:    7.375ns delay stm32_spi_cs_cmd to xilinx_spi_cs_cmd
 
    Name    Fanout   Delay (ns)          Site               Resource
 PADI_DEL    ---     1.372         70.PAD to       70.PADDI stm32_spi_cs_cmd
-ROUTE         1     1.953       70.PADDI to       73.PADDO xilinx_spi_cs_cmd_c_c
-DOPAD_DEL   ---     3.448       73.PADDO to         73.PAD xilinx_spi_cs_cmd
+ROUTE         1     2.555       70.PADDI to       87.PADDO xilinx_spi_cs_cmd_c_c
+DOPAD_DEL   ---     3.448       87.PADDO to         87.PAD xilinx_spi_cs_cmd
                   --------
-                    6.773   (71.2% logic, 28.8% route), 2 logic levels.
+                    7.375   (65.4% logic, 34.6% route), 2 logic levels.
 
-Report:    6.374ns delay xilinx_spi_miso to stm32_spi_miso
+Report:    7.368ns delay xilinx_spi_miso to stm32_spi_miso
 
    Name    Fanout   Delay (ns)          Site               Resource
-PADI_DEL    ---     1.372         67.PAD to       67.PADDI xilinx_spi_miso
-ROUTE         1     1.554       67.PADDI to       71.PADDO stm32_spi_miso_c_c
+PADI_DEL    ---     1.372         93.PAD to       93.PADDI xilinx_spi_miso
+ROUTE         1     2.548       93.PADDI to       71.PADDO stm32_spi_miso_c_c
 DOPAD_DEL   ---     3.448       71.PADDO to         71.PAD stm32_spi_miso
                   --------
-                    6.374   (75.6% logic, 24.4% route), 2 logic levels.
+                    7.368   (65.4% logic, 34.6% route), 2 logic levels.
 
-Report:    8.152ns is the maximum delay for this preference.
+Report:    9.625ns is the maximum delay for this preference.
 
 
 ================================================================================
@@ -109,32 +109,32 @@ Report:    8.152ns is the maximum delay for this preference.
             5 items scored, 0 timing errors detected.
 --------------------------------------------------------------------------------
 
-Report:    3.332ns maximum delay on xilinx_spi_clk_c_c
+Report:    4.805ns maximum delay on xilinx_spi_cs_data_c_c
 
            Delays             Connection(s)
-           3.332ns         44.PADDI to 69.PADDO        
+           4.805ns         40.PADDI to 96.PADDO        
 
-Report:    2.963ns maximum delay on xilinx_spi_mosi_c_c
-
-           Delays             Connection(s)
-           2.963ns         45.PADDI to 68.PADDO        
-
-Report:    2.963ns maximum delay on xilinx_spi_cs_data_c_c
+Report:    4.397ns maximum delay on xilinx_spi_clk_c_c
 
            Delays             Connection(s)
-           2.963ns         40.PADDI to 63.PADDO        
+           4.397ns         44.PADDI to 95.PADDO        
 
-Report:    1.953ns maximum delay on xilinx_spi_cs_cmd_c_c
-
-           Delays             Connection(s)
-           1.953ns         70.PADDI to 73.PADDO        
-
-Report:    1.554ns maximum delay on stm32_spi_miso_c_c
+Report:    4.289ns maximum delay on xilinx_spi_mosi_c_c
 
            Delays             Connection(s)
-           1.554ns         67.PADDI to 71.PADDO        
+           4.289ns         45.PADDI to 94.PADDO        
 
-Report:    3.332ns is the maximum delay for this preference.
+Report:    2.555ns maximum delay on xilinx_spi_cs_cmd_c_c
+
+           Delays             Connection(s)
+           2.555ns         70.PADDI to 87.PADDO        
+
+Report:    2.548ns maximum delay on stm32_spi_miso_c_c
+
+           Delays             Connection(s)
+           2.548ns         93.PADDI to 71.PADDO        
+
+Report:    4.805ns is the maximum delay for this preference.
 
 <A name="ptwr_set_rs"></A><B><U><big>Report Summary</big></U></B>
 --------------
@@ -142,9 +142,9 @@ Report:    3.332ns is the maximum delay for this preference.
 Preference                              |   Constraint|       Actual|Levels
 ----------------------------------------------------------------------------
                                         |             |             |
-Default path enumeration                |     0.000 ns|     8.152 ns|   0  
+Default path enumeration                |     0.000 ns|     9.625 ns|   0  
                                         |             |             |
-Default net enumeration                 |     0.000 ns|     3.332 ns|   0  
+Default net enumeration                 |     0.000 ns|     4.805 ns|   0  
                                         |             |             |
 ----------------------------------------------------------------------------
 

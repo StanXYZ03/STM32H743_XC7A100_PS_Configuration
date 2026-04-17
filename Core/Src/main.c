@@ -47,6 +47,7 @@ extern volatile uint8_t g_sdram_ready;
 /* USER CODE BEGIN PD */
 #define CONFIGURATION_MODE 0  //1-Slave Serial 0-JTAG
 #define UI_EARLY_LCD_DIAG 0U
+#define LATTICE_SINGLE_WIRE_TEST 0U
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -57,6 +58,7 @@ extern volatile uint8_t g_sdram_ready;
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+volatile uint8_t test = 0U;
 
 /* USER CODE END PV */
 
@@ -67,6 +69,8 @@ void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 static void CPU_CACHE_Enable(void);
 static void UI_CustomPlatformInit(void);
+static void LatticeSingleWireTestInit(void);
+static void LatticeSingleWireTestRun(void);
 
 /* USER CODE END PFP */
 
@@ -105,6 +109,35 @@ static void UI_CustomPlatformInit(void)
   g_sdram_ready = 1U;
 }
 
+static void LatticeSingleWireTestInit(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, GPIO_PIN_RESET);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+
+  test = (uint8_t)HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_9);
+}
+
+static void LatticeSingleWireTestRun(void)
+{
+  for (;;)
+  {
+    test = (uint8_t)HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_9);
+    HAL_Delay(1);
+  }
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -140,27 +173,33 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+#if (LATTICE_SINGLE_WIRE_TEST == 1U)
+  LatticeSingleWireTestInit();
+  LatticeSingleWireTestRun();
+#endif
   MX_DMA_Init();
   MX_FMC_Init();
   MX_SPI4_Init();
   MX_DMA2D_Init();
   MX_LTDC_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   UI_CustomPlatformInit();
 #if (UI_EARLY_LCD_DIAG == 1U)
-  UI_EarlyFramebufferInit();
-  LCD_RGB_Init();
-  if (LTDC_Layer1->CFBAR != 0xC0200000U)
-  {
-    LTDC_Layer1->CFBAR = 0xC0200000U;
-    LTDC->SRCR = LTDC_SRCR_IMR;
-  }
-  LCD_RGB_BacklightOn();
-  LCD_RGB_Fill(0xFFFFU);
-  bsp_LedOn(4);
+//  UI_EarlyFramebufferInit();
+//  LCD_RGB_Init();
+//  if (LTDC_Layer1->CFBAR != 0xC0200000U)
+//  {
+//    LTDC_Layer1->CFBAR = 0xC0200000U;
+//    LTDC->SRCR = LTDC_SRCR_IMR;
+//  }
+//  LCD_RGB_BacklightOn();
+//  LCD_RGB_Fill(0xFFFFU);
+//  bsp_LedOn(4);
   for (;;)
   {
-    HAL_Delay(1000);
+		HAL_GPIO_TogglePin(GPIOA,GPIO_PIN_0);
+    HAL_Delay(500);
   }
 #endif
 
