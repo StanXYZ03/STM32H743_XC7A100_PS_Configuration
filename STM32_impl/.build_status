@@ -5,8 +5,8 @@
             <Task name="IBIS" build_result="0" update_result="3" update_time="0"/>
             <Task name="TimingSimFileVlg" build_result="0" update_result="3" update_time="0"/>
             <Task name="TimingSimFileVHD" build_result="0" update_result="3" update_time="0"/>
-            <Task name="Bitgen" build_result="2" update_result="0" update_time="1776408171"/>
-            <Task name="Jedecgen" build_result="2" update_result="0" update_time="1776408176"/>
+            <Task name="Bitgen" build_result="2" update_result="0" update_time="1776647998"/>
+            <Task name="Jedecgen" build_result="2" update_result="0" update_time="1776648003"/>
         </Milestone>
         <Milestone name="Map" build_result="2" build_time="1776408166">
             <Task name="Map" build_result="2" update_result="0" update_time="1776408166"/>
@@ -31,9 +31,9 @@
             <Task name="DEC" build_result="0" update_result="3" update_time="0"/>
         </Milestone>
         <Report name=".vdbs/STM32_Lattice_Xilinx_STM32_impl_map.vdb" last_build_time="1776408166" last_build_size="28239"/>
-        <Report name="STM32_Lattice_Xilinx_STM32_impl.bgn" last_build_time="1776408176" last_build_size="4672"/>
-        <Report name="STM32_Lattice_Xilinx_STM32_impl.bit" last_build_time="1776408171" last_build_size="16099"/>
-        <Report name="STM32_Lattice_Xilinx_STM32_impl.jed" last_build_time="1776408176" last_build_size="849394"/>
+        <Report name="STM32_Lattice_Xilinx_STM32_impl.bgn" last_build_time="1776648003" last_build_size="4672"/>
+        <Report name="STM32_Lattice_Xilinx_STM32_impl.bit" last_build_time="1776647998" last_build_size="16099"/>
+        <Report name="STM32_Lattice_Xilinx_STM32_impl.jed" last_build_time="1776648003" last_build_size="849394"/>
         <Report name="STM32_Lattice_Xilinx_STM32_impl.lsedata" last_build_time="1776325284" last_build_size="1407"/>
         <Report name="STM32_Lattice_Xilinx_STM32_impl.ncd" last_build_time="1776408168" last_build_size="7092"/>
         <Report name="STM32_Lattice_Xilinx_STM32_impl.ngd" last_build_time="1776325284" last_build_size="6255"/>
@@ -42,4 +42,3 @@
         <Report name="STM32_Lattice_Xilinx_STM32_impl_map.ncd" last_build_time="1776408165" last_build_size="5892"/>
     </Strategy>
 </BuildStatus>
-                            

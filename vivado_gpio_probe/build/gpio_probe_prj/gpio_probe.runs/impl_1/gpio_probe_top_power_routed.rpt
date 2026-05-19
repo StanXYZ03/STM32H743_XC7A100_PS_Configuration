@@ -1,7 +1,7 @@
 Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2018.3 (win64) Build 2405991 Thu Dec  6 23:38:27 MST 2018
-| Date             : Fri Apr 17 09:54:43 2026
+| Date             : Mon Apr 27 14:20:28 2026
 | Host             : adsf running 64-bit major release  (build 9200)
 | Command          : report_power -file gpio_probe_top_power_routed.rpt -pb gpio_probe_top_power_summary_routed.pb -rpx gpio_probe_top_power_routed.rpx
 | Design           : gpio_probe_top

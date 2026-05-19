@@ -1,0 +1,21 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Fri Apr 17 14:38:51 2026
+# Process ID: 29264
+# Current directory: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent29796 D:\CubeMX\STM32H743_XC7A100_PS_Configuration\Mouse_Key\Mouse_Key.xpr
+# Log file: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/vivado.log
+# Journal file: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key\vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/Mouse_Key.xpr
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/Vivado/Vivado/2018.3/data/ip'.
+update_compile_order -fileset sources_1
+exit
+INFO: [Common 17-206] Exiting Vivado at Fri Apr 17 16:42:12 2026...

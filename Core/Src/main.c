@@ -22,6 +22,7 @@
 #include "dma.h"
 #include "dma2d.h"
 #include "ltdc.h"
+#include "lwip.h"
 #include "memorymap.h"
 #include "spi.h"
 #include "usb_device.h"
@@ -173,10 +174,6 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-#if (LATTICE_SINGLE_WIRE_TEST == 1U)
-  LatticeSingleWireTestInit();
-  LatticeSingleWireTestRun();
-#endif
   MX_DMA_Init();
   MX_FMC_Init();
   MX_SPI4_Init();

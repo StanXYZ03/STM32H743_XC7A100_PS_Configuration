@@ -26,11 +26,15 @@ stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_H
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma_ex.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_mdma.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_dma2d.h
+stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_eth.h
+stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_eth_ex.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_exti.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_cortex.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_flash_ex.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_hsem.h
+stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sram.h
+stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_fmc.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_i2c_ex.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_ltdc.h
@@ -38,7 +42,6 @@ stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_H
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pwr_ex.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_sdram.h
-stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_ll_fmc.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_spi_ex.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Drivers/STM32H7xx_HAL_Driver/Inc/stm32h7xx_hal_pcd.h
@@ -79,5 +82,6 @@ stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Core/Inc/fmc.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Core/Inc/dma.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdbool.h
+stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../User/bsp/inc/Bsp_ETH.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../User/bsp/inc/bsp_dwt.h
 stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h

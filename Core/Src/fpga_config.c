@@ -1,4 +1,5 @@
 #include "fpga_config.h"
+#include "FPGAConfigDefaultTask.h"
 #include "spi_bridge_bin.h"
 
 FPGA_StateTypeDef g_fpga_state = FPGA_STATE_IDLE;
@@ -106,6 +107,10 @@ static HAL_StatusTypeDef spi_flash_read_jedec_id(JtagContext *jtag, uint8_t jede
 static HAL_StatusTypeDef spi_flash_read_buffer(JtagContext *jtag, uint32_t addr, uint8_t *data, uint16_t len);
 static HAL_StatusTypeDef spi_flash_write_enable(JtagContext *jtag);
 static HAL_StatusTypeDef spi_flash_reset_memory(JtagContext *jtag);
+static uint8_t FPGA_ConfigAbortRequested(void)
+{
+    return FPGA_UI_IsAbortRequested();
+}
 
 void FPGA_Delay_NS(uint32_t ns)
 {
@@ -162,6 +167,10 @@ static HAL_StatusTypeDef FPGA_Wait_InitB_Ready(void)
     PROG_STATE = HAL_GPIO_ReadPin(FPGA_PROGB_PORT, FPGA_PROGB_PIN);
 
     while (HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET) {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            g_fpga_state = FPGA_STATE_FAILED;
+            return HAL_ERROR;
+        }
         osDelay(1);
         if (--timeout == 0U) {
             g_fpga_state = FPGA_STATE_FAILED;
@@ -180,6 +189,10 @@ static HAL_StatusTypeDef FPGA_Wait_DONE_High(void)
     DONE_STATE = HAL_GPIO_ReadPin(FPGA_DONE_PORT, FPGA_DONE_PIN);
 
     while (HAL_GPIO_ReadPin(FPGA_DONE_PORT, FPGA_DONE_PIN) == GPIO_PIN_RESET) {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            g_fpga_state = FPGA_STATE_FAILED;
+            return HAL_ERROR;
+        }
         osDelay(1);
 
         if (--timeout == 0U) {
@@ -235,6 +248,11 @@ HAL_StatusTypeDef FPGA_Send_Bin_From_SDRAM(uint32_t bin_size)
     uint32_t batch_size = 4096U;
 
     while (send_total < bin_size) {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            HAL_SPI_Abort(&hspi4);
+            g_fpga_state = FPGA_STATE_FAILED;
+            return HAL_ERROR;
+        }
         if (HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET) {
             CDC_Transmit_FS((uint8_t *)"[FPGA] ERROR: INIT_B dropped before send!\r\n", 44);
             g_fpga_state = FPGA_STATE_FAILED;
@@ -251,6 +269,11 @@ HAL_StatusTypeDef FPGA_Send_Bin_From_SDRAM(uint32_t bin_size)
         }
 
         while (HAL_SPI_GetState(&hspi4) != HAL_SPI_STATE_READY) {
+            if (FPGA_ConfigAbortRequested() != 0U) {
+                HAL_SPI_Abort(&hspi4);
+                g_fpga_state = FPGA_STATE_FAILED;
+                return HAL_ERROR;
+            }
             if (HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET) {
                 HAL_SPI_Abort(&hspi4);
                 CDC_Transmit_FS((uint8_t *)"[FPGA] ERROR: INIT_B dropped (DMA abort)!\r\n", 44);
@@ -471,6 +494,10 @@ static HAL_StatusTypeDef Jtag_WaitInitBHigh(JtagContext *jtag, uint32_t timeout_
     g_fpga_state = FPGA_STATE_WAIT_INITB;
 
     while (HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET) {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            g_fpga_state = FPGA_STATE_FAILED;
+            return HAL_ERROR;
+        }
         Jtag_RunClocks(jtag, 32U, JTAG_RTI);
         osDelay(1);
 
@@ -560,6 +587,11 @@ static HAL_StatusTypeDef Jtag_ConfigureFromBuffer(const uint8_t *bin_data, uint3
     while (send_total < bin_size) {
         uint32_t current_batch = ((bin_size - send_total) > batch_size) ? batch_size : (bin_size - send_total);
         bool is_last_batch = ((send_total + current_batch) == bin_size);
+
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            g_fpga_state = FPGA_STATE_FAILED;
+            return HAL_ERROR;
+        }
 
         if (HAL_GPIO_ReadPin(FPGA_INITB_PORT, FPGA_INITB_PIN) == GPIO_PIN_RESET) {
             CDC_Transmit_FS((uint8_t *)"[JTAG] INIT_B dropped during CFG_IN\r\n", 36);
@@ -907,6 +939,9 @@ static HAL_StatusTypeDef spi_flash_wait_ready(JtagContext *jtag, uint32_t timeou
     uint8_t status = 0U;
 
     while (timeout_ms-- > 0U) {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            return HAL_ERROR;
+        }
         if (spi_flash_read_status(jtag, &status) != HAL_OK) {
             return HAL_ERROR;
         }
@@ -1000,6 +1035,10 @@ static HAL_StatusTypeDef spi_flash_read_jedec_id(JtagContext *jtag, uint8_t jede
     }
 
     for (uint32_t i = 0; i < 3U; i++) {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            (void)Bridge_SetCs(jtag, true);
+            return HAL_ERROR;
+        }
         if (Bridge_Xfer8(jtag, 0xFFU, &jedec_id[i]) != HAL_OK) {
             (void)Bridge_SetCs(jtag, true);
             return HAL_ERROR;
@@ -1083,6 +1122,10 @@ HAL_StatusTypeDef spi_flash_program_page(JtagContext *jtag, uint32_t page_addr, 
     }
 
     for (uint16_t i = 0; i < len; i++) {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            (void)Bridge_SetCs(jtag, true);
+            return HAL_ERROR;
+        }
         if (Bridge_Xfer8(jtag, data[i], NULL) != HAL_OK) {
             (void)Bridge_SetCs(jtag, true);
             return HAL_ERROR;
@@ -1123,6 +1166,10 @@ static HAL_StatusTypeDef spi_flash_read_buffer(JtagContext *jtag, uint32_t addr,
     }
 
     for (uint16_t i = 0; i < len; i++) {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            (void)Bridge_SetCs(jtag, true);
+            return HAL_ERROR;
+        }
         if (Bridge_Xfer8(jtag, 0xFFU, &data[i]) != HAL_OK) {
             (void)Bridge_SetCs(jtag, true);
             return HAL_ERROR;
@@ -1158,6 +1205,10 @@ HAL_StatusTypeDef spi_flash_program_full(uint8_t *bin_data, uint32_t bin_len)
     if ((bin_data == NULL) || (bin_len == 0U) || (bin_len > SDRAM_TOTAL_SIZE)) {
         CDC_Transmit_FS((uint8_t*)"[ERROR] Invalid user design length!\r\n",
                         sizeof("[ERROR] Invalid user design length!\r\n") - 1U);
+        return HAL_ERROR;
+    }
+
+    if (FPGA_ConfigAbortRequested() != 0U) {
         return HAL_ERROR;
     }
 
@@ -1253,6 +1304,9 @@ HAL_StatusTypeDef spi_flash_program_full(uint8_t *bin_data, uint32_t bin_len)
     CDC_Transmit_FS((uint8_t*)log_buf, log_len);
 
     for (uint32_t i = 0; i < total_sectors; i++) {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            return HAL_ERROR;
+        }
         ret = spi_flash_erase_sector(&jtag, i * SPI_FLASH_SECTOR_SIZE);
         if (ret != HAL_OK) {
             log_len = snprintf(log_buf, sizeof(log_buf),
@@ -1278,6 +1332,9 @@ HAL_StatusTypeDef spi_flash_program_full(uint8_t *bin_data, uint32_t bin_len)
     CDC_Transmit_FS((uint8_t*)log_buf, log_len);
 
     for (uint32_t i = 0; i < total_pages; i++) {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            return HAL_ERROR;
+        }
         uint32_t page_addr = i * SPI_FLASH_PAGE_SIZE;
         uint16_t write_len = (i == (total_pages - 1U)) ? (uint16_t)(bin_len - page_addr) : SPI_FLASH_PAGE_SIZE;
         ret = spi_flash_program_page(&jtag, page_addr, &bin_data[page_addr], write_len);
@@ -1300,6 +1357,9 @@ HAL_StatusTypeDef spi_flash_program_full(uint8_t *bin_data, uint32_t bin_len)
     CDC_Transmit_FS((uint8_t*)"[FLASH] Start data verify...\r\n", 32);
     for(uint32_t i = 0; i < total_pages; i++)
     {
+        if (FPGA_ConfigAbortRequested() != 0U) {
+            return HAL_ERROR;
+        }
         uint32_t page_addr = i * SPI_FLASH_PAGE_SIZE;
         uint16_t read_len = (i == (total_pages - 1U)) ? (uint16_t)(bin_len - page_addr) : SPI_FLASH_PAGE_SIZE;
 

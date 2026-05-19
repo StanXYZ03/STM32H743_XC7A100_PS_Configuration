@@ -1,4 +1,4 @@
-﻿/*
+/*
  * File: FPGAConfigDefaultTask.c
  */
 
@@ -19,7 +19,10 @@ uint8_t g_fpgamode = 0;
 uint8_t g_wait_mode_flag = 0;
 static uint8_t g_skip_optional_start_marker = 0U;
 static volatile FPGA_UI_FlowState_t g_fpga_ui_flow = FPGA_UI_FLOW_IDLE;
+static volatile uint8_t g_fpga_ui_abort_requested = 0U;
 static void FPGA_ResetBinReceiveState(void);
+static uint32_t FPGA_NormalizeAsciiCommand(const uint8_t *src, uint32_t len, char *dst, uint32_t dst_size);
+static int FPGA_CommandEquals(const uint8_t *buf, uint32_t len, const char *token);
 
 static void FPGA_UI_SetFlow(FPGA_UI_FlowState_t state)
 {
@@ -32,6 +35,7 @@ void FPGA_UI_ResetSession(void)
     g_fpgamode = 0U;
     g_sdram_recv_state = SDRAM_RECV_IDLE;
     g_skip_optional_start_marker = 0U;
+    g_fpga_ui_abort_requested = 0U;
     FPGA_UI_SetFlow(FPGA_UI_FLOW_IDLE);
 }
 
@@ -42,6 +46,56 @@ static void FPGA_ResetBinReceiveState(void)
     g_fpga_config_start = 0U;
     g_wait_mode_flag = 0U;
     first_call = 1U;
+}
+
+static uint32_t FPGA_NormalizeAsciiCommand(const uint8_t *src, uint32_t len, char *dst, uint32_t dst_size)
+{
+    uint32_t i;
+    uint32_t out_len = 0U;
+
+    if ((src == NULL) || (dst == NULL) || (dst_size == 0U)) {
+        return 0U;
+    }
+
+    for (i = 0U; i < len; i++) {
+        uint8_t ch = src[i];
+
+        if ((ch == ' ') || (ch == '\r') || (ch == '\n') || (ch == '\t')) {
+            continue;
+        }
+
+        if ((ch >= 'a') && (ch <= 'z')) {
+            ch = (uint8_t)(ch - ('a' - 'A'));
+        }
+
+        if (out_len + 1U >= dst_size) {
+            break;
+        }
+
+        dst[out_len++] = (char)ch;
+    }
+
+    dst[out_len] = '\0';
+    return out_len;
+}
+
+static int FPGA_CommandEquals(const uint8_t *buf, uint32_t len, const char *token)
+{
+    char normalized[24];
+
+    if (token == NULL) {
+        return 0;
+    }
+
+    FPGA_NormalizeAsciiCommand(buf, len, normalized, sizeof(normalized));
+    return (strcmp(normalized, token) == 0) ? 1 : 0;
+}
+
+static void FPGA_UI_CancelPendingSession(const char *reason)
+{
+    FPGA_UI_ResetSession();
+    g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                         "[ABORT] %s\r\n", (reason != NULL) ? reason : "Configuration session canceled.");
 }
 
 static void FPGA_BeginModeSelection(void)
@@ -89,6 +143,11 @@ FPGA_UI_FlowState_t FPGA_UI_GetFlowState(void)
     return g_fpga_ui_flow;
 }
 
+uint8_t FPGA_UI_IsAbortRequested(void)
+{
+    return (uint8_t)g_fpga_ui_abort_requested;
+}
+
 uint32_t FPGA_UI_GetBinSize(void)
 {
     return g_sdram_bin_offset;
@@ -100,6 +159,21 @@ void FPGA_UI_RequestStart(void)
         ((g_fpgamode == 1U) || (g_fpgamode == 2U) || (g_fpgamode == 3U))) {
         g_fpga_config_start = 1U;
     }
+}
+
+void FPGA_UI_RequestAbort(void)
+{
+    if (g_fpga_ui_flow == FPGA_UI_FLOW_CONFIGURING) {
+        g_fpga_ui_abort_requested = 1U;
+        FPGA_UI_SetFlow(FPGA_UI_FLOW_ABORTING);
+        g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                             "[ABORT] Stop requested, leaving configuration mode...\r\n");
+        return;
+    }
+
+    FPGA_UI_ResetSession();
+    g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                         "[ABORT] Configuration session canceled.\r\n");
 }
 
 static void SDRAM_Process_Data_Block(uint8_t* buf, uint32_t len)
@@ -160,22 +234,97 @@ static void SDRAM_Process_Data_Block(uint8_t* buf, uint32_t len)
 
 int8_t USB_CDC_Recv_Callback(uint8_t* buf, uint32_t* len)
 {
-    uint32_t i = 0;
+    uint32_t i;
+    uint32_t payload_offset = 0U;
+    FPGA_UI_FlowState_t flow;
 
     if((*len == 0U) || (buf == NULL))
     {
         return USBD_OK;
     }
 
-    FPGA_Check_Config_Cmd(buf, *len);
+    flow = FPGA_UI_GetFlowState();
 
-    if((*len == 1U) && (g_wait_mode_flag == 1U))
+    if (((*len == 4U) &&
+         (buf[0] == 0xAAU) &&
+         (buf[1] == 0x55U) &&
+         (buf[2] == 0x55U) &&
+         (buf[3] == 0xAAU) &&
+         (flow != FPGA_UI_FLOW_CONFIGURING) &&
+         (flow != FPGA_UI_FLOW_ABORTING)))
     {
-        if((buf[0] == 0x01U) || (buf[0] == 0x02U) || (buf[0] == 0x03U))
+        if (flow != FPGA_UI_FLOW_IDLE)
+        {
+            FPGA_UI_CancelPendingSession("Configuration session canceled by host.");
+        }
+
+        g_usb_recv_flag = 1U;
+        return USBD_OK;
+    }
+
+    if ((flow == FPGA_UI_FLOW_BIN_DONE_WAIT_START) &&
+        FPGA_CommandEquals(buf, *len, "1231"))
+    {
+        FPGA_UI_RequestStart();
+        g_usb_recv_flag = 1U;
+        return USBD_OK;
+    }
+
+    if (flow == FPGA_UI_FLOW_BIN_DONE_WAIT_START)
+    {
+        FPGA_Check_Config_Cmd(buf, *len);
+    }
+
+    if ((((*len == 1U) && (buf[0] == CMD_START_BIN)) ||
+         FPGA_CommandEquals(buf, *len, "5A")) &&
+        (flow != FPGA_UI_FLOW_CONFIGURING) &&
+        (flow != FPGA_UI_FLOW_ABORTING))
+    {
+        if ((g_fpgamode == (uint8_t)FPGA_UI_MODE_SLAVE_SERIAL) ||
+            (g_fpgamode == (uint8_t)FPGA_UI_MODE_JTAG_SRAM) ||
+            (g_fpgamode == (uint8_t)FPGA_UI_MODE_JTAG_FLASH))
+        {
+            FPGA_BeginBinReceive();
+            g_skip_optional_start_marker = 1U;
+        }
+        else
+        {
+            FPGA_BeginModeSelection();
+        }
+
+        g_usb_recv_flag = 1U;
+        return USBD_OK;
+    }
+
+    if (g_wait_mode_flag == 1U)
+    {
+        uint8_t selected_mode = 0U;
+
+        if (*len == 1U)
+        {
+            if ((buf[0] == 0x01U) || (buf[0] == 0x02U) || (buf[0] == 0x03U))
+            {
+                selected_mode = buf[0];
+            }
+        }
+        else if (FPGA_CommandEquals(buf, *len, "01"))
+        {
+            selected_mode = 0x01U;
+        }
+        else if (FPGA_CommandEquals(buf, *len, "02"))
+        {
+            selected_mode = 0x02U;
+        }
+        else if (FPGA_CommandEquals(buf, *len, "03"))
+        {
+            selected_mode = 0x03U;
+        }
+
+        if(selected_mode != 0U)
         {
             const char *mode_name = "Unknown";
 
-            g_fpgamode = buf[0];
+            g_fpgamode = selected_mode;
 
             if(g_fpgamode == 0x01U)
             {
@@ -198,39 +347,46 @@ int8_t USB_CDC_Recv_Callback(uint8_t* buf, uint32_t* len)
         }
     }
 
-    for(i = 0; i < *len; i++)
+    if (g_sdram_recv_state == SDRAM_RECV_DATA)
     {
-        if((g_sdram_recv_state == SDRAM_RECV_DATA) &&
-           (g_skip_optional_start_marker != 0U) &&
-           (buf[i] == CMD_START_BIN))
+        if (FPGA_CommandEquals(buf, *len, "55AAAA55"))
+        {
+            g_sdram_recv_state = SDRAM_RECV_COMPLETE;
+            g_usb_recv_flag = 1U;
+            return USBD_OK;
+        }
+
+        if ((g_skip_optional_start_marker != 0U) &&
+            (((*len > 0U) && (buf[0] == CMD_START_BIN)) ||
+             FPGA_CommandEquals(buf, *len, "5A")))
         {
             g_skip_optional_start_marker = 0U;
-            continue;
-        }
-        g_skip_optional_start_marker = 0U;
-
-        if(g_sdram_recv_state == SDRAM_RECV_IDLE)
-        {
-            if(buf[i] == CMD_START_BIN)
-            {
-                FPGA_BeginModeSelection();
-                i++;
-                break;
-            }
-            else
-            {
-                continue;
-            }
+            payload_offset = ((*len == 1U) && (buf[0] == CMD_START_BIN)) ? 1U : *len;
         }
         else
         {
-            break;
+            g_skip_optional_start_marker = 0U;
         }
+
+        if (payload_offset < *len)
+        {
+            SDRAM_Process_Data_Block(&buf[payload_offset], *len - payload_offset);
+        }
+
+        g_usb_recv_flag = 1U;
+        return USBD_OK;
     }
 
-    if((i < *len) && (g_sdram_recv_state == SDRAM_RECV_DATA))
+    if (g_sdram_recv_state == SDRAM_RECV_IDLE)
     {
-        SDRAM_Process_Data_Block(&buf[i], *len - i);
+        for (i = 0U; i < *len; i++)
+        {
+            if (buf[i] == CMD_START_BIN)
+            {
+                FPGA_BeginModeSelection();
+                break;
+            }
+        }
     }
 
     g_usb_recv_flag = 1;
@@ -311,6 +467,7 @@ void FPGAConfigDefaultTask(void const * argument)
             HAL_StatusTypeDef ret = HAL_ERROR;
 
             FPGA_UI_SetFlow(FPGA_UI_FLOW_CONFIGURING);
+            g_fpga_ui_abort_requested = 0U;
 
             if((g_fpgamode != 1U) && (g_fpgamode != 2U) && (g_fpgamode != 3U))
             {
@@ -349,7 +506,13 @@ void FPGAConfigDefaultTask(void const * argument)
                 continue;
             }
 
-            if(ret == HAL_OK)
+            if (g_fpga_ui_abort_requested != 0U)
+            {
+                FPGA_Reset();
+                FPGA_UI_ResetSession();
+                CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration aborted by EC2.\r\n", 39);
+            }
+            else if(ret == HAL_OK)
             {
                 CDC_Transmit_FS((uint8_t*)"[FPGA] Configuration success!\r\n", 30);
                 FPGA_UI_SetFlow(FPGA_UI_FLOW_SUCCESS);
@@ -362,8 +525,11 @@ void FPGAConfigDefaultTask(void const * argument)
 
             osDelay(1);
             g_fpga_config_start = 0;
-            g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
-                                 "[READY] Wait next start cmd (0x5A)\r\n");
+            if (FPGA_UI_GetFlowState() != FPGA_UI_FLOW_IDLE)
+            {
+                g_log_len = snprintf((char*)g_log_buf, sizeof(g_log_buf),
+                                     "[READY] Wait next start cmd (0x5A)\r\n");
+            }
             osDelay(1);
         }
 

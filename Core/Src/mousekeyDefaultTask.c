@@ -5,6 +5,7 @@
 #include "usbd_cdc_if.h"
 #include "usbd_cdc.h"
 #include "FPGAConfigDefaultTask.h"
+#include "Bsp_ETH.h"
 #include "bsp_dwt.h"
 #include "cmsis_os.h"
 
@@ -454,6 +455,15 @@ void mousekeyDefaultTask(void const * argument)
     uint32_t regs[3] = {0U, 0U, 0U};
 
     (void)argument;
+
+#if (BSP_ETH_PG9_GPIO_TEST_MODE != 0U)
+    MouseKey_CS_AllHigh();
+    (void)HAL_SPI_DeInit(&hspi1);
+    for (;;)
+    {
+        osDelay(100U);
+    }
+#endif
 
     MouseKey_SPI_ConfigSlow();
     bsp_InitDWT();

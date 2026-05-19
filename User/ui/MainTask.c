@@ -130,6 +130,12 @@ static uint8_t s_remote_tracked;
 static int16_t s_remote_prev_x;
 static int16_t s_remote_prev_y;
 static TickType_t s_remote_last_redraw_tick;
+static uint8_t s_fpga_tracked;
+static UI_ScreenId_t s_fpga_prev_sid;
+static FPGA_UI_Mode_t s_fpga_prev_mode;
+static FPGA_UI_FlowState_t s_fpga_prev_flow;
+static uint32_t s_fpga_prev_bin_size;
+static uint32_t s_fpga_prev_dot_phase;
 
 static int16_t UI_ClampS16(int value, int min_value, int max_value)
 {
@@ -199,6 +205,48 @@ static void UI_ResetRemoteControlRefreshTracking(void)
     s_remote_prev_x = 0;
     s_remote_prev_y = 0;
     s_remote_last_redraw_tick = 0;
+}
+
+static void UI_ResetFpgaRefreshTracking(void)
+{
+    s_fpga_tracked = 0u;
+    s_fpga_prev_sid = UI_SCR_COUNT;
+    s_fpga_prev_mode = FPGA_UI_MODE_NONE;
+    s_fpga_prev_flow = FPGA_UI_FLOW_IDLE;
+    s_fpga_prev_bin_size = 0u;
+    s_fpga_prev_dot_phase = 0u;
+}
+
+static int UI_ShouldRefreshFpgaScreen(UI_ScreenId_t sid, TickType_t now)
+{
+    FPGA_UI_Mode_t mode;
+    FPGA_UI_FlowState_t flow;
+    uint32_t bin_size;
+
+    if (!UI_IsFpgaDynamicScreen(sid)) {
+        UI_ResetFpgaRefreshTracking();
+        return 0;
+    }
+
+    mode = FPGA_UI_GetMode();
+    flow = FPGA_UI_GetFlowState();
+    bin_size = FPGA_UI_GetBinSize();
+
+    if ((s_fpga_tracked == 0u) ||
+        (s_fpga_prev_sid != sid) ||
+        (s_fpga_prev_mode != mode) ||
+        (s_fpga_prev_flow != flow) ||
+        (s_fpga_prev_bin_size != bin_size)) {
+        s_fpga_tracked = 1u;
+        s_fpga_prev_sid = sid;
+        s_fpga_prev_mode = mode;
+        s_fpga_prev_flow = flow;
+        s_fpga_prev_bin_size = bin_size;
+        s_fpga_prev_dot_phase = 0u;
+        return 1;
+    }
+
+    return 0;
 }
 
 extern volatile unsigned long g_emwin_showbuffer_cnt;
@@ -810,7 +858,11 @@ void MainTask(void)
                 int remote_region_only = 0;
                 int nav_redraw = UI_Nav_ConsumeRedraw();
                 if (UI_IsFpgaDynamicScreen(sid)) {
-                    need_redraw = 1;
+                    if (UI_ShouldRefreshFpgaScreen(sid, now) != 0) {
+                        need_redraw = 1;
+                    }
+                } else {
+                    UI_ResetFpgaRefreshTracking();
                 }
                 if (UI_IsRemoteControlScreen(sid)) {
                     if (UI_ShouldRefreshRemoteControl(now) != 0) {
@@ -848,7 +900,11 @@ void MainTask(void)
                     }
                     ManualRotateToPhysical();
                 }
-                vTaskDelay(pdMS_TO_TICKS(UI_DEMO_IDLE_POLL_MS));
+                if (UI_IsFpgaDynamicScreen(sid)) {
+                    vTaskDelay(pdMS_TO_TICKS(2u));
+                } else {
+                    vTaskDelay(pdMS_TO_TICKS(UI_DEMO_IDLE_POLL_MS));
+                }
             }
             prev_sid = sid;
         }

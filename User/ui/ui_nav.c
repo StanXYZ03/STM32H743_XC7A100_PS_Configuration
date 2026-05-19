@@ -10,19 +10,20 @@ static volatile uint8_t s_redraw_req;
 static int              s_menu_focus;
 static int              s_fpga_mode_focus;
 
-/* EC1: GPB2=A GPB1=B GPB0=R；EC2: GPB5=A GPB4=B GPB3=R（跳线切到 EC2 后有效） */
+/* EC1: GPB2=A GPB1=B GPB0=R；EC2: GPB5=A GPB4=B GPB3=R（跳线切�?EC2 后有效） */
 #define EC1_AB_SHIFT     1
 #define EC2_AB_SHIFT     4
 
 /* 按键连发间隔（ms），兼作去抖 */
 #define BTN_COOLDOWN_MS  180u
-/* EC11 按键：连续 N 次采样一致才翻转滤波状态，避免按住时毛刺被当成「松手」导致长按在按住阶段误触发 */
+#define FPGA_MODE_BTN_COOLDOWN_MS  60u
+/* EC11 按键：连�?N 次采样一致才翻转滤波状态，避免按住时毛刺被当成「松手」导致长按在按住阶段误触�?*/
 #define EC_BTN_DEBOUNCE_MATCHES  2u
 
-/* 波形页：长按阈值（V/div、ms/div） */
+/* 波形页：长按阈值（V/div、ms/div�?*/
 #define EC_SCOPE_LONG_MS 550u
 
-/* 正交状态转移 → -1 / 0 / +1（与常见 Gray 码表一致） */
+/* 正交状态转�?�?-1 / 0 / +1（与常见 Gray 码表一致） */
 static const int8_t s_quad_tbl[16] = {
     0, -1, 1, 0,
     1, 0, 0, -1,
@@ -34,6 +35,8 @@ static uint8_t s_ec1_prev_ab;
 static uint8_t s_ec2_prev_ab;
 static uint8_t s_ec1_btn_prev;
 static uint8_t s_ec2_btn_prev;
+static uint8_t s_ec2_btn_prev_raw;
+static uint8_t s_fpga_ec2_back_latched;
 static uint8_t s_ec1_btn_filt;
 static uint8_t s_ec2_btn_filt;
 static uint8_t s_ec1_btn_debounce;
@@ -45,14 +48,14 @@ static uint8_t s_io_inited;
 static uint8_t s_enc_arm;
 static int16_t s_ec1_pulse_accum;
 static int16_t s_ec2_pulse_accum;
-/* 上次有效单步方向 ±1，用于快转时 A/B 同时跳变（对角）时补 ±2 步 */
+/* 上次有效单步方向 ±1，用于快转时 A/B 同时跳变（对角）时补 ±2 �?*/
 static int8_t  s_ec1_last_step;
 static int8_t  s_ec2_last_step;
 
-/* 波形页 EC1/EC2：按下时刻与组合判定（松手时再决定是否执行原长按） */
+/* 波形�?EC1/EC2：按下时刻与组合判定（松手时再决定是否执行原长按�?*/
 static TickType_t s_ec1_scope_press_tick;
 static TickType_t s_ec2_scope_press_tick;
-/* 本段按下内若发生过对侧旋钮旋转 → 组合模式，松手时不执行本键原长按 */
+/* 本段按下内若发生过对侧旋钮旋�?�?组合模式，松手时不执行本键原长按 */
 static uint8_t    s_ec1_scope_combo_lock;
 static uint8_t    s_ec2_scope_combo_lock;
 
@@ -61,6 +64,42 @@ static int nav_is_fpga_mode_page(UI_ScreenId_t screen)
     return (screen == UI_SCR_FPGA_SLAVE_SERIAL) ||
            (screen == UI_SCR_FPGA_JTAG_SRAM) ||
            (screen == UI_SCR_FPGA_JTAG_FLASH);
+}
+static FPGA_UI_Mode_t nav_expected_fpga_mode(UI_ScreenId_t screen)
+{
+    switch (screen) {
+    case UI_SCR_FPGA_SLAVE_SERIAL:
+        return FPGA_UI_MODE_SLAVE_SERIAL;
+    case UI_SCR_FPGA_JTAG_SRAM:
+        return FPGA_UI_MODE_JTAG_SRAM;
+    case UI_SCR_FPGA_JTAG_FLASH:
+        return FPGA_UI_MODE_JTAG_FLASH;
+    default:
+        return FPGA_UI_MODE_NONE;
+    }
+}
+
+static void nav_sync_fpga_mode_session(void)
+{
+    FPGA_UI_Mode_t expected;
+    FPGA_UI_FlowState_t flow;
+
+    if (!nav_is_fpga_mode_page(s_screen)) {
+        return;
+    }
+
+    expected = nav_expected_fpga_mode(s_screen);
+    flow = FPGA_UI_GetFlowState();
+
+    if ((expected == FPGA_UI_MODE_NONE) ||
+        ((FPGA_UI_GetMode() == expected) &&
+         (flow != FPGA_UI_FLOW_IDLE) &&
+         (flow != FPGA_UI_FLOW_WAIT_MODE))) {
+        return;
+    }
+
+    FPGA_UI_SelectMode(expected);
+    s_redraw_req = 1u;
 }
 
 static void nav_menu_enter_from_focus(void)
@@ -149,7 +188,7 @@ static void nav_apply_back(void)
         return;
     }
     if (nav_is_fpga_mode_page(s_screen)) {
-        FPGA_UI_ResetSession();
+        FPGA_UI_RequestAbort();
         s_screen = UI_SCR_FPGA_CONFIG;
         return;
     }
@@ -210,26 +249,39 @@ void UI_Nav_Poll(void)
     uint8_t ab1, ab2;
     uint8_t ec1_down;
     uint8_t ec2_down;
+    uint8_t raw_ec1;
+    uint8_t raw_ec2;
     int8_t  step1 = 0;
     int8_t  step2 = 0;
     TickType_t now;
+
+    nav_sync_fpga_mode_session();
 
     if (s_io_inited == 0u) {
         BSP_UI_IO_Init();
         s_io_inited = 1u;
     }
 
-    if (BSP_UI_IO_ReadPortB(&gpb) != 0) {
-        return;
+    {
+        uint8_t read_retry;
+        for (read_retry = 0u; read_retry < 3u; ++read_retry) {
+            if (BSP_UI_IO_ReadPortB(&gpb) == 0) {
+                break;
+            }
+        }
+        if (read_retry >= 3u) {
+            return;
+        }
     }
 
     {
-        uint8_t raw_ec1 = (uint8_t)(((gpb & (1u << 0)) == 0u) ? 1u : 0u);
-        uint8_t raw_ec2 = (uint8_t)(((gpb & (1u << 3)) == 0u) ? 1u : 0u);
+        raw_ec1 = (uint8_t)(((gpb & (1u << 0)) == 0u) ? 1u : 0u);
+        raw_ec2 = (uint8_t)(((gpb & (1u << 3)) == 0u) ? 1u : 0u);
 
         if (s_ec_btn_db_arm == 0u) {
             s_ec1_btn_filt     = raw_ec1;
             s_ec2_btn_filt     = raw_ec2;
+            s_ec2_btn_prev_raw = raw_ec2;
             s_ec1_btn_debounce = 0u;
             s_ec2_btn_debounce = 0u;
             s_ec_btn_db_arm    = 1u;
@@ -251,7 +303,7 @@ void UI_Nav_Poll(void)
         ec2_down = s_ec2_btn_filt;
     }
 
-    /* 编码器：取 A、B 两相 2bit Gray，边沿判向 */
+    /* 编码器：�?A、B 两相 2bit Gray，边沿判�?*/
     ab1 = (uint8_t)(((gpb >> (EC1_AB_SHIFT + 1)) & 1u) << 1) | (uint8_t)(((gpb >> EC1_AB_SHIFT) & 1u));
     ab2 = (uint8_t)(((gpb >> (EC2_AB_SHIFT + 1)) & 1u) << 1) | (uint8_t)(((gpb >> EC2_AB_SHIFT) & 1u));
 
@@ -267,7 +319,7 @@ void UI_Nav_Poll(void)
 
         step1 = s_quad_tbl[(uint8_t)((old1 << 2) | (ab1 & 3u))];
         step2 = s_quad_tbl[(uint8_t)((old2 << 2) | (ab2 & 3u))];
-        /* 采样偏慢时易见 00↔11 / 01↔10 对角跳变，表值为 0；按上一有效方向补双倍步进 */
+        /* 采样偏慢时易�?00�?1 / 01�?0 对角跳变，表值为 0；按上一有效方向补双倍步�?*/
         if (step1 == 0 && ((old1 ^ ab1) & 3u) == 3u && s_ec1_last_step != 0) {
             step1 = (int8_t)(2 * s_ec1_last_step);
         }
@@ -287,9 +339,8 @@ void UI_Nav_Poll(void)
     }
 
     /*
-     * 波形页组合键：只按住 EC2 时转 EC1→solo，应忽略 EC2 轴误码；只按住 EC1 时转 EC2→模式，
-     * 应忽略 EC1 轴误码。两键同时按住时不屏蔽，以便两轴仍可分工。
-     */
+     * 波形页组合键：只按住 EC2 时转 EC1→solo，应忽略 EC2 轴误码；只按�?EC1 时转 EC2→模式，
+     * 应忽�?EC1 轴误码。两键同时按住时不屏蔽，以便两轴仍可分工�?     */
     {
         int8_t s1 = step1;
         int8_t s2 = step2;
@@ -303,7 +354,7 @@ void UI_Nav_Poll(void)
             }
         }
 
-    /* EC1 旋转：主菜单=焦点；波形页= CH1 上下 / 按住 EC2 时循环 DUAL-CH1-CH2 */
+    /* EC1 旋转：主菜单=焦点；波形页= CH1 上下 / 按住 EC2 时循�?DUAL-CH1-CH2 */
     if (s_screen == UI_SCR_MAIN_MENU) {
         if (s_enc_arm != 0u && step1 != 0) {
             s_ec1_pulse_accum += (int16_t)step1;
@@ -367,7 +418,7 @@ void UI_Nav_Poll(void)
         s_ec1_last_step   = 0;
     }
 
-    /* EC2 旋转：波形页= CH2 上下 / 按住 EC1 时 Y-T↔Roll；其它页忽略 */
+    /* EC2 旋转：波形页= CH2 上下 / 按住 EC1 �?Y-T↔Roll；其它页忽略 */
     if (s_screen == UI_SCR_SCOPE) {
         if (s_enc_arm != 0u && s2 != 0) {
             s_ec2_pulse_accum += (int16_t)s2;
@@ -398,10 +449,7 @@ void UI_Nav_Poll(void)
     } /* scope step mask */
 
     /*
-     * 波形页长按与组合解耦：必须先处理按下沿再置 combo_lock，否则同一周期内
-     * 「对侧 step + 本键按下沿」会被按下沿误清。
-     * 松手时：combo_lock 则绝不执行原长按；否则按住≥阈值才在松手执行 V/div、ms/div。
-     */
+     * 波形页长按与组合解耦：必须先处理按下沿再置 combo_lock，否则同一周期�?     * 「对�?step + 本键按下沿」会被按下沿误清�?     * 松手时：combo_lock 则绝不执行原长按；否则按住≥阈值才在松手执�?V/div、ms/div�?     */
     if (s_screen == UI_SCR_SCOPE) {
         if (ec1_down != 0u && s_ec1_btn_prev == 0u) {
             s_ec1_scope_press_tick = now;
@@ -419,7 +467,7 @@ void UI_Nav_Poll(void)
         }
     }
 
-    /* EC1 按键：波形页短按=RUN/STOP，长按=V/div；其它页=确认 */
+    /* EC1 按键：波形页短按=RUN/STOP，长�?V/div；其它页=确认 */
     {
         if (s_screen == UI_SCR_SCOPE) {
             if (ec1_down == 0u && s_ec1_btn_prev != 0u) {
@@ -447,7 +495,7 @@ void UI_Nav_Poll(void)
         s_ec1_btn_prev = ec1_down;
     }
 
-    /* EC2 按键：波形页短按=返回，长按=ms/div；其它页下降沿=返回 */
+    /* EC2 按键：波形页短按=返回，长�?ms/div；其它页返回 */
     {
         if (s_screen == UI_SCR_SCOPE) {
             if (ec2_down == 0u && s_ec2_btn_prev != 0u) {
@@ -465,6 +513,15 @@ void UI_Nav_Poll(void)
                     }
                 }
             }
+        } else if (nav_is_fpga_mode_page(s_screen)) {
+            if (raw_ec2 == 0u) {
+                s_fpga_ec2_back_latched = 0u;
+            } else if (s_fpga_ec2_back_latched == 0u) {
+                nav_apply_back();
+                s_redraw_req   = 1u;
+                s_ec2_last_ms = now;
+                s_fpga_ec2_back_latched = 1u;
+            }
         } else if (ec2_down != 0u && s_ec2_btn_prev == 0u) {
             if ((now - s_ec2_last_ms) >= pdMS_TO_TICKS(BTN_COOLDOWN_MS)) {
                 nav_apply_back();
@@ -472,7 +529,11 @@ void UI_Nav_Poll(void)
                 s_ec2_last_ms = now;
             }
         }
+        if (!nav_is_fpga_mode_page(s_screen)) {
+            s_fpga_ec2_back_latched = 0u;
+        }
         s_ec2_btn_prev = ec2_down;
+        s_ec2_btn_prev_raw = raw_ec2;
     }
 }
 

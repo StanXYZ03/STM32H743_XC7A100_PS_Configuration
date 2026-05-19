@@ -1,0 +1,4 @@
+#Start recording tcl command: 4/28/2026 11:31:42
+#Project Location: D:/CubeMX/STM32H743_XC7A100_PS_Configuration; Project name: STM32_Lattice_Xilinx
+prj_project open "D:/CubeMX/STM32H743_XC7A100_PS_Configuration/STM32_Lattice_Xilinx.ldf"
+#Stop recording: 4/28/2026 17:22:05

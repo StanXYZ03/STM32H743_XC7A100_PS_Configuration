@@ -3,7 +3,7 @@
 <!--The data in this file is primarily intended for consumption by Xilinx tools.
 The structure and the elements are likely to change over the next few releases.
 This means code written to parse this file will need to be revisited each subsequent release.-->
-<application name="pa" timeStamp="Fri Apr 17 16:42:09 2026">
+<application name="pa" timeStamp="Mon Apr 27 14:18:05 2026">
 <section name="Project Information" visible="false">
 <property name="ProjectID" value="22141a01470d440ba0ee3c9c2c64b02f" type="ProjectID"/>
 <property name="ProjectIteration" value="15" type="ProjectIteration"/>
@@ -19,16 +19,16 @@ This means code written to parse this file will need to be revisited each subseq
 <item name="Java Command Handlers">
 <property name="AddCfgMem" value="1" type="JavaHandler"/>
 <property name="AddSources" value="2" type="JavaHandler"/>
-<property name="AutoConnectTarget" value="4" type="JavaHandler"/>
+<property name="AutoConnectTarget" value="5" type="JavaHandler"/>
 <property name="DebugWizardCmdHandler" value="4" type="JavaHandler"/>
 <property name="EditDelete" value="2" type="JavaHandler"/>
 <property name="EditProperties" value="2" type="JavaHandler"/>
 <property name="LaunchProgramFpga" value="32" type="JavaHandler"/>
 <property name="NewHardwareDashboard" value="1" type="JavaHandler"/>
 <property name="NewProject" value="1" type="JavaHandler"/>
-<property name="OpenHardwareManager" value="13" type="JavaHandler"/>
+<property name="OpenHardwareManager" value="14" type="JavaHandler"/>
 <property name="OpenRecentTarget" value="5" type="JavaHandler"/>
-<property name="ProgramCfgMem" value="3" type="JavaHandler"/>
+<property name="ProgramCfgMem" value="4" type="JavaHandler"/>
 <property name="ProgramDevice" value="7" type="JavaHandler"/>
 <property name="RefreshDevice" value="2" type="JavaHandler"/>
 <property name="RunBitgen" value="15" type="JavaHandler"/>
@@ -50,26 +50,27 @@ This means code written to parse this file will need to be revisited each subseq
 <property name="AddIlaProbesPopup_OK" value="1" type="GuiHandlerData"/>
 <property name="BaseDialog_APPLY" value="1" type="GuiHandlerData"/>
 <property name="BaseDialog_CANCEL" value="14" type="GuiHandlerData"/>
-<property name="BaseDialog_OK" value="27" type="GuiHandlerData"/>
+<property name="BaseDialog_OK" value="28" type="GuiHandlerData"/>
 <property name="BaseDialog_YES" value="14" type="GuiHandlerData"/>
 <property name="CfgMemPartChooser_MANUFACTURER_CHOOSER" value="1" type="GuiHandlerData"/>
 <property name="CfgMemPartChooser_TABLE" value="1" type="GuiHandlerData"/>
 <property name="CfgMemPartChooser_TYPE_CHOOSER" value="1" type="GuiHandlerData"/>
-<property name="CmdMsgDialog_OK" value="19" type="GuiHandlerData"/>
+<property name="CmdMsgDialog_OK" value="21" type="GuiHandlerData"/>
 <property name="DebugView_DEBUG_CORES_TREE_TABLE" value="5" type="GuiHandlerData"/>
 <property name="DebugWizard_ADVANCED_TRIGGER" value="2" type="GuiHandlerData"/>
 <property name="DebugWizard_CHIPSCOPE_TREE_TABLE" value="36" type="GuiHandlerData"/>
 <property name="DebugWizard_REMOVE_NETS" value="12" type="GuiHandlerData"/>
 <property name="DebugWizard_SAMPLE_OF_DATA_DEPTH" value="2" type="GuiHandlerData"/>
 <property name="FPGAChooser_FPGA_TABLE" value="1" type="GuiHandlerData"/>
-<property name="FileSetPanel_FILE_SET_PANEL_TREE" value="83" type="GuiHandlerData"/>
+<property name="FileSetPanel_FILE_SET_PANEL_TREE" value="86" type="GuiHandlerData"/>
 <property name="FilteredNetsWarningDialog_OK" value="4" type="GuiHandlerData"/>
-<property name="FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE" value="60" type="GuiHandlerData"/>
+<property name="FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE" value="61" type="GuiHandlerData"/>
 <property name="GettingStartedView_CREATE_NEW_PROJECT" value="1" type="GuiHandlerData"/>
+<property name="HExceptionDialog_EXIT" value="1" type="GuiHandlerData"/>
 <property name="HJFileChooserRecentListPreview_RECENT_DIRECTORIES" value="6" type="GuiHandlerData"/>
 <property name="HardwareIlaWaveformView_RUN_TRIGGER_FOR_THIS_ILA_CORE" value="67" type="GuiHandlerData"/>
 <property name="HardwareIlaWaveformView_STOP_TRIGGER_FOR_THIS_ILA_CORE" value="1" type="GuiHandlerData"/>
-<property name="HardwareTreePanel_HARDWARE_TREE_TABLE" value="51" type="GuiHandlerData"/>
+<property name="HardwareTreePanel_HARDWARE_TREE_TABLE" value="53" type="GuiHandlerData"/>
 <property name="LabtoolsMenu_JTAG_SCAN_RATE" value="5" type="GuiHandlerData"/>
 <property name="MainMenuMgr_EDIT" value="2" type="GuiHandlerData"/>
 <property name="MainMenuMgr_FILE" value="2" type="GuiHandlerData"/>
@@ -88,10 +89,10 @@ This means code written to parse this file will need to be revisited each subseq
 <property name="OpenFileAction_OK" value="2" type="GuiHandlerData"/>
 <property name="PACommandNames_ADD_CONFIG_MEMORY" value="1" type="GuiHandlerData"/>
 <property name="PACommandNames_ADD_SOURCES" value="2" type="GuiHandlerData"/>
-<property name="PACommandNames_AUTO_CONNECT_TARGET" value="4" type="GuiHandlerData"/>
+<property name="PACommandNames_AUTO_CONNECT_TARGET" value="5" type="GuiHandlerData"/>
 <property name="PACommandNames_AUTO_UPDATE_HIER" value="2" type="GuiHandlerData"/>
 <property name="PACommandNames_CREATE_HARDWARE_DASHBOARDS" value="4" type="GuiHandlerData"/>
-<property name="PACommandNames_PROGRAM_CONFIG_MEMORY" value="3" type="GuiHandlerData"/>
+<property name="PACommandNames_PROGRAM_CONFIG_MEMORY" value="4" type="GuiHandlerData"/>
 <property name="PACommandNames_PROGRAM_FPGA" value="25" type="GuiHandlerData"/>
 <property name="PACommandNames_REFRESH_DEVICE" value="1" type="GuiHandlerData"/>
 <property name="PACommandNames_RUN_TRIGGER" value="5" type="GuiHandlerData"/>
@@ -105,7 +106,7 @@ This means code written to parse this file will need to be revisited each subseq
 <property name="PAViews_DASHBOARD" value="6" type="GuiHandlerData"/>
 <property name="PAViews_DEVICE" value="2" type="GuiHandlerData"/>
 <property name="PAViews_FLOW_NAVIGATOR" value="1" type="GuiHandlerData"/>
-<property name="PAViews_PROJECT_SUMMARY" value="12" type="GuiHandlerData"/>
+<property name="PAViews_PROJECT_SUMMARY" value="13" type="GuiHandlerData"/>
 <property name="ProbesView_PROBES_TREE" value="10" type="GuiHandlerData"/>
 <property name="ProgramCfgMemDialog_ADDRESS_RANGE_USED_FOR_ERASE_BLANK" value="2" type="GuiHandlerData"/>
 <property name="ProgramCfgMemDialog_CONTENTS_OF_CONFIGURATION_FILE" value="1" type="GuiHandlerData"/>
@@ -138,9 +139,9 @@ This means code written to parse this file will need to be revisited each subseq
 <property name="WriteCfgMemFileDialog_SPECIFY_CONFIGURATION_FILENAME" value="1" type="GuiHandlerData"/>
 </item>
 <item name="Other">
-<property name="GuiMode" value="4" type="GuiMode"/>
+<property name="GuiMode" value="14" type="GuiMode"/>
 <property name="BatchMode" value="0" type="BatchMode"/>
-<property name="TclMode" value="1" type="TclMode"/>
+<property name="TclMode" value="7" type="TclMode"/>
 </item>
 </section>
 </application>

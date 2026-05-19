@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<webTalkData  fileName='usage_statistics_webtalk.xml'  majorVersion='1' minorVersion='0' timeStamp='Fri Apr 17 09:54:51 2026'>
+<webTalkData  fileName='usage_statistics_webtalk.xml'  majorVersion='1' minorVersion='0' timeStamp='Mon Apr 27 14:20:41 2026'>
 <section name="__ROOT__" level="0" order="1" description="">
  <section name="software_version_and_target_device" level="1" order="1" description="">
   <keyValuePair key="beta" value="FALSE" description="" />
   <keyValuePair key="build_version" value="2405991" description="" />
-  <keyValuePair key="date_generated" value="Fri Apr 17 09:54:51 2026" description="" />
+  <keyValuePair key="date_generated" value="Mon Apr 27 14:20:40 2026" description="" />
   <keyValuePair key="os_platform" value="WIN64" description="" />
   <keyValuePair key="product_version" value="Vivado v2018.3 (64-bit)" description="" />
   <keyValuePair key="project_id" value="4f245dc076aa4d25a2713877ef849925" description="" />
-  <keyValuePair key="project_iteration" value="16" description="" />
+  <keyValuePair key="project_iteration" value="17" description="" />
   <keyValuePair key="random_id" value="55f7e6835c585015a55c220622586961" description="" />
   <keyValuePair key="registration_id" value="55f7e6835c585015a55c220622586961" description="" />
   <keyValuePair key="route_design" value="TRUE" description="" />
@@ -97,7 +97,7 @@
    <keyValuePair key="devstatic" value="0.083804" description="" />
    <keyValuePair key="die" value="xc7a100tfgg484-2" description="" />
    <keyValuePair key="dsp_output_toggle" value="12.500000" description="" />
-   <keyValuePair key="dynamic" value="0.001078" description="" />
+   <keyValuePair key="dynamic" value="0.001040" description="" />
    <keyValuePair key="effective_thetaja" value="2.7" description="" />
    <keyValuePair key="enable_probability" value="0.990000" description="" />
    <keyValuePair key="family" value="artix7" description="" />
@@ -107,7 +107,7 @@
    <keyValuePair key="i/o" value="0.000064" description="" />
    <keyValuePair key="input_toggle" value="12.500000" description="" />
    <keyValuePair key="junction_temp" value="25.2 (C)" description="" />
-   <keyValuePair key="logic" value="0.000067" description="" />
+   <keyValuePair key="logic" value="0.000066" description="" />
    <keyValuePair key="mgtavcc_dynamic_current" value="0.000000" description="" />
    <keyValuePair key="mgtavcc_static_current" value="0.000000" description="" />
    <keyValuePair key="mgtavcc_total_current" value="0.000000" description="" />
@@ -118,7 +118,7 @@
    <keyValuePair key="mgtavtt_voltage" value="1.200000" description="" />
    <keyValuePair key="netlist_net_matched" value="NA" description="" />
    <keyValuePair key="off-chip_power" value="0.000000" description="" />
-   <keyValuePair key="on-chip_power" value="0.084882" description="" />
+   <keyValuePair key="on-chip_power" value="0.084844" description="" />
    <keyValuePair key="output_enable" value="1.000000" description="" />
    <keyValuePair key="output_load" value="5.000000" description="" />
    <keyValuePair key="output_toggle" value="12.500000" description="" />
@@ -132,7 +132,7 @@
    <keyValuePair key="read_saif" value="False" description="" />
    <keyValuePair key="set/reset_probability" value="0.000000" description="" />
    <keyValuePair key="signal_rate" value="False" description="" />
-   <keyValuePair key="signals" value="0.000117" description="" />
+   <keyValuePair key="signals" value="0.000080" description="" />
    <keyValuePair key="simulation_file" value="None" description="" />
    <keyValuePair key="speedgrade" value="-2" description="" />
    <keyValuePair key="static_prob" value="False" description="" />
@@ -161,9 +161,9 @@
    <keyValuePair key="vccbram_static_current" value="0.000244" description="" />
    <keyValuePair key="vccbram_total_current" value="0.000244" description="" />
    <keyValuePair key="vccbram_voltage" value="1.000000" description="" />
-   <keyValuePair key="vccint_dynamic_current" value="0.001078" description="" />
+   <keyValuePair key="vccint_dynamic_current" value="0.001040" description="" />
    <keyValuePair key="vccint_static_current" value="0.014917" description="" />
-   <keyValuePair key="vccint_total_current" value="0.015995" description="" />
+   <keyValuePair key="vccint_total_current" value="0.015958" description="" />
    <keyValuePair key="vccint_voltage" value="1.000000" description="" />
    <keyValuePair key="vcco12_dynamic_current" value="0.000000" description="" />
    <keyValuePair key="vcco12_static_current" value="0.000000" description="" />
@@ -357,10 +357,10 @@
    <keyValuePair key="slice_registers_used" value="27" description="" />
    <keyValuePair key="slice_registers_util_percentage" value="0.02" description="" />
    <keyValuePair key="slice_registers_util_percentage" value="0.02" description="" />
-   <keyValuePair key="slice_used" value="14" description="" />
-   <keyValuePair key="slice_util_percentage" value="0.09" description="" />
+   <keyValuePair key="slice_used" value="13" description="" />
+   <keyValuePair key="slice_util_percentage" value="0.08" description="" />
    <keyValuePair key="slicel_fixed" value="0" description="" />
-   <keyValuePair key="slicel_used" value="14" description="" />
+   <keyValuePair key="slicel_used" value="13" description="" />
    <keyValuePair key="slicem_fixed" value="0" description="" />
    <keyValuePair key="slicem_used" value="0" description="" />
    <keyValuePair key="unique_control_sets_available" value="15850" description="" />
@@ -451,10 +451,10 @@
    <keyValuePair key="-verilog_define" value="default::[not_specified]" description="" />
   </section>
   <section name="usage" level="2" order="2" description="">
-   <keyValuePair key="elapsed" value="00:00:16s" description="" />
+   <keyValuePair key="elapsed" value="00:00:27s" description="" />
    <keyValuePair key="hls_ip" value="0" description="" />
-   <keyValuePair key="memory_gain" value="517.570MB" description="" />
-   <keyValuePair key="memory_peak" value="782.863MB" description="" />
+   <keyValuePair key="memory_gain" value="522.277MB" description="" />
+   <keyValuePair key="memory_peak" value="781.324MB" description="" />
   </section>
  </section>
  <section name="unisim_transformation" level="1" order="8" description="">
@@ -490,14 +490,14 @@
    <keyValuePair key="abstractfileview_reload" value="1" description="" />
    <keyValuePair key="basedialog_apply" value="2" description="" />
    <keyValuePair key="basedialog_cancel" value="15" description="" />
-   <keyValuePair key="basedialog_ok" value="23" description="" />
-   <keyValuePair key="basedialog_yes" value="15" description="" />
+   <keyValuePair key="basedialog_ok" value="24" description="" />
+   <keyValuePair key="basedialog_yes" value="16" description="" />
    <keyValuePair key="cfgmempartchooser_manufacturer_chooser" value="1" description="" />
    <keyValuePair key="cfgmempartchooser_table" value="1" description="" />
    <keyValuePair key="cfgmempartchooser_type_chooser" value="1" description="" />
    <keyValuePair key="cmdmsgdialog_ok" value="31" description="" />
-   <keyValuePair key="filesetpanel_file_set_panel_tree" value="47" description="" />
-   <keyValuePair key="flownavigatortreepanel_flow_navigator_tree" value="56" description="" />
+   <keyValuePair key="filesetpanel_file_set_panel_tree" value="57" description="" />
+   <keyValuePair key="flownavigatortreepanel_flow_navigator_tree" value="57" description="" />
    <keyValuePair key="hardwaretreepanel_hardware_tree_table" value="57" description="" />
    <keyValuePair key="hexceptiondialog_exit" value="1" description="" />
    <keyValuePair key="hjfilechooserrecentlistpreview_recent_directories" value="6" description="" />
@@ -535,7 +535,7 @@
    <keyValuePair key="programcfgmem" value="6" description="" />
    <keyValuePair key="programdevice" value="3" description="" />
    <keyValuePair key="refreshdevice" value="1" description="" />
-   <keyValuePair key="runbitgen" value="16" description="" />
+   <keyValuePair key="runbitgen" value="17" description="" />
    <keyValuePair key="runimplementation" value="1" description="" />
    <keyValuePair key="toolssettings" value="1" description="" />
    <keyValuePair key="viewtaskimplementation" value="1" description="" />
@@ -545,7 +545,7 @@
   </section>
   <section name="other_data" level="2" order="3" description="">
    <keyValuePair key="batchmode" value="2" description="" />
-   <keyValuePair key="guimode" value="5" description="" />
+   <keyValuePair key="guimode" value="7" description="" />
   </section>
   <section name="project_data" level="2" order="4" description="">
    <keyValuePair key="constraintsetcount" value="1" description="" />

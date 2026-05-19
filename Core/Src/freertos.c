@@ -50,6 +50,7 @@
 osThreadId FPGAConfigTaskHandle;
 osThreadId ewWinTaskHandle;
 osThreadId mousekeyTaskHandle;
+osThreadId ETHHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -58,8 +59,10 @@ osThreadId mousekeyTaskHandle;
 void FPGAConfigDefaultTask(void const * argument);
 void ewWinDefaultTask(void const * argument);
 void mousekeyDefaultTask(void const * argument);
+void ETHDefaultTask(void const * argument);
 
 extern void MX_USB_DEVICE_Init(void);
+extern void MX_LWIP_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* GetIdleTaskMemory prototype (linked to static allocation support) */
@@ -106,7 +109,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of FPGAConfigTask */
-  osThreadDef(FPGAConfigTask, FPGAConfigDefaultTask, osPriorityNormal, 0, 6144);
+  osThreadDef(FPGAConfigTask, FPGAConfigDefaultTask, osPriorityNormal, 0, 2048);
   FPGAConfigTaskHandle = osThreadCreate(osThread(FPGAConfigTask), NULL);
 
   /* definition and creation of ewWinTask */
@@ -116,6 +119,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of mousekeyTask */
   osThreadDef(mousekeyTask, mousekeyDefaultTask, osPriorityIdle, 0, 1024);
   mousekeyTaskHandle = osThreadCreate(osThread(mousekeyTask), NULL);
+
+  /* definition and creation of ETH */
+  osThreadDef(ETH, ETHDefaultTask, osPriorityIdle, 0, 2048);
+  ETHHandle = osThreadCreate(osThread(ETH), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   if (ewWinTaskHandle != NULL)
@@ -137,6 +144,9 @@ __weak void FPGAConfigDefaultTask(void const * argument)
 {
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
+
+  /* init code for LWIP */
+  MX_LWIP_Init();
   /* USER CODE BEGIN FPGAConfigDefaultTask */
   /* Infinite loop */
   for(;;)
@@ -179,6 +189,24 @@ __weak void mousekeyDefaultTask(void const * argument)
     osDelay(1);
   }
   /* USER CODE END mousekeyDefaultTask */
+}
+
+/* USER CODE BEGIN Header_ETHDefaultTask */
+/**
+* @brief Function implementing the ETH thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_ETHDefaultTask */
+__weak void ETHDefaultTask(void const * argument)
+{
+  /* USER CODE BEGIN ETHDefaultTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END ETHDefaultTask */
 }
 
 /* Private application code --------------------------------------------------*/

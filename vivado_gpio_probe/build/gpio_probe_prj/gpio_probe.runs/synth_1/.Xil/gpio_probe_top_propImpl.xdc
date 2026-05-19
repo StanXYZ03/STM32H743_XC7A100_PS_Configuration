@@ -2,4 +2,4 @@ set_property SRC_FILE_INFO {cfile:D:/CubeMX/STM32H743_XC7A100_PS_Configuration/v
 set_property src_info {type:XDC file:1 line:5 export:INPUT save:INPUT read:READ} [current_design]
 set_property PACKAGE_PIN W19 [get_ports clk]
 set_property src_info {type:XDC file:1 line:10 export:INPUT save:INPUT read:READ} [current_design]
-set_property PACKAGE_PIN Y11 [get_ports probe_led]
+set_property PACKAGE_PIN F20 [get_ports probe_led]

@@ -1,58 +1,97 @@
-/*
-*********************************************************************************************************
-*
-*	模块名称 : STM32F4 内置ETH MAC 驱动模块
-*	文件名称 : bsp_eth.h
-*	版    本 : V2.4
-*	说    明 : 安富莱STM32-V5开发板外扩的MAC为 DM9161
-*
-*	Copyright (C), 2013-2014, 安富莱电子 www.armfly.com
-*
-*********************************************************************************************************
-*/
-
-/* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __BSP_ETH_H
 #define __BSP_ETH_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
-/* 定义 ETH_PHY 中断口线 PH6  used to manage Ethernet link status */
-#define ETH_LINK_EXTI_LINE             EXTI_Line6
-#define ETH_LINK_EXTI_PORT_SOURCE      EXTI_PortSourceGPIOH
-#define ETH_LINK_EXTI_PIN_SOURCE       EXTI_PinSource6
-#define ETH_LINK_EXTI_IRQn             EXTI9_5_IRQn			/* 中断号，在stm32f4xx.h 中定义 */
+#include "main.h"
+#include <stdint.h>
 
-#define ETH_LINK_PIN                   GPIO_Pin_6
-#define ETH_LINK_GPIO_PORT             GPIOH
-#define ETH_LINK_GPIO_CLK              RCC_AHB1Periph_GPIOH
+/*
+ * Minimal remote-lab Ethernet test configuration.
+ *
+ * Board data path:
+ *   FPGA threshold bit -> STM32 GPIO -> UDP -> Node.js server -> browser
+ *
+ * Update these values to match your PC/server and the actual PCB GPIO.
+ */
+#ifndef BSP_ETH_MINIMAL_TEST_MODE
+#define BSP_ETH_MINIMAL_TEST_MODE          0U
+#endif
 
+#ifndef BSP_ETH_MINIMAL_TEST_FORCE_SEND
+#define BSP_ETH_MINIMAL_TEST_FORCE_SEND    0U
+#endif
 
-#define PHY_ADDRESS      0x00 	/* 地址有DM9161的RXD0 - RXD3 决定，上电复位时锁存. 安富莱STM32-V5开发板地址是0 */
+#ifndef BSP_ETH_MINIMAL_TEST_BROADCAST
+#define BSP_ETH_MINIMAL_TEST_BROADCAST     0U
+#endif
 
+#ifndef BSP_ETH_SERVER_IP0
+#define BSP_ETH_SERVER_IP0                 192U
+#endif
+#ifndef BSP_ETH_SERVER_IP1
+#define BSP_ETH_SERVER_IP1                 168U
+#endif
+#ifndef BSP_ETH_SERVER_IP2
+#define BSP_ETH_SERVER_IP2                 16U
+#endif
+#ifndef BSP_ETH_SERVER_IP3
+#define BSP_ETH_SERVER_IP3                 210U
+#endif
 
-/* PHY registers */
-#define PHY_MICR                  0x11 	/* MII Interrupt Control Register */
-#define PHY_MICR_INT_EN           ((uint16_t)0x0002) /* PHY Enable interrupts */
-#define PHY_MICR_INT_OE           ((uint16_t)0x0001) /* PHY Enable output interrupt events */
-#define PHY_MISR                  0x12 /* MII Interrupt Status and Misc. Control Register */
-#define PHY_MISR_LINK_INT_EN      ((uint16_t)0x0020) /* Enable Interrupt on change of link status */
-#define PHY_LINK_STATUS           ((uint16_t)0x2000) /* PHY link status interrupt mask */
+#ifndef BSP_ETH_SERVER_PORT
+#define BSP_ETH_SERVER_PORT                5005U
+#endif
 
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
-void  ETH_BSP_Config(void);
-uint32_t Eth_Link_PHYITConfig(uint16_t PHYAddress);
-void Eth_Link_EXTIConfig(void);
-void Eth_Link_ITHandler(uint16_t PHYAddress);
+#ifndef BSP_ETH_MINIMAL_TEST_PERIOD_MS
+#define BSP_ETH_MINIMAL_TEST_PERIOD_MS     1000U
+#endif
+
+#ifndef BSP_ETH_SAMPLE_PERIOD_MS
+#define BSP_ETH_SAMPLE_PERIOD_MS           20U
+#endif
+
+#ifndef BSP_ETH_KEEPALIVE_PERIOD_MS
+#define BSP_ETH_KEEPALIVE_PERIOD_MS        1000U
+#endif
+
+/*
+ * Default input pin. Change these two macros to the STM32 pin connected to
+ * the FPGA threshold output. PC13 is only a safe CubeMX-configured placeholder.
+ */
+#ifndef BSP_ETH_DATA_GPIO_PORT
+#define BSP_ETH_DATA_GPIO_PORT             GPIOG
+#endif
+
+#ifndef BSP_ETH_DATA_GPIO_PIN
+#define BSP_ETH_DATA_GPIO_PIN              GPIO_PIN_9
+#endif
+
+#ifndef BSP_ETH_DATA_ACTIVE_HIGH
+#define BSP_ETH_DATA_ACTIVE_HIGH           1U
+#endif
+
+/*
+ * When enabled, ETH test mode takes ownership of PG9 as a plain GPIO input.
+ * This disables the SPI1-based mouse/key FPGA readback path at runtime so the
+ * existing Ethernet PG9 sampling logic can run without pin-function conflicts.
+ */
+#ifndef BSP_ETH_PG9_GPIO_TEST_MODE
+#define BSP_ETH_PG9_GPIO_TEST_MODE         0U
+#endif
+
+void Bsp_ETH_Init(void);
+uint8_t Bsp_ETH_ReadDataBit(void);
+uint16_t Bsp_ETH_GetServerPort(void);
+uint32_t Bsp_ETH_GetSamplePeriodMs(void);
+uint32_t Bsp_ETH_GetKeepalivePeriodMs(void);
+void Bsp_ETH_GetServerIp(uint8_t ip[4]);
+uint16_t Bsp_ETH_FormatBitPayload(uint8_t bit, char *buffer, uint16_t buffer_size);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32F4x7_ETH_BSP_H */
-
-
-/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
+#endif /* __BSP_ETH_H */

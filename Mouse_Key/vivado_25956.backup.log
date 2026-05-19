@@ -1,0 +1,13 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Mon Apr 20 09:19:28 2026
+# Process ID: 25956
+# Current directory: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent23988 D:\CubeMX\STM32H743_XC7A100_PS_Configuration\Mouse_Key\Mouse_Key.xpr
+# Log file: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/vivado.log
+# Journal file: D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key\vivado.jou
+#-----------------------------------------------------------
+start_gui
+ERROR: [Vivado 12-106] *** Exception: java.lang.IllegalArgumentException: The icon should not be null. (See D:/CubeMX/STM32H743_XC7A100_PS_Configuration/Mouse_Key/vivado_pid25956.debug)
