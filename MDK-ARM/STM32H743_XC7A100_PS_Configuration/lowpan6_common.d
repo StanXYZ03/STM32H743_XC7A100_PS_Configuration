@@ -54,7 +54,6 @@ stm32h743_xc7a100_ps_configuration\lowpan6_common.o: ../Middlewares/Third_Party/
 stm32h743_xc7a100_ps_configuration\lowpan6_common.o: ../Middlewares/Third_Party/LwIP/system/arch/cc.h
 stm32h743_xc7a100_ps_configuration\lowpan6_common.o: ../Middlewares/Third_Party/LwIP/system/arch/cpu.h
 stm32h743_xc7a100_ps_configuration\lowpan6_common.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdlib.h
-stm32h743_xc7a100_ps_configuration\lowpan6_common.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdio.h
 stm32h743_xc7a100_ps_configuration\lowpan6_common.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\inttypes.h
 stm32h743_xc7a100_ps_configuration\lowpan6_common.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\limits.h
 stm32h743_xc7a100_ps_configuration\lowpan6_common.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\ctype.h

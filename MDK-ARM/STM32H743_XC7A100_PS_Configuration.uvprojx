@@ -867,6 +867,11 @@
               <FileType>1</FileType>
               <FilePath>..\Core\Src\ETHDefaultTask.c</FilePath>
             </File>
+            <File>
+              <FileName>ExpH743SpiBridge.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\ExpH743SpiBridge.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

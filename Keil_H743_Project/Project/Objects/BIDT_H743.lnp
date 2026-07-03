@@ -1,0 +1,28 @@
+--cpu Cortex-M7.fp.dp
+".\objects\system_stm32h7xx.o"
+".\objects\stm32h7xx_hal.o"
+".\objects\stm32h7xx_hal_cortex.o"
+".\objects\stm32h7xx_hal_gpio.o"
+".\objects\stm32h7xx_hal_ltdc.o"
+".\objects\stm32h7xx_hal_pwr_ex.o"
+".\objects\stm32h7xx_hal_rcc.o"
+".\objects\stm32h7xx_hal_spi.o"
+".\objects\stm32h7xx_hal_pwr.o"
+".\objects\stm32h7xx_hal_dma.o"
+".\objects\stm32h7xx_hal_rcc_ex.o"
+".\objects\stm32h7xx_hal_sdram.o"
+".\objects\stm32h7xx_ll_fmc.o"
+".\objects\stm32h7xx_hal_mdma.o"
+".\objects\bsp_fmc_sdram.o"
+".\objects\bsp_lcd_rgb.o"
+".\objects\bsp_ui_io_expander.o"
+".\objects\gpio.o"
+".\objects\lcd_lg4573a.o"
+".\objects\lcd_ltdc.o"
+".\objects\spi_master.o"
+".\objects\startup_stm32h743xx.o"
+".\objects\main.o"
+--library_type=microlib --strict --scatter ".\Objects\BIDT_H743.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Listings\BIDT_H743.map" -o .\Objects\BIDT_H743.axf

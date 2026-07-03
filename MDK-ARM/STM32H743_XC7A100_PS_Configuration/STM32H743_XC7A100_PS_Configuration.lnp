@@ -60,6 +60,7 @@
 "stm32h743_xc7a100_ps_configuration\fpgaconfigdefaulttask.o"
 "stm32h743_xc7a100_ps_configuration\mousekeydefaulttask.o"
 "stm32h743_xc7a100_ps_configuration\ethdefaulttask.o"
+"stm32h743_xc7a100_ps_configuration\exph743spibridge.o"
 "stm32h743_xc7a100_ps_configuration\bsp_lcd_rgb.o"
 "stm32h743_xc7a100_ps_configuration\dma2d_wait.o"
 "stm32h743_xc7a100_ps_configuration\bsp_ui_io_expander.o"

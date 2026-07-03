@@ -249,11 +249,13 @@ int8_t USB_CDC_Recv_Callback(uint8_t* buf, uint32_t* len)
          (buf[0] == 0xAAU) &&
          (buf[1] == 0x55U) &&
          (buf[2] == 0x55U) &&
-         (buf[3] == 0xAAU) &&
-         (flow != FPGA_UI_FLOW_CONFIGURING) &&
-         (flow != FPGA_UI_FLOW_ABORTING)))
+         (buf[3] == 0xAAU)))
     {
-        if (flow != FPGA_UI_FLOW_IDLE)
+        if (flow == FPGA_UI_FLOW_CONFIGURING)
+        {
+            FPGA_UI_RequestAbort();
+        }
+        else if ((flow != FPGA_UI_FLOW_ABORTING) && (flow != FPGA_UI_FLOW_IDLE))
         {
             FPGA_UI_CancelPendingSession("Configuration session canceled by host.");
         }
@@ -280,17 +282,7 @@ int8_t USB_CDC_Recv_Callback(uint8_t* buf, uint32_t* len)
         (flow != FPGA_UI_FLOW_CONFIGURING) &&
         (flow != FPGA_UI_FLOW_ABORTING))
     {
-        if ((g_fpgamode == (uint8_t)FPGA_UI_MODE_SLAVE_SERIAL) ||
-            (g_fpgamode == (uint8_t)FPGA_UI_MODE_JTAG_SRAM) ||
-            (g_fpgamode == (uint8_t)FPGA_UI_MODE_JTAG_FLASH))
-        {
-            FPGA_BeginBinReceive();
-            g_skip_optional_start_marker = 1U;
-        }
-        else
-        {
-            FPGA_BeginModeSelection();
-        }
+        FPGA_BeginModeSelection();
 
         g_usb_recv_flag = 1U;
         return USBD_OK;

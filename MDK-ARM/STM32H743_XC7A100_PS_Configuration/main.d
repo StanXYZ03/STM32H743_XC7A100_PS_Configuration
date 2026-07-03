@@ -70,7 +70,6 @@ stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/Third_Party/LwIP/src/i
 stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/Third_Party/LwIP/system/arch/cc.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/Third_Party/LwIP/system/arch/cpu.h
 stm32h743_xc7a100_ps_configuration\main.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdlib.h
-stm32h743_xc7a100_ps_configuration\main.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdio.h
 stm32h743_xc7a100_ps_configuration\main.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\inttypes.h
 stm32h743_xc7a100_ps_configuration\main.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\limits.h
 stm32h743_xc7a100_ps_configuration\main.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\ctype.h
@@ -111,6 +110,7 @@ stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/spi.h
 stm32h743_xc7a100_ps_configuration\main.o: ../USB_DEVICE/App/usb_device.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h
 stm32h743_xc7a100_ps_configuration\main.o: ../USB_DEVICE/Target/usbd_conf.h
+stm32h743_xc7a100_ps_configuration\main.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdio.h
 stm32h743_xc7a100_ps_configuration\main.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\string.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/gpio.h
 stm32h743_xc7a100_ps_configuration\main.o: ../Core/Inc/fpga_config.h

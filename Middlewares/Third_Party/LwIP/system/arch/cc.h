@@ -34,7 +34,6 @@
 
 #include "cpu.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 typedef int sys_prot_t;
 
@@ -79,8 +78,23 @@ typedef int sys_prot_t;
 
 #endif
 
-#define LWIP_PLATFORM_ASSERT(x) do {printf("Assertion \"%s\" failed at line %d in %s\n", \
-                                     x, __LINE__, __FILE__); } while(0)
+/*
+ * Keep lwIP diagnostics from pulling in full stdio during C library init.
+ * On this project, printf-based asserts eventually drag in _sys_open() and
+ * hit ARM semihosting BKPT 0xAB before main(). For board firmware we prefer
+ * silent diagnostics over startup breakpoints.
+ */
+#ifndef LWIP_NOASSERT
+#define LWIP_NOASSERT
+#endif
+
+#ifndef LWIP_PLATFORM_ASSERT
+#define LWIP_PLATFORM_ASSERT(x) do { (void)(x); } while(0)
+#endif
+
+#ifndef LWIP_PLATFORM_DIAG
+#define LWIP_PLATFORM_DIAG(x)   do { (void)sizeof(x); } while(0)
+#endif
 
 /* Define random number generator function */
 #define LWIP_RAND() ((u32_t)rand())

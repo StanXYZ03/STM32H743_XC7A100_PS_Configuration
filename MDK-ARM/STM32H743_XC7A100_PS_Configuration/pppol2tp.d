@@ -53,7 +53,6 @@ stm32h743_xc7a100_ps_configuration\pppol2tp.o: ../Middlewares/Third_Party/LwIP/s
 stm32h743_xc7a100_ps_configuration\pppol2tp.o: ../Middlewares/Third_Party/LwIP/system/arch/cc.h
 stm32h743_xc7a100_ps_configuration\pppol2tp.o: ../Middlewares/Third_Party/LwIP/system/arch/cpu.h
 stm32h743_xc7a100_ps_configuration\pppol2tp.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdlib.h
-stm32h743_xc7a100_ps_configuration\pppol2tp.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\stdio.h
 stm32h743_xc7a100_ps_configuration\pppol2tp.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\inttypes.h
 stm32h743_xc7a100_ps_configuration\pppol2tp.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\limits.h
 stm32h743_xc7a100_ps_configuration\pppol2tp.o: D:\Keil-ARM\ARM\ARMCC\Bin\..\include\ctype.h

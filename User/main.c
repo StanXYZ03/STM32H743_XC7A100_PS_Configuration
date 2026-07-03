@@ -282,7 +282,7 @@ int main(void)
     __set_PRIMASK(1);
 
     bsp_Init();
-    printf("\r\n[BOOT] OK\r\n");
+    USER_BOOT_PRINTF("\r\n[BOOT] OK\r\n");
 
 #if (DMA2D_PHASE1_TEST == 1)
     if (!DMA2D_Phase1_Test()) {
@@ -292,12 +292,12 @@ int main(void)
 
     bsp_InitExtSDRAM();
     SDRAM_QuickCheck();
-    printf("[BOOT] SDRAM OK\r\n");
+    USER_BOOT_PRINTF("[BOOT] SDRAM OK\r\n");
 
 #if (SDRAM_GUI_HEAP_TEST_AT_BOOT != 0)
     {
         uint32_t e = bsp_TestExtSDRAM_Block((uint32_t)SDRAM_APP_BUF, GUI_CONF_EXPERIMENT_NUMBYTES);
-        printf("[BOOT] SDRAM GUI heap region test err=%lu (0=ok, size=%lu)\r\n",
+        USER_BOOT_PRINTF("[BOOT] SDRAM GUI heap region test err=%lu (0=ok, size=%lu)\r\n",
                (unsigned long)e, (unsigned long)GUI_CONF_EXPERIMENT_NUMBYTES);
         if (e != 0U) {
             Error_Handler(__FILE__, __LINE__);
@@ -309,7 +309,7 @@ int main(void)
     Framebuffer_Init();
 
     LCD_RGB_Init();
-    printf("[BOOT] LTDC FB=0x%08lX\r\n", (unsigned long)LCD_RGB_FB_ADDR);
+    USER_BOOT_PRINTF("[BOOT] LTDC FB=0x%08lX\r\n", (unsigned long)LCD_RGB_FB_ADDR);
 
     /* 试验：PG10 拉高 */
     {
@@ -344,13 +344,13 @@ int main(void)
     LCD_DiagnosticTest();
 #else
     if (xTaskCreate((TaskFunction_t)MainTask, "emWin", 8192, NULL, 2, NULL) != pdPASS) {
-        printf("[BOOT] FAIL emWin\r\n");
+        USER_BOOT_PRINTF("[BOOT] FAIL emWin\r\n");
         Error_Handler(__FILE__, __LINE__);
     }
 
     /* 假 ADC 数据 */
     if (xTaskCreate(ADC_FakeData_Task, "FakeADC", 2048, NULL, 1, NULL) != pdPASS) {
-        printf("[BOOT] FAIL FakeADC\r\n");
+        USER_BOOT_PRINTF("[BOOT] FAIL FakeADC\r\n");
         Error_Handler(__FILE__, __LINE__);
     }
 
@@ -364,7 +364,7 @@ int main(void)
     HAL_ResumeTick();
     __set_PRIMASK(0);
 
-    printf("[BOOT] scheduler\r\n");
+    USER_BOOT_PRINTF("[BOOT] scheduler\r\n");
     vTaskStartScheduler();
 #endif
 
@@ -377,7 +377,7 @@ int main(void)
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
     (void)xTask;
-    printf("\r\n[RTOS] STACK OVERFLOW: %s\r\n", (pcTaskName != NULL) ? pcTaskName : "?");
+    USER_BOOT_PRINTF("\r\n[RTOS] STACK OVERFLOW: %s\r\n", (pcTaskName != NULL) ? pcTaskName : "?");
     for (;;) {}
 }
 #endif
@@ -385,7 +385,7 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 #if ( configUSE_MALLOC_FAILED_HOOK == 1 )
 void vApplicationMallocFailedHook(void)
 {
-    printf("\r\n[RTOS] pvPortMalloc failed (heap exhausted)\r\n");
+    USER_BOOT_PRINTF("\r\n[RTOS] pvPortMalloc failed (heap exhausted)\r\n");
     taskDISABLE_INTERRUPTS();
     for (;;) {}
 }
